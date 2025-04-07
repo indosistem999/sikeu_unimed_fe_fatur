@@ -113,16 +113,16 @@ export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy
     handleSignIn() {
         const formValue = this.FormComps.onGetFormValue();
 
-        if (formValue) {
-            this._authenticationService
-                .signIn(formValue)
-                .pipe(takeUntil(this.Destroy$))
-                .subscribe((result) => {
-                    if (result.status) {
-                        this._authenticationService.setUserData();
-                        this._router.navigateByUrl("beranda");
-                    }
-                })
-        }
+        // if (formValue) {
+        //     this._authenticationService
+        //         .signIn(formValue)
+        //         .pipe(takeUntil(this.Destroy$))
+        //         .subscribe((result) => {
+        //             if (result.status) {
+        //                 this._authenticationService.setUserData();
+        this._router.navigateByUrl("/list-module");
+        //             }
+        //         })
+        // }
     }
 }

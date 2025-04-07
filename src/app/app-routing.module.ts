@@ -7,7 +7,14 @@ const routes: Routes = [
         path: '',
         loadComponent: async () => (await import('./pages/authentication/authentication.component')).AuthenticationComponent,
         data: {
-            title: 'Sign In'
+            title: 'Login'
+        }
+    },
+    {
+        path: 'list-module',
+        loadComponent: async () => (await import('./pages/module-list/module-list.component')).ModuleListComponent,
+        data: {
+            title: 'List Module'
         }
     }
 ];
