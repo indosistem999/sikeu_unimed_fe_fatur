@@ -9,6 +9,9 @@ import { Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { CheckboxModule } from 'primeng/checkbox';
+import { InputOtpModule } from 'primeng/inputotp';
+import { PasswordModule } from 'primeng/password';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
     selector: 'app-authentication',
@@ -17,12 +20,17 @@ import { CheckboxModule } from 'primeng/checkbox';
         CommonModule,
         ButtonModule,
         CheckboxModule,
+        PasswordModule,
+        InputOtpModule,
+        InputTextModule,
         DynamicFormComponent,
     ],
     templateUrl: './authentication.component.html',
     styleUrls: ['./authentication.component.scss']
 })
 export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    PageState: 'login' | 'email_confirm' | 'otp' | 'password_confirm' | 'success' = 'login'
 
     Destroy$ = new Subject();
 

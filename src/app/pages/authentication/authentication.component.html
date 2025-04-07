@@ -19,8 +19,8 @@
             </div>
         </div>
 
-        <!-- Form -->
-        <div class="grid w-full p-5 rounded-xl bg-white">
+        <!-- Form Login -->
+        <div *ngIf="PageState == 'login'" class="grid w-full p-5 rounded-xl bg-white">
             <p
                 class="text-gray-700 text-center text-sm mb-3 pb-3 border-b border-t-0 border-x-0 border-dashed border-gray-300">
                 Silahkan login terlebih dahulu agar dapat mengakses aplikasi.
@@ -37,14 +37,104 @@
                     </p>
                 </div>
 
-                <p class="text-[#295AA3] text-xs underline cursor-pointer">
+                <p class="text-[#295AA3] text-xs underline cursor-pointer" (click)="PageState = 'email_confirm'">
                     Lupa Password?
                 </p>
             </div>
 
             <div class="flex w-full justify-center">
-                <p-button severity="secondary" styleClass="p-button-sm bg-[#5050D8] text-white"
-                    label="Login"></p-button>
+                <p-button severity="secondary" styleClass="p-button-sm bg-[#5050D8] text-white" label="Login">
+                </p-button>
+            </div>
+        </div>
+
+        <!-- Reset Password State -->
+        <div *ngIf="PageState != 'login'" class="grid w-full p-5 rounded-xl bg-white">
+            <!-- Email Confirmation -->
+            <div *ngIf="PageState == 'email_confirm'" class="flex flex-col gap-0">
+                <p class="text-gray-700 text-sm mb-3 cursor-pointer" (click)="PageState = 'login'">
+                    <i class="pi pi-chevron-left" style="font-size: 12px"></i>&nbsp; Kembali
+                </p>
+
+                <p class="text-base text-semibold text-gray-800 mb-1">
+                    Atur Ulang Password Anda
+                </p>
+                <p class="text-xs text-gray-600 mb-2">
+                    Masukkan email yang anda gunakan untuk mendaftar.
+                </p>
+
+                <input type="text" pInputText placeholder="Email terdaftar" class="p-inputtext-sm w-full">
+
+                <div class="flex w-full justify-center mt-3">
+                    <p-button severity="secondary" styleClass="p-button-sm bg-[#5050D8] text-white" label="Lanjutkan"
+                        (onClick)="PageState = 'otp'">
+                    </p-button>
+                </div>
+            </div>
+
+            <!-- OTP -->
+            <div *ngIf="PageState == 'otp'" class="flex flex-col gap-0">
+                <p class="text-gray-700 text-sm mb-3 cursor-pointer" (click)="PageState = 'email_confirm'">
+                    <i class="pi pi-chevron-left" style="font-size: 12px"></i>&nbsp; Kembali
+                </p>
+
+                <p class="text-base text-semibold text-gray-800 mb-1">
+                    Masukkan Kode OTP
+                </p>
+                <p class="text-xs text-gray-600 mb-2">
+                    Kode OTP telah dikirimkan ke email anda. Silahkan periksa email anda.
+                </p>
+
+                <div class="flex w-full justify-center">
+                    <p-inputOtp [length]="6" [integerOnly]="true" styleClass="mx-auto" />
+                </div>
+
+                <div class="flex w-full justify-center mt-3">
+                    <p-button severity="secondary" styleClass="p-button-sm bg-[#5050D8] text-white" label="Lanjutkan"
+                        (onClick)="PageState = 'password_confirm'">
+                    </p-button>
+                </div>
+            </div>
+
+            <!-- Password Confirmation -->
+            <div *ngIf="PageState == 'password_confirm'" class="flex flex-col gap-0">
+                <p class="text-gray-700 text-sm mb-3 cursor-pointer" (click)="PageState = 'otp'">
+                    <i class="pi pi-chevron-left" style="font-size: 12px"></i>&nbsp; Kembali
+                </p>
+
+                <p class="text-base text-semibold text-gray-800 mb-1">
+                    Buat Password Baru
+                </p>
+                <p class="text-xs text-gray-600 mb-2">
+                    Silahkan buat password baru untuk akun anda
+                </p>
+
+                <p-password [feedback]="false" styleClass="p-inputtext-sm w-full mb-3" placeholder="Password Baru" />
+
+                <p-password [feedback]="false" styleClass="p-inputtext-sm w-full"
+                    placeholder="Konfirmasi Password Baru" />
+
+                <div class="flex w-full justify-center mt-3">
+                    <p-button severity="secondary" styleClass="p-button-sm bg-[#5050D8] text-white" label="Lanjutkan"
+                        (onClick)="PageState = 'success'">
+                    </p-button>
+                </div>
+            </div>
+
+            <!-- Success -->
+            <div *ngIf="PageState == 'success'" class="flex flex-col gap-0">
+                <p class="text-base text-semibold text-gray-800 mb-1">
+                    Password Baru Berhasil Dibuat
+                </p>
+                <p class="text-xs text-gray-600 mb-2">
+                    Silahkan login dengan menggunakan password baru anda.
+                </p>
+
+                <div class="flex w-full justify-center mt-3">
+                    <p-button severity="secondary" styleClass="p-button-sm bg-[#5050D8] text-white"
+                        label="Kembali Ke Form Login" (onClick)="PageState = 'login'">
+                    </p-button>
+                </div>
             </div>
         </div>
     </div>
