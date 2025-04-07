@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, map, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthenticationModel } from 'src/app/model/pages/authentication/authentication.model';
-import { SettingMenuRolesService } from '../management-user/setting-menu-roles.service';
+// import { SettingMenuRolesService } from '../management-user/setting-menu-roles.service';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +18,7 @@ export class AuthenticationService {
     constructor(
         private _cookieService: CookieService,
         private _httpRequestService: HttpRequestService,
-        private _settingMenuRolesService: SettingMenuRolesService,
+        // private _settingMenuRolesService: SettingMenuRolesService,
     ) { }
 
     signIn(payload: AuthenticationModel.ISignIn): Observable<AuthenticationModel.SignIn> {
@@ -68,14 +68,14 @@ export class AuthenticationService {
     }
 
     setMenu(id_user_group: number) {
-        this._settingMenuRolesService
-            .getAllAssigned(id_user_group)
-            .subscribe((result) => {
-                if (result.status) {
-                    localStorage.setItem("_LBS_MENU_", JSON.stringify(result.data));
-                    this.SidebarMenu$.next(result.data);
-                }
-            })
+        // this._settingMenuRolesService
+        //     .getAllAssigned(id_user_group)
+        //     .subscribe((result) => {
+        //         if (result.status) {
+        //             localStorage.setItem("_LBS_MENU_", JSON.stringify(result.data));
+        //             this.SidebarMenu$.next(result.data);
+        //         }
+        //     })
     }
 
     private handleSignIn(data: AuthenticationModel.IAuthentication) {

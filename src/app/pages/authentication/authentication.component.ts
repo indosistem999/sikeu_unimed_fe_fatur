@@ -8,14 +8,16 @@ import { AuthenticationService } from 'src/app/services/authentication/authentic
 import { Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
     selector: 'app-authentication',
     standalone: true,
     imports: [
         CommonModule,
-        DynamicFormComponent,
         ButtonModule,
+        CheckboxModule,
+        DynamicFormComponent,
     ],
     templateUrl: './authentication.component.html',
     styleUrls: ['./authentication.component.scss']
@@ -41,22 +43,29 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
             id: 'authentication',
             fields: [
                 {
-                    id: 'username',
-                    label: 'Username',
+                    id: 'email',
+                    label: 'Email',
                     required: true,
                     type: 'text',
-                    value: 'superadmin',
+                    value: '',
                 },
                 {
                     id: 'password',
                     label: 'Password',
                     required: true,
                     type: 'password',
-                    value: '1234',
+                    value: '',
+                },
+                {
+                    id: 'captcha',
+                    label: 'Captcha',
+                    required: true,
+                    type: 'text',
+                    value: '',
                 },
             ],
             style: 'not_inline',
-            class: 'grid-rows-2',
+            class: 'grid-rows-3',
             state: 'write',
             defaultValue: null,
         };
