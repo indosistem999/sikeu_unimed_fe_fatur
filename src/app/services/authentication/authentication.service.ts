@@ -15,6 +15,44 @@ export class AuthenticationService {
 
     SidebarMenu$ = new BehaviorSubject<AuthenticationModel.IUserGroupMenu[]>([]);
 
+    Module$ = new BehaviorSubject<AuthenticationModel.IModuleMenu[]>([
+        {
+            module_id: '1',
+            module_name: 'Pengaturan',
+            module_icon: '../../../assets/icon/pengaturan.png',
+            module_path: 'pengaturan',
+            order_number: 1
+        },
+        {
+            module_id: '2',
+            module_name: 'SPPD',
+            module_icon: '../../../assets/icon/sppd.png',
+            module_path: 'sppd',
+            order_number: 2
+        },
+        {
+            module_id: '3',
+            module_name: 'BKU',
+            module_icon: '../../../assets/icon/bku.png',
+            module_path: 'bku',
+            order_number: 3
+        },
+        {
+            module_id: '4',
+            module_name: 'Website',
+            module_icon: '../../../assets/icon/website.png',
+            module_path: 'website',
+            order_number: 4
+        },
+        {
+            module_id: '5',
+            module_name: 'Gaji Honor',
+            module_icon: '../../../assets/icon/gaji.png',
+            module_path: 'gaji-honor',
+            order_number: 5
+        },
+    ])
+
     constructor(
         private _cookieService: CookieService,
         private _httpRequestService: HttpRequestService,
@@ -111,5 +149,9 @@ export class AuthenticationService {
         question = `${num1} ${operator} ${num2}`;
 
         return { question, answer };
+    }
+
+    getModuleList() {
+        return of(this.Module$.value);
     }
 }

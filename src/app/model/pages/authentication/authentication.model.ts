@@ -31,6 +31,14 @@ export namespace AuthenticationModel {
         child: IUserGroupMenu[];
     }
 
+    export interface IModuleMenu {
+        module_id: string;
+        module_name: string;
+        module_path: string;
+        module_icon: string;
+        order_number: number;
+    }
+
     export interface ISignIn {
         username: string
         password: string
