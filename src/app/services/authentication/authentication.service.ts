@@ -11,7 +11,20 @@ import { AuthenticationModel } from 'src/app/model/pages/authentication/authenti
 })
 export class AuthenticationService {
 
-    UserData$ = new BehaviorSubject<AuthenticationModel.IAuthentication>({} as any);
+    UserData$ = new BehaviorSubject<AuthenticationModel.IAuthentication>({
+        id_user: 101,
+        id_setting_company: 202,
+        company_name: 'TechNova Solutions',
+        id_user_group: 3,
+        user_group: 'Administrator',
+        username: 'johndoe',
+        full_name: 'John Doe',
+        email: 'johndoe@technova.com',
+        phone: '+1-555-1234',
+        whatsapp: '+1-555-5678',
+        notes: 'Main admin user',
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.sampletoken.payload'
+    } as any);
 
     SidebarMenu$ = new BehaviorSubject<AuthenticationModel.IUserGroupMenu[]>([]);
 

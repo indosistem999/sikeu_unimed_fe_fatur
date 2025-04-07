@@ -16,6 +16,10 @@ const routes: Routes = [
         data: {
             title: 'List Module'
         }
+    },
+    {
+        path: 'pengaturan',
+        loadChildren: async () => (await import('./pages/pengaturan/pengaturan.routes')).pengaturanRoutes
     }
 ];
 

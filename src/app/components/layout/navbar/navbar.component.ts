@@ -2,20 +2,26 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UtilityService } from 'src/app/services/utility/utility.service';
 import { TooltipModule } from 'primeng/tooltip';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Subject } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
+import { MenuModule } from 'primeng/menu';
+import { ButtonModule } from 'primeng/button';
+import { AvatarModule } from 'primeng/avatar';
 
 @Component({
     selector: 'app-navbar',
     standalone: true,
     imports: [
+        MenuModule,
         CommonModule,
-        TooltipModule,
         DialogModule,
+        ButtonModule,
+        AvatarModule,
+        TooltipModule,
         InputTextModule,
     ],
     templateUrl: './navbar.component.html',
@@ -25,6 +31,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     Destroy$ = new Subject();
 
+    User$ = this._authenticationService
+        .UserData$
+        .pipe(takeUntil(this.Destroy$));
+
     ShowTopMenu = false;
 
     ShowSearch = false;
@@ -33,8 +43,23 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     Menu: any[] = this.getMenu();
 
+    Breadcrumbs$ =
+        this._activatedRoute.data
+            .pipe(
+                takeUntil(this.Destroy$),
+                map(result => result['breadcrumbs'])
+            );
+
+    UserMenu = [
+        {
+            label: 'Sign Out',
+            icon: 'pi pi-sign-out'
+        },
+    ];
+
     constructor(
         private _router: Router,
+        private _activatedRoute: ActivatedRoute,
         private _messageService: MessageService,
         private _utilityService: UtilityService,
         private _authenticationService: AuthenticationService,
