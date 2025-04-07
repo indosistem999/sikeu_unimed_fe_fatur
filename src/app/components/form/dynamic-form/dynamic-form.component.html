@@ -44,6 +44,19 @@
                 (onBlur)="item.onChange?.(FormGroup.get(item.id)?.value)">
             </p-inputNumber>
 
+            <!-- Captcha -->
+            <p-inputGroup *ngIf="item.type == 'captcha'">
+                <input type="text" pInputText
+                    class="p-inputtext-sm w-full {{ props.state == 'read' || item.readonly ? 'readonlyState' : '' }}"
+                    formControlName="{{ item.id }}" [readonly]="props.state == 'read' || item.readonly "
+                    (change)="handleChangeInputText($event, item)" [value]="item.value"
+                    placeholder="{{ item.placeholder ? item.placeholder : '' }}" />
+
+                <button type="button" pButton icon="pi pi-refresh" class="p-button-secondary p-button-sm"
+                    (click)="handleRefreshCaptch(item)">
+                </button>
+            </p-inputGroup>
+
             <!-- Datepicker -->
             <p-calendar *ngIf="item.type == 'date'" appendTo="body" styleClass="p-inputtext-sm w-full"
                 dateFormat="dd MM yy" [showClear]="true" formControlName="{{ item.id }}" [readonlyInput]="true"

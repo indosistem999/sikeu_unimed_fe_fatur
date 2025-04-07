@@ -22,6 +22,7 @@ import { VgOverlayPlayModule } from '@videogular/ngx-videogular/overlay-play';
 import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputOtpModule } from 'primeng/inputotp';
+import { InputGroupModule } from 'primeng/inputgroup';
 
 @Component({
     selector: 'app-dynamic-form',
@@ -33,6 +34,7 @@ import { InputOtpModule } from 'primeng/inputotp';
         InputTextModule,
         CalendarModule,
         InputNumberModule,
+        InputGroupModule,
         DropdownModule,
         RadioButtonModule,
         CheckboxModule,
@@ -284,4 +286,8 @@ export class DynamicFormComponent implements OnInit {
             this.FormGroup.get(item.id)?.setValue(item.value);
         });
     };
+
+    handleRefreshCaptch(fields: FormModel.IFormFields): any {
+        return fields?.onRefresh?.(fields);
+    }
 }

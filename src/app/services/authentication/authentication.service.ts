@@ -85,4 +85,31 @@ export class AuthenticationService {
             this.getProfile(data);
         }, 1000);
     }
+
+    generateCaptcha() {
+        const operators = ['+', '-', '*'];
+
+        const num1 = Math.floor(Math.random() * (10 - 1 + 1)) + 1;
+        const num2 = Math.floor(Math.random() * (10 - 1 + 1)) + 1;
+        const operator = operators[Math.floor(Math.random() * operators.length)];
+
+        let answer: number = 0;
+        let question: string = "";
+
+        switch (operator) {
+            case '+':
+                answer = num1 + num2;
+                break;
+            case '-':
+                answer = num1 - num2;
+                break;
+            case '*':
+                answer = num1 * num2;
+                break;
+        }
+
+        question = `${num1} ${operator} ${num2}`;
+
+        return { question, answer };
+    }
 }

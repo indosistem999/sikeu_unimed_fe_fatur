@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DynamicFormComponent } from 'src/app/components/form/dynamic-form/dynamic-form.component';
 import { FormModel } from 'src/app/model/components/form.model';
@@ -22,7 +22,7 @@ import { CheckboxModule } from 'primeng/checkbox';
     templateUrl: './authentication.component.html',
     styleUrls: ['./authentication.component.scss']
 })
-export class AuthenticationComponent implements OnInit, OnDestroy {
+export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     Destroy$ = new Subject();
 
@@ -33,6 +33,8 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     Version = environment.version;
 
     Year = new Date().getFullYear();
+
+    Captcha = this._authenticationService.generateCaptcha();
 
     constructor(
         private _router: Router,
@@ -60,8 +62,13 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
                     id: 'captcha',
                     label: 'Captcha',
                     required: true,
-                    type: 'text',
+                    type: 'captcha',
                     value: '',
+                    onRefresh: (args) => {
+                        console.log(args);
+                        this.Captcha = this._authenticationService.generateCaptcha();
+                        this.handleRefreshCaptcha();
+                    }
                 },
             ],
             style: 'not_inline',
@@ -72,16 +79,27 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        const userData = this._authenticationService.getUserData();
+        // const userData = this._authenticationService.getUserData();
 
-        if (userData) {
-            this._router.navigateByUrl("beranda");
-        };
+        // if (userData) {
+        //     this._router.navigateByUrl("beranda");
+        // };
+    }
+
+    ngAfterViewInit(): void {
+        setTimeout(() => {
+            this.handleRefreshCaptcha()
+        }, 1);
     }
 
     ngOnDestroy(): void {
         this.Destroy$.next(0);
         this.Destroy$.complete();
+    }
+
+    handleRefreshCaptcha() {
+        const indexCaptcha = this.FormProps.fields.findIndex(item => item.id == 'captcha');
+        this.FormProps.fields[indexCaptcha].label = `Hasil dari ${this.Captcha.question}`;
     }
 
     handleSignIn() {
