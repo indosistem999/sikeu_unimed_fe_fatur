@@ -18,6 +18,14 @@ export const pengaturanUmumRoutes: Routes = [
         }
     },
     {
+        path: 'pejabat/detail',
+        loadComponent: async () => (await import('./pejabat/detail-pejabat/detail-pejabat.component')).DetailPejabatComponent,
+        data: {
+            title: 'Detail Pejabat Satuan Kerja',
+            breadcrumbs: ['Pengaturan', 'Umum', 'Pejabat Pada Satuan Kerja', 'Detail']
+        }
+    },
+    {
         path: 'identitas',
         loadComponent: async () => (await import('./identitas/identitas.component')).IdentitasComponent,
         data: {

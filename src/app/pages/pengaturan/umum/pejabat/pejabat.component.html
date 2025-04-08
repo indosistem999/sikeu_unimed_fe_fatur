@@ -1,1 +1,11 @@
-<p>pejabat works!</p>
+<app-dashboard>
+    <!-- Grid -->
+    <div class="grid w-full bg-white rounded-lg shadow-sm p-3">
+        <app-grid [props]="GridProps" (aksiClicked)="onToolbarClicked($event)"
+            (customSearchClicked)="onSearchGrid($event)" (pageChanged)="onPageChanged($event)">
+        </app-grid>
+    </div>
+
+    <p-confirmDialog />
+
+</app-dashboard>
