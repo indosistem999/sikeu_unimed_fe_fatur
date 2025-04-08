@@ -1,0 +1,10 @@
+:host ::ng-deep {
+  .p-paginator {
+    justify-content: start !important;
+
+    .p-paginator-current {
+      font-size: 14px !important;
+      margin-right: auto !important;
+    }
+  }
+}

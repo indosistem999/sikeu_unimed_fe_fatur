@@ -1,20 +1,7 @@
-<div *ngIf="props.showSearch && !props.isCustomSearch"
-    class="flex items-center justify-between w-full mb-4 pt-2 pb-3 border-b border-t-0 border-x-0 border-dashed border-gray-300">
-    <div class="flex w-5/12">
+<div *ngIf="props.showSearch && !props.isCustomSearch" class="flex items-center justify-end w-full mb-3">
+    <div class="flex w-4/12">
         <input #KeywordSearch type="text" pInputText class="w-full p-inputtext-sm"
             [placeholder]="props.searchPlaceholder" (keyup.enter)="onSearchKeyword(KeywordSearch.value)">
-    </div>
-
-    <div class="flex gap-3">
-        <p-button severity="secondary" label="Search" styleClass="p-button-sm bg-pink-600 text-white"
-            (onClick)="onSearchKeyword(KeywordSearch.value)">
-        </p-button>
-
-        <p-button severity="info" label="Export" styleClass="p-button-sm" (onClick)="onExportExcel()"></p-button>
-
-        <p-button *ngFor="let item of props.additionalButtons" [severity]="item.severity" [label]="item.label"
-            styleClass="p-button-sm" (onClick)="onClickAdditionalButton(item)">
-        </p-button>
     </div>
 </div>
 
@@ -61,22 +48,28 @@
         </p-button>
 
         <p-button severity="secondary" label="Export" styleClass="p-button-sm" (onClick)="onExportExcel()"></p-button>
+
+        <p-button *ngFor="let item of props.additionalButtons" [severity]="item.severity" [label]="item.label"
+            styleClass="p-button-sm" (onClick)="onClickAdditionalButton(item)">
+        </p-button>
     </div>
 </div>
 
 <div class="grid w-full">
-
     <!-- Sort Mode -->
     <p-table *ngIf="props.showSort; else noSortMode" [value]="props.dataSource" [columns]="props.column"
         styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}" selectionMode="single"
-        [(selection)]="SelectedRow" sortMode="multiple">
+        [(selection)]="SelectedRow" sortMode="multiple" [paginator]="props.showPaging" [rows]="rows" [first]="first"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Menampilkan data ke {first} - {last} dari {totalRecords} data"
+        (onPage)="onPageChanged($event)" [rowsPerPageOptions]="[5, 10, 25, 50, 100]">
         <ng-template pTemplate="header" let-columns>
             <tr class="bg-gray-100">
                 <th *ngFor="let col of columns" class="text-sm" [pSortableColumn]="col.field">
                     {{ col.headerName }} <p-sortIcon [field]="col.field" style="font-size: 12px" />
                 </th>
                 <th *ngIf="props.toolbar" class="text-sm text-center">
-                    Action
+                    Aksi
                 </th>
             </tr>
         </ng-template>
@@ -129,7 +122,7 @@
                     <i class="pi pi-ellipsis-v" (click)="op.toggle($event)"></i>
 
                     <p-overlayPanel #op>
-                        <div class="flex flex-col gap-2 w-[10rem]">
+                        <div class="flex flex-col gap-2 w-auto p-3">
                             @for (item of gridToolbar; track $index) {
                             <div class="flex items-center gap-2 p-2 bg-white hover:bg-gray-100 transition-all rounded-md cursor-pointer"
                                 (click)="onAksiClicked(item.id, rowData)">
@@ -147,7 +140,7 @@
         <ng-template *ngIf="!props.dataSource">
             <div class="flex w-full justify-center">
                 <p class="text-sm font-medium text-gray-700">
-                    No data displayed
+                    Tidak Ada Data Ditampilkan
                 </p>
             </div>
         </ng-template>
@@ -164,7 +157,7 @@
                         {{ col.headerName }}
                     </th>
                     <th *ngIf="props.toolbar" class="text-sm text-center">
-                        Action
+                        Aksi
                     </th>
                 </tr>
             </ng-template>
@@ -239,7 +232,7 @@
             <ng-template *ngIf="!props.dataSource">
                 <div class="flex w-full justify-center">
                     <p class="text-sm font-medium text-gray-700">
-                        No data displayed
+                        Tidak Ada Data Ditampilkan
                     </p>
                 </div>
             </ng-template>

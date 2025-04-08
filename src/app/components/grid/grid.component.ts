@@ -40,13 +40,10 @@ export class GridComponent implements OnInit, AfterViewInit {
     @Input('props') props!: GridModel.IGrid;
 
     @Output('cellClicked') cellClicked = new EventEmitter<any>();
-
     @Output('rowDoubleClicked') rowDoubleClicked = new EventEmitter<any>();
-
     @Output('aksiClicked') aksiClicked = new EventEmitter<any>();
-
+    @Output('pageChanged') pageChanged = new EventEmitter<any>();
     @Output('additionalButtonClicked') additionalButtonClicked = new EventEmitter<GridModel.IAdditionalButtonGrid>();
-
     @Output('customSearchClicked') customSearchClicked = new EventEmitter<any>();
 
     defaultColDef: ColDef = {
@@ -64,6 +61,10 @@ export class GridComponent implements OnInit, AfterViewInit {
     gridDatasource: any[] = [];
 
     SelectedRow: any;
+
+    first: number = 0;
+
+    rows: number = 5;
 
     CustomSearchForm: FormGroup;
 
@@ -103,32 +104,20 @@ export class GridComponent implements OnInit, AfterViewInit {
                 let icon = "";
 
                 switch (item) {
-                    case 'Add':
+                    case 'Tambah':
                         icon = 'pi pi-plus';
                         break;
                     case 'Edit':
                         icon = 'pi pi-file-edit';
                         break;
-                    case 'Delete':
+                    case 'Hapus':
                         icon = 'pi pi-trash';
                         break;
-                    case 'Change Status':
+                    case 'Ubah Status':
                         icon = 'pi pi-sync';
                         break;
                     case 'Detail':
                         icon = 'pi pi-info-circle';
-                        break;
-                    case 'Produk Layanan':
-                        icon = 'pi pi-user-edit';
-                        break;
-                    case 'Kirim Pesan Tagihan':
-                        icon = 'pi pi-whatsapp';
-                        break;
-                    case 'Kirim Pesan Lunas':
-                        icon = 'pi pi-send';
-                        break;
-                    case 'Payment':
-                        icon = 'pi pi-credit-card';
                         break;
                     default:
                         break;
@@ -295,4 +284,11 @@ export class GridComponent implements OnInit, AfterViewInit {
         });
         FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
     }
+
+    onPageChanged(args: any) {
+        this.first = args.first;
+        this.rows = args.rows;
+        this.pageChanged.emit(args);
+    }
+
 }

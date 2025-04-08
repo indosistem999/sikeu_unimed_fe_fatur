@@ -1,20 +1,38 @@
 <app-dashboard>
-    <!-- User -->
-    <div *ngIf="UserData$ | async as user"
-        class="flex w-full gap-3 items-center p-5 rounded-lg shadow-sm bg-white mb-5 ">
-        <div class="flex">
-            <img src="../../../assets/icon/user.png" alt="user" class="h-14 w-14">
+    <div class="flex w-full items-start gap-3">
+        <!-- Grid -->
+        <div class="grid w-9/12 bg-white rounded-lg shadow-sm p-3">
+            <div class="flex justify-between w-full items-center mb-3">
+                <p class="text-gray-700 font-semibold text-lg">
+                    Daftar User
+                </p>
+
+                <p-button severity="info" label="Tambah User" icon="pi pi-plus" styleClass="p-button-sm"></p-button>
+            </div>
+
+            <app-grid [props]="GridProps" (cellClicked)="onCellClicked($event)"
+                (rowDoubleClicked)="onRowDoubleClicked($event)" (aksiClicked)="onToolbarClicked($event)"
+                (customSearchClicked)="onSearchGrid($event)" (pageChanged)="onPageChanged($event)">
+            </app-grid>
         </div>
 
-        <div class="flex flex-col gap-0">
-            <p class="text-slate-700 text-3xl font-semibold">
-                Welcome, {{ user.full_name | titlecase }}
-            </p>
+        <!-- Quick Access -->
+        <div class="flex flex-col w-3/12 bg-gray-200 rounded-lg shadow-sm p-3">
+            <div class="flex justify-between w-full items-center mb-3">
+                <p class="text-gray-800 font-semibold text-xl">
+                    Akses Cepat
+                </p>
+            </div>
 
-            <p class="text-slate-600 text-sm">
-                <i class="pi pi-home" style="font-size: 12px; margin-right: 3px"></i>
-                {{ user.company_name }}
-            </p>
+            <div class="flex flex-col w-full gap-3 px-3">
+                <p *ngFor="let item of QuickAccessDatasource" class="text-[#295AA3] font-medium text-sm cursor-pointer"
+                    (click)="handleNavigate(item.path)">
+                    {{ item.title }}
+                </p>
+            </div>
         </div>
     </div>
+
+    <p-confirmDialog />
+
 </app-dashboard>

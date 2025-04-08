@@ -1,25 +1,26 @@
-<section id="dashboard" class="h-screen overflow-hidden bg-gray-100">
-    <div class="flex w-full h-full">
-        <!-- Navbar & Content -->
-        <div class="w-full flex flex-col gap-3">
+<section id="dashboard" class="h-screen w-screen bg-gray-100">
+    <div class="flex w-full h-full relative">
+        <!-- Navbar-->
+        <div class="w-screen flex flex-col gap-3 fixed z-10">
             <app-navbar></app-navbar>
+        </div>
 
-            <div class="flex flex-col gap-3 px-5">
-                <!-- Breadcrumbs & Buttons -->
-                <div *ngIf="!IsBeranda" class="flex w-full h-14 gap-2 justify-between items-center">
-                    <app-breadcrumbs></app-breadcrumbs>
+        <!-- Content -->
+        <div class="flex flex-col gap-3 px-5 w-full pt-[14rem]">
+            <!-- Breadcrumbs & Buttons -->
+            <div class="flex w-full h-14 gap-2 px-2 justify-between items-center">
+                <app-breadcrumbs></app-breadcrumbs>
 
-                    <div *ngIf="ButtonNavigation" class="flex gap-3">
-                        <p-button *ngFor="let item of ButtonNavigation" severity="info" styleClass="p-button-sm"
-                            [label]="item.title" [icon]="item.icon" (onClick)="handleClickButtonNavigation(item)">
-                        </p-button>
-                    </div>
+                <div *ngIf="ButtonNavigation" class="flex gap-3">
+                    <p-button *ngFor="let item of ButtonNavigation" severity="info" styleClass="p-button-sm"
+                        [label]="item.title" [icon]="item.icon" (onClick)="handleClickButtonNavigation(item)">
+                    </p-button>
                 </div>
+            </div>
 
-                <!-- Content -->
-                <div class="w-full p-2 overflow-y-auto bg-transparent " [style.height]="'calc(100vh - 10rem)'">
-                    <ng-content></ng-content>
-                </div>
+            <!-- Content -->
+            <div class="w-full px-2 overflow-y-auto bg-transparent mb-4">
+                <ng-content></ng-content>
             </div>
         </div>
     </div>
