@@ -33,4 +33,33 @@
         </div>
     </div>
 
+    <!-- Menu -->
+    <div class="flex w-full gap-5 mt-2 mb-[1px]">
+        <div *ngFor="let item of Menu"
+            class="flex px-5 pb-1 cursor-pointer 
+            {{ SelectedMenu && SelectedMenu.menu_id == item.menu_id ? 'border-b-2 border-t-0 border-x-0 border-white border-solid' : 'border-b-2 border-t-0 border-x-0 border-transparent border-solid ' }}">
+            @if(item.sub_menu) {
+            <div (click)="op.toggle($event); SelectedMenu = item">
+                <p class="text-sm text-white">
+                    {{ item.menu_name }}
+                    <i *ngIf="item.sub_menu" class="pi pi-chevron-down ml-2" style="font-size: 11px"></i>
+                </p>
+
+                <p-overlayPanel #op>
+                    <div class="flex flex-col gap-4 p-5 w-auto bg-[#295AA3] rounded-lg">
+                        <p *ngFor="let sub of item.sub_menu" class="text-gray-50 text-sm cursor-pointer"
+                            (click)="handleNavigateToMenu(sub.menu_path!)">
+                            {{ sub.menu_name }}
+                        </p>
+                    </div>
+                </p-overlayPanel>
+            </div>
+            } @else {
+            <p class="text-sm text-white" (click)="handleNavigateToMenu(item.menu_path!); SelectedMenu = item">
+                {{ item.menu_name }}
+                <i *ngIf="item.sub_menu" class="pi pi-chevron-down ml-2" style="font-size: 11px"></i>
+            </p>
+            }
+        </div>
+    </div>
 </div>

@@ -11,6 +11,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
+import { AuthenticationModel } from 'src/app/model/pages/authentication/authentication.model';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 @Component({
     selector: 'app-navbar',
@@ -23,6 +25,7 @@ import { AvatarModule } from 'primeng/avatar';
         AvatarModule,
         TooltipModule,
         InputTextModule,
+        OverlayPanelModule
     ],
     templateUrl: './navbar.component.html',
     styleUrls: ['./navbar.component.scss']
@@ -39,9 +42,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     ShowSearch = false;
 
-    OriginalMenu = this.getMenu();
+    Menu: AuthenticationModel.IModuleChildMenu[] = this._authenticationService.getModuleMenu();
 
-    Menu: any[] = this.getMenu();
+    SelectedMenu!: AuthenticationModel.IModuleChildMenu;
 
     Breadcrumbs$ =
         this._activatedRoute.data
@@ -69,48 +72,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     }
 
-    getMenu(): any {
-        const menu = this._authenticationService.SidebarMenu$.value;
-
-        let flatArray: any[] = [];
-
-        function flatten(item: any) {
-            const { sidebarChild, url, ...rest } = item;
-            // Only push items that have a URL
-            if (url) {
-                flatArray.push({ ...rest, url });
-            }
-            if (sidebarChild) {
-                sidebarChild.forEach(flatten);
-            }
-        }
-
-        menu.forEach(flatten);
-        return flatArray;
-    }
-
-    handleToggleSidebar() {
-        const state: boolean = this._utilityService.ShowSidebar$.value;
-        this._utilityService.ShowSidebar$.next(!state);
-    }
-
-    handleToggleTopMenu() {
-        this.ShowTopMenu = !this.ShowTopMenu;
-        this._utilityService.ShowTopMenu$.next(this.ShowTopMenu);
-    }
-
-    handleFilterMenu(keyword: string) {
-        this.Menu = this.OriginalMenu;
-
-        if (keyword) {
-            this.Menu = this.Menu.filter(item => item.caption.toLowerCase().includes(keyword.toLowerCase()));
-        } else {
-            this.Menu = this.OriginalMenu;
-        }
-    }
-
-    onBackToBeranda() {
-        this._router.navigateByUrl("/beranda");
+    ngOnDestroy(): void {
+        this.Destroy$.next(0);
+        this.Destroy$.complete();
     }
 
     handleNavigateToMenu(url: string) {
@@ -127,10 +91,5 @@ export class NavbarComponent implements OnInit, OnDestroy {
             this._router.navigateByUrl("");
             localStorage.clear();
         }, 2000);
-    }
-
-    ngOnDestroy(): void {
-        this.Destroy$.next(0);
-        this.Destroy$.complete();
     }
 }   

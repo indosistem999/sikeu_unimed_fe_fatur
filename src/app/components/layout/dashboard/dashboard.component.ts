@@ -26,12 +26,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     Destroy$ = new Subject();
 
-    ShowSidebar = false;
-
-    SidebarMenu$ =
-        this._authenticationService.SidebarMenu$
-            .pipe(takeUntil(this.Destroy$));
-
     UserData$ =
         this._authenticationService.UserData$
             .pipe(takeUntil(this.Destroy$));
@@ -76,38 +70,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.Destroy$.complete();
     }
 
-    handleShowSidebarWhenMouseOver() {
-        this._utilityService.ShowSidebar$.next(true);
-        this.ShowSidebar = true;
-
-        const sidebarEl = document.getElementById('sidebar') as HTMLElement;
-        sidebarEl.classList.replace("w-[5rem]", "w-[24rem]");
-    }
-
-    handleHideSidebarWhenMouseLeave() {
-        this._utilityService.ShowSidebar$.next(false);
-        this.ShowSidebar = false;
-
-        const sidebarEl = document.getElementById('sidebar') as HTMLElement;
-        sidebarEl.classList.replace("w-[24rem]", "w-[5rem]");
-
-        let sidebarMenu = this._authenticationService.SidebarMenu$.value.map((item) => {
-            return {
-                ...item,
-                toggle_child: false
-            }
-        });
-
-        this._authenticationService.SidebarMenu$.next([]);
-        this._authenticationService.SidebarMenu$.next(sidebarMenu);
-    }
-
     handleClickButtonNavigation(item: LayoutModel.IButtonNavigation) {
         this.onClickButtonNavigation.emit(item);
-    }
-
-    handleClickSidebarMenu(item: any) {
-        this.handleHideSidebarWhenMouseLeave();
-        this._router.navigateByUrl(item.url);
     }
 }

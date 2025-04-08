@@ -40,7 +40,8 @@ export class ModuleListComponent implements OnInit, OnDestroy {
         this.Destroy$.complete();
     }
 
-    handleNavigate(url: string) {
+    handleNavigate(item: AuthenticationModel.IModuleMenu, url: string) {
+        localStorage.setItem("_SIMKEU_MN_", JSON.stringify(item.module_menu ? item.module_menu : []));
         this._router.navigateByUrl(url);
     }
 }

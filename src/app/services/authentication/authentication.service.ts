@@ -34,7 +34,77 @@ export class AuthenticationService {
             module_name: 'Pengaturan',
             module_icon: '../../../assets/icon/pengaturan.png',
             module_path: 'pengaturan',
-            order_number: 1
+            order_number: 1,
+            module_menu: [
+                {
+                    module_id: '1',
+                    menu_id: '11',
+                    menu_name: 'Beranda',
+                    menu_path: '/pengaturan/beranda',
+                },
+                {
+                    module_id: '1',
+                    menu_id: '12',
+                    menu_name: 'Umum',
+                    sub_menu: [
+                        {
+                            module_id: '1',
+                            menu_id: '121',
+                            menu_name: 'Satuan Kerja',
+                            menu_path: '/pengaturan/umum/satuan-kerja',
+                        },
+                        {
+                            module_id: '1',
+                            menu_id: '122',
+                            menu_name: 'Pejabat',
+                            menu_path: '/pengaturan/umum/pejabat',
+                        },
+                        {
+                            module_id: '1',
+                            menu_id: '123',
+                            menu_name: 'Identitas',
+                            menu_path: '/pengaturan/umum/identitas',
+                        },
+                        {
+                            module_id: '1',
+                            menu_id: '124',
+                            menu_name: 'Sumber Dana',
+                            menu_path: '/pengaturan/umum/sumber-dana',
+                        },
+                    ]
+                },
+                {
+                    module_id: '1',
+                    menu_id: '13',
+                    menu_name: 'Modul',
+                    menu_path: '/pengaturan/modul',
+                },
+                {
+                    module_id: '1',
+                    menu_id: '14',
+                    menu_name: 'Hak Akses',
+                    sub_menu: [
+                        {
+                            module_id: '1',
+                            menu_id: '141',
+                            menu_name: 'Role Akses',
+                            menu_path: '/pengaturan/hak-akses/role-akses',
+                        },
+                        {
+                            module_id: '1',
+                            menu_id: '142',
+                            menu_name: 'Daftar User',
+                            menu_path: '/pengaturan/hak-akses/daftar-user',
+                        }
+                    ]
+                },
+                {
+                    module_id: '1',
+                    menu_id: '15',
+                    menu_name: 'Tahun Anggaran',
+                    menu_path: '/pengaturan/tahun-anggaran',
+                },
+            ]
         },
         {
             module_id: '2',
@@ -166,5 +236,9 @@ export class AuthenticationService {
 
     getModuleList() {
         return of(this.Module$.value);
+    }
+
+    getModuleMenu() {
+        return JSON.parse(localStorage.getItem("_SIMKEU_MN_") as any);
     }
 }

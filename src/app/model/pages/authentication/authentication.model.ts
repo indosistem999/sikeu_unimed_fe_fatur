@@ -31,12 +31,21 @@ export namespace AuthenticationModel {
         child: IUserGroupMenu[];
     }
 
+    export interface IModuleChildMenu {
+        module_id: string;
+        menu_id: string;
+        menu_name: string;
+        menu_path?: string;
+        sub_menu?: IModuleChildMenu[]
+    }
+
     export interface IModuleMenu {
         module_id: string;
         module_name: string;
         module_path: string;
         module_icon: string;
         order_number: number;
+        module_menu?: IModuleChildMenu[]
     }
 
     export interface ISignIn {

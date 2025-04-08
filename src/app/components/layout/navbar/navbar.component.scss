@@ -1,10 +1,12 @@
-.p-overlaypanel {
-  border: 1px solid #fff !important;
-}
-
 #navbar {
   background-image: url("../../../../assets/image/nav-bg.png");
   background-color: #295aa3; /* Red with transparency */
   background-size: cover;
   background-blend-mode: multiply; /* or overlay, screen, darken, etc. */
+}
+
+.p-overlaypanel {
+  .p-overlaypanel-content {
+    padding: 0px !important;
+  }
 }
