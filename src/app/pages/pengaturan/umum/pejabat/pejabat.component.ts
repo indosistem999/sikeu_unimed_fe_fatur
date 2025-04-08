@@ -73,6 +73,7 @@ export class PejabatComponent implements OnInit, OnDestroy {
 
     onToolbarClicked(args: any): void {
         if (args.type == 'detail') {
+            localStorage.setItem("_SIMKEU_PJB_", JSON.stringify(args.data));
             this._router.navigateByUrl(`/pengaturan/umum/pejabat/detail?id=${args.data.no}`)
         }
     }
