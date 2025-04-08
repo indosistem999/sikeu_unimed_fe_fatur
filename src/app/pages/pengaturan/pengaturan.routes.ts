@@ -9,4 +9,8 @@ export const pengaturanRoutes: Routes = [
             breadcrumbs: ['Pengaturan', 'Beranda']
         }
     },
+    {
+        path: 'umum',
+        loadChildren: async () => (await import('./umum/umum.routes')).pengaturanUmumRoutes
+    },
 ]

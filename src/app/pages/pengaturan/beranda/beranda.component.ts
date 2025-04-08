@@ -166,15 +166,15 @@ export class BerandaComponent implements OnInit, OnDestroy {
         if (args.type == 'delete') {
             this._confirmationService.confirm({
                 target: (<any>event).target as EventTarget,
-                message: 'Deleted data can not be reverted',
-                header: 'Are you sure?',
+                message: 'Data Yang Dihapus Tidak Dapat Dikembalikan',
+                header: 'Apakah Anda Yakin?',
                 icon: 'pi pi-info-circle',
                 acceptButtonStyleClass: "p-button-danger p-button-sm",
                 rejectButtonStyleClass: "p-button-secondary p-button-sm",
                 acceptIcon: "none",
-                acceptLabel: 'Yes, sure',
+                acceptLabel: 'Iya, saya yakin',
                 rejectIcon: "none",
-                rejectLabel: 'No, back',
+                rejectLabel: 'Tidak, kembali',
                 accept: () => {
                 }
             });
