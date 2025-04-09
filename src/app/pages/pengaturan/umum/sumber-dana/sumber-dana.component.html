@@ -1,1 +1,31 @@
-<p>sumber-dana works!</p>
+<app-dashboard [ButtonNavigation]="ButtonNavigation" (onClickButtonNavigation)="handleClickButtonNavigation($event)">
+    <!-- Grid -->
+    <div class="grid w-full bg-white rounded-lg shadow-sm p-3">
+        <app-grid [props]="GridProps" (cellClicked)="onCellClicked($event)"
+            (rowDoubleClicked)="onRowDoubleClicked($event)" (aksiClicked)="onToolbarClicked($event)"
+            (customSearchClicked)="onSearchGrid($event)" (pageChanged)="onPageChanged($event)">
+        </app-grid>
+    </div>
+
+    <!-- Dialog -->
+    <p-dialog [header]="FormState == 'insert' ? 'Tambah Sumber Dana' : 'Ubah Sumber Dana'"
+        [(visible)]="FormDialogToggle" [modal]="true" [style]="{ width: '35rem' }" [draggable]="false"
+        [resizable]="false">
+
+        <div class="grid w-full my-2">
+            <app-dynamic-form #FormComps [props]="FormProps"></app-dynamic-form>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Batal" severity="secondary" styleClass="p-button-sm"
+                (onClick)="FormDialogToggle = false" />
+
+            <p-button label="Simpan" severity="success" styleClass="p-button-sm"
+                (onClick)="FormState == 'insert' ? handleSave(FormComps.FormGroup.value) : handleUpdate(FormComps.FormGroup.value)">
+            </p-button>
+        </ng-template>
+    </p-dialog>
+
+    <p-confirmDialog />
+
+</app-dashboard>
