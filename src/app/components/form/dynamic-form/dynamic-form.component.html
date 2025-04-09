@@ -3,14 +3,14 @@
         class="flex {{ props.style == 'inline' ? 'flex-row' : 'flex-col' }} {{ item.type == 'textarea' ? 'items-start' : 'items-center' }} gap-1"
         [class.hidden]="item.hidden">
         <!-- Label -->
-        <div *ngIf="!item.hideLabel" class="{{ props.style == 'inline' ? 'w-4/12' : 'w-full'  }}">
+        <div *ngIf="!item.hideLabel" class="{{ props.style == 'inline' ? 'w-3/12' : 'w-full'  }}">
             <p class="text-sm text-gray-600 font-medium {{ item.type == 'textarea' ? 'pt-3' : '' }}">
                 {{ item.label }}
                 <span *ngIf="item.required" class="text-xs text-red-500">*</span>
             </p>
         </div>
 
-        <div class="{{ props.style == 'inline' ? 'w-8/12' : 'w-full'  }}">
+        <div class="{{ props.style == 'inline' ? 'w-9/12' : 'w-full'  }}">
             <!-- Text -->
             <input *ngIf="item.type == 'text' && !item.mask" type="text" pInputText
                 class="p-inputtext-sm w-full {{ props.state == 'read' || item.readonly ? 'readonlyState' : '' }}"
@@ -190,11 +190,11 @@
                         class="flex flex-col items-center justify-center w-full gap-0 cursor-pointer h-[10rem]"
                         (click)="FileInputEl.click()">
                         <i class="pi pi-plus-circle"></i>
-                        <p class="text-sm text-gray-700 font-semibold mt-1">Click here to browse files</p>
+                        <p class="text-sm text-gray-700 font-semibold mt-1">Klik disini untuk mencari file</p>
                         <p class="text-xs text-gray-600">
-                            You can choose
-                            {{ isImageFile(item.file_accept!) ? 'image' :'video' }}
-                            with all type
+                            Anda dapat memilih
+                            {{ isImageFile(item.file_accept!) ? 'gambar' :'video' }}
+                            dengan semua tipe
                         </p>
                     </div>
 
@@ -202,7 +202,8 @@
 
                         <!-- Image Preview -->
                         <img *ngIf="isImageFile(item.file_accept!)" id="{{ item.id }}_file_preview"
-                            [src]="ImagePreviews[item.id]" alt="{{ item.id }}_file_preview" class="h-[5rem] w-[5rem]">
+                            [src]="ImagePreviews[item.id]" alt="{{ item.id }}_file_preview" class="h-[7.5rem] w-auto"
+                            (click)="handleOpenImage(ImagePreviews[item.id])">
 
                         <!-- Video Preview -->
                         <video *ngIf="isVideoFile(item.file_accept!)" id="{{ item.id }}_video_preview" preload="auto"
@@ -210,25 +211,18 @@
                             <source [src]="ImagePreviews[item.id]" type="video/mp4">
                         </video>
 
-                        <!-- <vg-player>
-                            <video [vgMedia]="media" #media id="singleVideo" preload="auto" controls>
-                                <source [src]="ImagePreviews[item.id]" type="video/mp4">
-                            </video>
-                        </vg-player> -->
-
-
                         <!-- Button -->
                         <div class="flex w-full gap-3 justify-center">
                             <span
                                 class="px-2 py-1 text-sm bg-gray-100 text-gray-800 font-semibold rounded-md cursor-pointer"
                                 (click)="FileInputEl.click()">
-                                Change File
+                                Ubah File
                             </span>
 
                             <span
                                 class="px-2 py-1 text-sm bg-red-100 text-red-800 font-semibold rounded-md cursor-pointer"
                                 (click)="FileInputEl.value = ''; removeFile(item.id)">
-                                Delete File
+                                Hapus File
                             </span>
                         </div>
                     </div>

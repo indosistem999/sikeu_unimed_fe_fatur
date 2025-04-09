@@ -290,4 +290,8 @@ export class DynamicFormComponent implements OnInit {
     handleRefreshCaptch(fields: FormModel.IFormFields): any {
         return fields?.onRefresh?.(fields);
     }
+
+    handleOpenImage(image: any) {
+        window.open(image);
+    }
 }

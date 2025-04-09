@@ -1,1 +1,110 @@
-<p>identitas works!</p>
+<app-dashboard>
+    <div class="grid w-full bg-white rounded-lg shadow-sm p-3">
+        <p-tabView>
+            <!-- Logo & Nama -->
+            <p-tabPanel>
+                <ng-template pTemplate="header">
+                    <div class="flex items-center">
+                        <span class="font-bold white-space-nowrap m-0">
+                            Logo & Nama
+                        </span>
+                    </div>
+                </ng-template>
+
+                <div class="flex flex-col gap-0 p-3">
+                    <p class="text-lg font-semibold text-gray-700 mb-4">
+                        Logo & Nama Universitas
+                    </p>
+
+                    <div class="grid w-full my-2">
+                        <app-dynamic-form #FormComps [props]="FormProps"></app-dynamic-form>
+                    </div>
+
+                    <div class="flex w-full justify-end gap-2 mt-2">
+                        <p-button severity="secondary" label="Batal" styleClass="p-button-sm"></p-button>
+
+                        <p-button severity="success" label="Simpan" styleClass="p-button-sm"></p-button>
+                    </div>
+                </div>
+            </p-tabPanel>
+
+            <!-- Kontak -->
+            <p-tabPanel>
+                <ng-template pTemplate="header">
+                    <div class="flex items-center">
+                        <span class="font-bold white-space-nowrap m-0">
+                            Kontak
+                        </span>
+                    </div>
+                </ng-template>
+                <div class="flex flex-col gap-0 p-3">
+                    <p class="text-lg font-semibold text-gray-700 mb-4">
+                        Kontak Universitas
+                    </p>
+
+                    <div class="grid w-full my-2">
+                        <app-dynamic-form #FormKontakComps [props]="FormKontakProps"></app-dynamic-form>
+                    </div>
+
+                    <div class="flex w-full justify-end gap-2 mt-2">
+                        <p-button severity="secondary" label="Batal" styleClass="p-button-sm"></p-button>
+
+                        <p-button severity="success" label="Simpan" styleClass="p-button-sm"></p-button>
+                    </div>
+                </div>
+            </p-tabPanel>
+
+            <!-- Pejabat -->
+            <p-tabPanel>
+                <ng-template pTemplate="header">
+                    <div class="flex items-center">
+                        <span class="font-bold white-space-nowrap m-0">
+                            Pejabat
+                        </span>
+                    </div>
+                </ng-template>
+                <div class="flex flex-col gap-0 p-3">
+                    <div class="flex w-full justify-between items-center gap-3 mb-3">
+                        <p class="text-lg font-semibold text-gray-700">
+                            Daftar Pejabat
+                        </p>
+
+                        <p-button label="Tambah Pejabat" severity="info" styleClass="p-button-sm" (onClick)=" FormState = 'insert';
+                            FormPejabatDialogToggle = true;
+                            FormPejabatComps.FormGroup.reset();">
+                        </p-button>
+                    </div>
+
+                    <!-- Grid -->
+                    <div class="grid w-full bg-white rounded-lg shadow-sm p-3">
+                        <app-grid [props]="GridProps" (cellClicked)="onCellClicked($event)"
+                            (rowDoubleClicked)="onRowDoubleClicked($event)" (aksiClicked)="onToolbarClicked($event)"
+                            (customSearchClicked)="onSearchGrid($event)" (pageChanged)="onPageChanged($event)">
+                        </app-grid>
+                    </div>
+
+                    <!-- Dialog -->
+                    <p-dialog [header]="FormState == 'insert' ? 'Tambah Pejabat' : 'Ubah Pejabat'"
+                        [(visible)]="FormPejabatDialogToggle" [modal]="true" [style]="{ width: '35rem' }"
+                        [draggable]="false" [resizable]="false">
+
+                        <div class="grid w-full my-2">
+                            <app-dynamic-form #FormPejabatComps [props]="FormPejabatProps"></app-dynamic-form>
+                        </div>
+
+                        <ng-template pTemplate="footer">
+                            <p-button label="Batal" severity="secondary" styleClass="p-button-sm"
+                                (onClick)="FormPejabatDialogToggle = false" />
+
+                            <p-button label="Simpan" severity="success" styleClass="p-button-sm"
+                                (onClick)="FormState == 'insert' ? handleSave(FormPejabatComps.FormGroup.value) : handleUpdate(FormPejabatComps.FormGroup.value)">
+                            </p-button>
+                        </ng-template>
+                    </p-dialog>
+
+                    <p-confirmDialog />
+                </div>
+            </p-tabPanel>
+        </p-tabView>
+    </div>
+</app-dashboard>
