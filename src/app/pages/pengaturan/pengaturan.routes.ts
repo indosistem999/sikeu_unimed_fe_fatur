@@ -13,4 +13,8 @@ export const pengaturanRoutes: Routes = [
         path: 'umum',
         loadChildren: async () => (await import('./umum/umum.routes')).pengaturanUmumRoutes
     },
+    {
+        path: 'modul',
+        loadChildren: async () => (await import('./modul/modul.routes')).pengaturanModulRoutes
+    },
 ]
