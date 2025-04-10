@@ -13,14 +13,14 @@ export class JwtInterceptor implements HttpInterceptor {
 
     intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-        const WebApiUrl = httpRequest.url.startsWith(`${environment.webApiUrl}`) && !httpRequest.url.startsWith(`${environment.webApiUrl}/auth`);
+        const WebApiUrl = !httpRequest.url.startsWith(`${environment.webApiUrl}/auth`);
 
         const userData = this._authenticationService.getUserData();
 
         if (userData && WebApiUrl) {
             const modifiedRequest = httpRequest.clone({
                 setHeaders: {
-                    Authorization: `Bearer ${userData.token}`
+                    Authorization: `Bearer ${userData.access_token}`
                 }
             });
             return next.handle(modifiedRequest);

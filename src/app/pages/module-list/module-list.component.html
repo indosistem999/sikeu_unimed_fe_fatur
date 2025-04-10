@@ -48,7 +48,7 @@
                         class="flex w-full flex-col gap-3 p-3 justify-center items-center 
                         {{ ActiveModule && ActiveModule.module_id == item.module_id ? 'bg-blue-100' : 'bg-gray-50'}} rounded-lg shadow cursor-pointer"
                         (click)="ActiveModule = item">
-                        <img [src]="item.module_icon" alt="icon" class="w-[60px] h-[60px]">
+                        <img [src]="item.icon" alt="icon" class="w-[60px] h-[60px]">
                         <p class="text-[#295AA3] font-medium text-sm text-center">
                             {{ item.module_name }}
                         </p>
@@ -62,7 +62,8 @@
                     Daftar Role
                 </p>
 
-                <div *ngIf="ActiveModule" class="flex flex-col px-5">
+                @if(ActiveModule) {
+                <div *ngIf="User$ | async as user" class="flex flex-col px-5">
                     <p class="text-gray-700 font-medium text-sm mb-3">
                         {{ ActiveModule.module_name }}
                     </p>
@@ -70,10 +71,11 @@
                     <div class="bg-white rounded-lg shadow-md p-3 cursor-pointer transition-all duration-75 hover:bg-gray-100"
                         (click)="handleNavigate(ActiveModule, ActiveModule.module_path + '/beranda')">
                         <p class="text-sm text-[#295AA3]">
-                            Admin
+                            {{ user.role.role_name }}
                         </p>
                     </div>
                 </div>
+                }
             </div>
         </div>
     </div>
