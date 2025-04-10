@@ -51,6 +51,11 @@ export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy
 
     RememberMe: boolean = false;
 
+    EmailForgotPassword = "";
+    OtpVerifikasi = "";
+    NewPassword: string = "";
+    ConfirmPassword: string = "";
+
     constructor(
         private _store: Store,
         private _router: Router,
@@ -138,6 +143,58 @@ export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy
                         this._router.navigateByUrl("/list-module");
                     }
                 })
+        }
+    }
+
+    handleForgotPassword(email: string) {
+        const payload = { email: email };
+
+        this._authenticationService
+            .forgotPassword(payload)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil', detail: 'Mohon Cek OTP pada Email Anda' });
+                    this.PageState = 'otp';
+                }
+            })
+    }
+
+    handleVerifyOtp(otp: string) {
+        const payload = { email: this.EmailForgotPassword, reset_token_code: otp };
+
+        this._authenticationService
+            .verifyOtp(payload)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'OTP Terverifikasi', detail: 'Mohon Input Password Baru Anda' });
+                    this.PageState = 'password_confirm';
+                }
+            })
+    }
+
+    handleResetPassword(new_password: string, confirm_password: string) {
+        if (new_password == confirm_password) {
+            const payload = {
+                email: this.EmailForgotPassword,
+                new_password: new_password,
+                confirm_password: confirm_password,
+            };
+
+            this._authenticationService
+                .resetPassword(payload)
+                .pipe(takeUntil(this.Destroy$))
+                .subscribe((result) => {
+                    if (result.success) {
+                        this.PageState = 'success';
+                    }
+                })
+        } else {
+            this._messageService.clear();
+            this._messageService.add({ severity: 'warning', summary: 'Oops', detail: 'Mohon Periksa Kembali Password Anda' });
         }
     }
 }

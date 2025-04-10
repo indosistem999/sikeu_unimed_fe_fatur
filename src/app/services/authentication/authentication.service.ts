@@ -262,4 +262,16 @@ export class AuthenticationService {
     getModuleMenu() {
         return JSON.parse(localStorage.getItem("_SIMKEU_MN_") as any);
     }
+
+    forgotPassword(payload: any) {
+        return this._httpRequestService.postRequest(`${environment.webApiUrl}/auth/forgot-password`, payload);
+    }
+
+    verifyOtp(payload: any) {
+        return this._httpRequestService.postRequest(`${environment.webApiUrl}/auth/verify-otp`, payload);
+    }
+
+    resetPassword(payload: any) {
+        return this._httpRequestService.postRequest(`${environment.webApiUrl}/auth/reset-password`, payload);
+    }
 }

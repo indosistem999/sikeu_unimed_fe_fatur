@@ -64,11 +64,12 @@
                     Masukkan email yang anda gunakan untuk mendaftar.
                 </p>
 
-                <input type="text" pInputText placeholder="Email terdaftar" class="p-inputtext-sm w-full">
+                <input type="text" [(ngModel)]="EmailForgotPassword" pInputText placeholder="Email terdaftar"
+                    class="p-inputtext-sm w-full">
 
                 <div class="flex w-full justify-center mt-3">
                     <p-button severity="secondary" styleClass="p-button-sm bg-[#5050D8] text-white" label="Lanjutkan"
-                        (onClick)="PageState = 'otp'">
+                        (onClick)="handleForgotPassword(EmailForgotPassword)">
                     </p-button>
                 </div>
             </div>
@@ -87,12 +88,12 @@
                 </p>
 
                 <div class="flex w-full justify-center">
-                    <p-inputOtp [length]="6" [integerOnly]="true" styleClass="mx-auto" />
+                    <p-inputOtp [length]="6" [integerOnly]="true" styleClass="mx-auto" [(ngModel)]="OtpVerifikasi" />
                 </div>
 
                 <div class="flex w-full justify-center mt-3">
                     <p-button severity="secondary" styleClass="p-button-sm bg-[#5050D8] text-white" label="Lanjutkan"
-                        (onClick)="PageState = 'password_confirm'">
+                        (onClick)="handleVerifyOtp(OtpVerifikasi)">
                     </p-button>
                 </div>
             </div>
@@ -110,14 +111,15 @@
                     Silahkan buat password baru untuk akun anda
                 </p>
 
-                <p-password [feedback]="false" styleClass="p-inputtext-sm w-full mb-3" placeholder="Password Baru" />
+                <p-password [feedback]="false" styleClass="p-inputtext-sm w-full mb-3" placeholder="Password Baru"
+                    [(ngModel)]="NewPassword" />
 
-                <p-password [feedback]="false" styleClass="p-inputtext-sm w-full"
-                    placeholder="Konfirmasi Password Baru" />
+                <p-password [feedback]="false" styleClass="p-inputtext-sm w-full" placeholder="Konfirmasi Password Baru"
+                    [(ngModel)]="ConfirmPassword" />
 
                 <div class="flex w-full justify-center mt-3">
                     <p-button severity="secondary" styleClass="p-button-sm bg-[#5050D8] text-white" label="Lanjutkan"
-                        (onClick)="PageState = 'success'">
+                        (onClick)="handleResetPassword(NewPassword, ConfirmPassword)">
                     </p-button>
                 </div>
             </div>
