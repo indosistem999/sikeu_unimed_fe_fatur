@@ -25,7 +25,7 @@
             </span>
 
             <span class="text-gray-100 cursor-pointer">
-                <p-avatar (click)="menu.toggle($event)" [label]="user.full_name[0]" styleClass="mr-2"
+                <p-avatar (click)="menu.toggle($event)" [label]="user.first_name[0]" styleClass="mr-2"
                     [style]="{ 'background-color': '#dee9fc', color: '#1a2551' }" />
 
                 <p-menu #menu [model]="UserMenu" [popup]="true" appendTo="body" />

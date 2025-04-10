@@ -2,24 +2,25 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from "@angular/c
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { environment } from "src/environments/environment";
+import { AuthenticationService } from "../services/authentication/authentication.service";
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
 
-    constructor() { }
+    constructor(
+        private _authenticationService: AuthenticationService,
+    ) { }
 
     intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-        const WebApiUrl = httpRequest.url.startsWith(`${environment.webApiUrl}`);
+        const WebApiUrl = httpRequest.url.startsWith(`${environment.webApiUrl}`) && !httpRequest.url.startsWith(`${environment.webApiUrl}/auth`);
 
-        const userData = localStorage.getItem("_LBS_UD_");
+        const userData = this._authenticationService.getUserData();
 
         if (userData && WebApiUrl) {
-            const UserData = JSON.parse(userData)
-
             const modifiedRequest = httpRequest.clone({
                 setHeaders: {
-                    Authorization: `Bearer ${UserData.token}`
+                    Authorization: `Bearer ${userData.token}`
                 }
             });
             return next.handle(modifiedRequest);

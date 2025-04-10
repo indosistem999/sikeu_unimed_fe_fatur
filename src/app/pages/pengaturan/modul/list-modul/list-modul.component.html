@@ -1,2 +1,10 @@
 <app-dashboard [ButtonNavigation]="ButtonNavigation" (onClickButtonNavigation)="handleClickButtonNavigation($event)">
+    <div class="grid w-full bg-white rounded-lg shadow-sm p-3">
+        <!-- Searchbox -->
+        <div class="flex justify-end w-full mb-4">
+            <div class="flex w-3/12">
+                <input type="text" pInputText placeholder="Cari modul disini" class="p-inputtext-sm w-full">
+            </div>
+        </div>
+    </div>
 </app-dashboard>

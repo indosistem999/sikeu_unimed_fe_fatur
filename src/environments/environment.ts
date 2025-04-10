@@ -4,9 +4,9 @@
 
 export const environment = {
     production: false,
-    webApiUrl: 'http://localhost:5000/api/v1',
-    socketUrl: 'http://localhost:5000',
-    version: 'v0.2.3-alpha'
+    webApiUrl: 'http://dev-sikeu-unimed.avnet.id/api/v1',
+    socketUrl: 'http://dev-sikeu-unimed.avnet.id',
+    version: 'v0.0.1-alpha'
 };
 
 /*

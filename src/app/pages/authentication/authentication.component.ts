@@ -12,11 +12,14 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputOtpModule } from 'primeng/inputotp';
 import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-authentication',
     standalone: true,
     imports: [
+        FormsModule,
         CommonModule,
         ButtonModule,
         CheckboxModule,
@@ -44,8 +47,11 @@ export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy
 
     Captcha = this._authenticationService.generateCaptcha();
 
+    RememberMe: boolean = false;
+
     constructor(
         private _router: Router,
+        private _messageService: MessageService,
         private _utilityService: UtilityService,
         private _authenticationService: AuthenticationService,
     ) {
@@ -67,7 +73,7 @@ export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy
                     value: '',
                 },
                 {
-                    id: 'captcha',
+                    id: 'security_question_answer',
                     label: 'Captcha',
                     required: true,
                     type: 'captcha',
@@ -97,7 +103,7 @@ export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy
     ngAfterViewInit(): void {
         setTimeout(() => {
             this.handleRefreshCaptcha()
-        }, 1);
+        }, 100);
     }
 
     ngOnDestroy(): void {
@@ -106,23 +112,24 @@ export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     handleRefreshCaptcha() {
-        const indexCaptcha = this.FormProps.fields.findIndex(item => item.id == 'captcha');
+        const indexCaptcha = this.FormProps.fields.findIndex(item => item.id == 'security_question_answer');
         this.FormProps.fields[indexCaptcha].label = `Hasil dari ${this.Captcha.question}`;
     }
 
     handleSignIn() {
         const formValue = this.FormComps.onGetFormValue();
 
-        // if (formValue) {
-        //     this._authenticationService
-        //         .signIn(formValue)
-        //         .pipe(takeUntil(this.Destroy$))
-        //         .subscribe((result) => {
-        //             if (result.status) {
-        //                 this._authenticationService.setUserData();
-        this._router.navigateByUrl("/list-module");
-        //             }
-        //         })
-        // }
+        if (formValue) {
+            this._authenticationService
+                .signIn({ ...formValue, remember_me: this.RememberMe })
+                .pipe(takeUntil(this.Destroy$))
+                .subscribe((result) => {
+                    if (result.success) {
+                        this._messageService.clear();
+                        this._messageService.add({ severity: 'success', summary: 'Berhasil', detail: 'Login Berhasil' });
+                        this._router.navigateByUrl("/list-module");
+                    }
+                })
+        }
     }
 }

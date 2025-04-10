@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Observable, catchError, map } from 'rxjs';
@@ -24,16 +24,19 @@ export class HttpRequestService {
      * @param queryString 
      * @returns Observable<HttpBaseResponse>
     */
-    getRequest(url: string, queryString?: any): Observable<HttpBaseResponse> {
+    getRequest(url: string, headers?: any, queryString?: any): Observable<HttpBaseResponse> {
         this._utilityService.ShowLoading$.next(true);
 
+        const header = new HttpHeaders(headers || {});
+
         return this._httpClient.get<HttpBaseResponse>(url, {
+            headers: header,
             params: queryString
         }).pipe(
             map((result) => {
                 this._utilityService.ShowLoading$.next(false);
 
-                if (!result.status) {
+                if (!result.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'warn', summary: 'Oops', detail: this._titleCasePipe.transform(result.message) })
                 }
@@ -58,7 +61,7 @@ export class HttpRequestService {
             params: queryString
         }).pipe(
             map((result) => {
-                if (!result.status) {
+                if (!result.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'warn', summary: 'Oops', detail: this._titleCasePipe.transform(result.message) })
                 }
@@ -95,13 +98,13 @@ export class HttpRequestService {
                     this._utilityService.ShowLoading$.next(false);
 
                     // ** Show success notification
-                    if (result.status && showSuccessNotif) {
+                    if (result.success && showSuccessNotif) {
                         this._messageService.clear();
                         this._messageService.add({ severity: 'success', summary: 'Success', detail: this._titleCasePipe.transform(result.message) });
                     }
 
-                    // ** Jika status = false
-                    if (!result.status) {
+                    // ** Jika success = false
+                    if (!result.success) {
                         this._messageService.clear();
                         (<any>result.message).forEach((item: string) => {
                             this._messageService.add({ severity: 'warn', summary: 'Oops', detail: this._titleCasePipe.transform(item) })
@@ -134,8 +137,8 @@ export class HttpRequestService {
         return this._httpClient.post<HttpBaseResponse>(url, data)
             .pipe(
                 map((result) => {
-                    // ** Jika status = false
-                    if (!result.status) {
+                    // ** Jika success = false
+                    if (!result.success) {
                         this._messageService.clear();
                         (<any>result.message).forEach((item: string) => {
                             this._messageService.add({ severity: 'warn', summary: 'Oops', detail: this._titleCasePipe.transform(item) })
@@ -173,7 +176,7 @@ export class HttpRequestService {
                         this._messageService.add({ severity: 'success', summary: 'Success', detail: this._titleCasePipe.transform(result.message) });
                     }
 
-                    // ** Jika status = false
+                    // ** Jika success = false
                     if (!result) {
                         this._messageService.clear();
                         this._messageService.add({ severity: 'warn', summary: 'Oops', detail: this._titleCasePipe.transform(result.message) })
@@ -212,13 +215,13 @@ export class HttpRequestService {
                     this._utilityService.ShowLoading$.next(false);
 
                     // ** Show success notification
-                    if (result.status && showSuccessNotif) {
+                    if (result.success && showSuccessNotif) {
                         this._messageService.clear();
                         this._messageService.add({ severity: 'success', summary: 'Success', detail: this._titleCasePipe.transform(result.message) });
                     }
 
-                    // ** Jika status = false
-                    if (!result.status) {
+                    // ** Jika success = false
+                    if (!result.success) {
                         this._messageService.clear();
                         (<any>result.message).forEach((item: string) => {
                             this._messageService.add({ severity: 'warn', summary: 'Oops', detail: this._titleCasePipe.transform(item) })
@@ -252,13 +255,13 @@ export class HttpRequestService {
                     this._utilityService.ShowLoading$.next(false);
 
                     // ** Show success notification
-                    if (result.status && showSuccessNotif) {
+                    if (result.success && showSuccessNotif) {
                         this._messageService.clear();
                         this._messageService.add({ severity: 'success', summary: 'Success', detail: this._titleCasePipe.transform(result.message) });
                     }
 
-                    // ** Jika status = false
-                    if (!result.status) {
+                    // ** Jika success = false
+                    if (!result.success) {
                         this._messageService.clear();
                         (<any>result.message).forEach((item: string) => {
                             this._messageService.add({ severity: 'warn', summary: 'Oops', detail: this._titleCasePipe.transform(item) })

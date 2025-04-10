@@ -2,18 +2,17 @@ import { HttpBaseResponse } from "../../http/http-request.model"
 
 export namespace AuthenticationModel {
     export interface IAuthentication {
-        id_user: number;
-        id_setting_company: number;
-        company_name: string;
-        id_user_group: number;
-        user_group: string;
-        username: string;
-        full_name: string;
-        email: string;
-        phone: string;
-        whatsapp: string;
-        notes: string;
-        token: string;
+        user_id: string
+        email: string
+        first_name: string
+        last_name: string
+        access_token: string;
+        refresh_token: string;
+        role: {
+            role_id: string
+            role_name: string
+            role_slug: string
+        }
     }
 
     export interface IUserGroupMenu {
@@ -49,12 +48,14 @@ export namespace AuthenticationModel {
     }
 
     export interface ISignIn {
-        username: string
+        email: string
         password: string
+        security_question_answer: string
+        remember_me: boolean
     }
 
     export class SignIn implements HttpBaseResponse {
-        status!: boolean
+        success!: boolean
         message!: string
         data!: IAuthentication
     }

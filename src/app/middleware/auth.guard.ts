@@ -1,8 +1,11 @@
 import { inject } from "@angular/core";
 import { Router } from "@angular/router";
+import { AuthenticationService } from "../services/authentication/authentication.service";
 
 export const AuthGuard = () => {
-    const userData = localStorage.getItem("_LBS_UD_");
+    const authService = inject(AuthenticationService)
+
+    const userData = authService.getUserData();
 
     const router = inject(Router);
 

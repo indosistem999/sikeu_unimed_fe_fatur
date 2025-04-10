@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpRequestService } from '../http/http-request.service';
-import { BehaviorSubject, Observable, map, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, of, switchMap, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthenticationModel } from 'src/app/model/pages/authentication/authentication.model';
@@ -144,48 +144,59 @@ export class AuthenticationService {
 
     signIn(payload: AuthenticationModel.ISignIn): Observable<AuthenticationModel.SignIn> {
         return this._httpRequestService
-            .postRequest(`${environment.webApiUrl}/authentication/login`, payload)
+            .postRequest(`${environment.webApiUrl}/auth/login`, payload)
             .pipe(
-                tap((result) => {
-                    if (result.status) {
-                        this.handleSignIn(result.data);
+                switchMap((result) => {
+                    if (result.success) {
+                        const token = result.data.access_token;
+                        return this.getProfile(token)
+                            .pipe(
+                                map(profile => {
+                                    if (profile.success) {
+                                        this.handleSignIn({
+                                            access_token: result.data.access_token,
+                                            refresh_token: result.data.refresh_token,
+                                            ...profile.data
+                                        });
+
+                                        return {
+                                            success: true,
+                                            message: 'Login Berhasil',
+                                            data: {
+                                                access_token: result.data.access_token,
+                                                refresh_token: result.data.refresh_token,
+                                                ...profile.data
+                                            }
+                                        };
+                                    } else {
+                                        return {
+                                            success: false,
+                                            message: profile.message,
+                                            data: null
+                                        };
+                                    }
+                                })
+                            );
+                    } else {
+                        return throwError(() => new Error('Sign-in failed'));
                     }
                 })
-            )
+            );
     }
 
-    getProfile(loginResult: any) {
-        localStorage.removeItem("_LBS_MENU_");
-
-        this._httpRequestService
-            .getRequest(`${environment.webApiUrl}/authentication/profile`)
-            .pipe(
-                tap((result) => {
-                    if (result.status) {
-
-                    }
-                })
-            )
-            .subscribe((result) => {
-                const newRes = {
-                    ...loginResult,
-                    ...result.data,
-                };
-
-                localStorage.setItem("_LBS_UD_", JSON.stringify(newRes));
-            })
+    getProfile(token: string) {
+        const headers = { Authorization: `Bearer ${token}` };
+        return this._httpRequestService.getRequest(`${environment.webApiUrl}/auth/profile`, headers);
     }
 
     setUserData() {
-        const user_data = localStorage.getItem("_LBS_UD_");
-        const layanan_data = localStorage.getItem("_LBS_UD_");
-        this.UserData$.next({ ...JSON.parse(user_data as any), ...JSON.parse(layanan_data as any) });
+        const user_data = localStorage.getItem("_SIMKEU_UD_");
+        this.UserData$.next(JSON.parse(user_data as any));
     }
 
     getUserData() {
-        const user_data = localStorage.getItem("_LBS_UD_");
-        const layanan_data = localStorage.getItem("_LBS_UD_");
-        return { ...JSON.parse(user_data as any), ...JSON.parse(layanan_data as any) };
+        const user_data = localStorage.getItem("_SIMKEU_UD_");
+        return JSON.parse(user_data as any);
     }
 
     setMenu(id_user_group: number) {
@@ -201,10 +212,8 @@ export class AuthenticationService {
 
     private handleSignIn(data: AuthenticationModel.IAuthentication) {
         localStorage.clear();
-        localStorage.setItem("_LBS_UD_", JSON.stringify(data));
-        setTimeout(() => {
-            this.getProfile(data);
-        }, 1000);
+        this.UserData$.next(data);
+        localStorage.setItem("_SIMKEU_UD_", JSON.stringify(data));
     }
 
     generateCaptcha() {
