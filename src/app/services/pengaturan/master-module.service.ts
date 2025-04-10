@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpRequestService } from '../http/http-request.service';
 import { ModulModel } from 'src/app/model/pages/pengaturan/modul.model';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -14,7 +14,14 @@ export class MasterModuleService {
     ) { }
 
     getAll(query?: ModulModel.GetAllQuery): Observable<ModulModel.GetAllModul> {
-        return this._httpRequestService.getRequest(`${environment.webApiUrl}/master-module`, {}, query);
+        return this._httpRequestService
+            .getRequest(`${environment.webApiUrl}/master-module`, {}, query)
+            .pipe(
+                map((result) => {
+                    result.data.rows = result.data.rows.sort((a: any, b: any) => { return parseInt(a.order_number) - parseInt(b.order_number) });
+                    return result;
+                })
+            )
     }
 
     getById(module_id: string): Observable<ModulModel.GetByIdModul> {

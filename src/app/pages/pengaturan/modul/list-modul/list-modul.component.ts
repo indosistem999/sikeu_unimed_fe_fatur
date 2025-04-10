@@ -1,17 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { Store } from '@ngxs/store';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { Subject } from 'rxjs';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { Subject, takeUntil } from 'rxjs';
 import { DynamicFormComponent } from 'src/app/components/form/dynamic-form/dynamic-form.component';
 import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboard.component';
 import { FormModel } from 'src/app/model/components/form.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
+import { ModuleState } from 'src/app/store/pengaturan/module';
 
 @Component({
     selector: 'app-list-modul',
@@ -22,6 +25,7 @@ import { AuthenticationService } from 'src/app/services/authentication/authentic
         DialogModule,
         InputTextModule,
         DashboardComponent,
+        OverlayPanelModule,
         ConfirmDialogModule,
         DynamicFormComponent,
     ],
@@ -40,12 +44,17 @@ export class ListModulComponent implements OnInit, OnDestroy {
         }
     ];
 
+    Module$ = this._store
+        .select(ModuleState.modulEntities)
+        .pipe(takeUntil(this.Destroy$));
+
     FormState: 'insert' | 'update' = 'insert';
     FormProps: FormModel.IForm;
     FormDialogToggle: boolean = false;
     @ViewChild('FormComps') FormComps!: DynamicFormComponent;
 
     constructor(
+        private _store: Store,
         private _router: Router,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
