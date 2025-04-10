@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UtilityService } from 'src/app/services/utility/utility.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { map, Subject, takeUntil } from 'rxjs';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { DialogModule } from 'primeng/dialog';
@@ -53,10 +53,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
                 map(result => result['breadcrumbs'])
             );
 
-    UserMenu = [
+    UserMenu: MenuItem[] = [
         {
             label: 'Sign Out',
-            icon: 'pi pi-sign-out'
+            icon: 'pi pi-sign-out',
+            command: () => {
+                this._authenticationService.signOut();
+            }
         },
     ];
 

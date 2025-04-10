@@ -3,12 +3,15 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { Subject, takeUntil } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
 import { GridComponent } from 'src/app/components/grid/grid.component';
 import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboard.component';
 import { GridModel } from 'src/app/model/components/grid.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { Store } from '@ngxs/store';
+import { UserModel } from 'src/app/model/pages/pengaturan/user.model';
+import { UserActions, UserState } from 'src/app/store/pengaturan/umum/user';
 
 @Component({
     selector: 'app-beranda',
@@ -34,7 +37,7 @@ export class BerandaComponent implements OnInit, OnDestroy {
             { field: 'full_name', headerName: 'Nama', },
             { field: 'email', headerName: 'Email', },
             { field: 'phone_number', headerName: 'No. HP', },
-            { field: 'job_position', headerName: 'Role Akses', },
+            { field: 'role.role_name', headerName: 'Role Akses', },
             { field: 'work_unit', headerName: 'Satuan Kerja', },
         ],
         dataSource: [],
@@ -47,103 +50,25 @@ export class BerandaComponent implements OnInit, OnDestroy {
         searchPlaceholder: 'Cari User Disini',
     };
 
+    GridQueryParams: UserModel.GetAllQuery = { page: '1', limit: '5' };
+
     QuickAccessDatasource: any[] = [
         { title: 'Tambah Role Akses', path: '/pengaturan/hak-akses/role-akses' },
         { title: 'Tambah Satuan Kerja', path: '/pengaturan/umum/satuan-kerja' },
         { title: 'Tambah Modul', path: '/pengaturan/modul' },
         { title: 'Lihat Daftar Pejabat Satuan Kerja', path: '/pengaturan/umum/pejabat' },
         { title: 'Ubah Identitas', path: '/pengaturan/profile' },
-    ]
+    ];
 
     constructor(
+        private _store: Store,
         private _router: Router,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
     ) { }
 
     ngOnInit(): void {
-        this.GridProps.dataSource = [
-            {
-                no: 1,
-                full_name: 'Rudi Tabuti 1',
-                email: 'ruditabutisbb@gmail.com',
-                phone_number: '081234567890',
-                job_position: 'Super Admin',
-                work_unit: null,
-            },
-            {
-                no: 2,
-                full_name: 'Rudi Tabuti 2',
-                email: 'ruditabutisbb@gmail.com',
-                phone_number: '081234567890',
-                job_position: 'Super Admin',
-                work_unit: null,
-            },
-            {
-                no: 3,
-                full_name: 'Rudi Tabuti 3',
-                email: 'ruditabutisbb@gmail.com',
-                phone_number: '081234567890',
-                job_position: 'Super Admin',
-                work_unit: null,
-            },
-            {
-                no: 4,
-                full_name: 'Rudi Tabuti 4',
-                email: 'ruditabutisbb@gmail.com',
-                phone_number: '081234567890',
-                job_position: 'Super Admin',
-                work_unit: null,
-            },
-            {
-                no: 5,
-                full_name: 'Rudi Tabuti 5',
-                email: 'ruditabutisbb@gmail.com',
-                phone_number: '081234567890',
-                job_position: 'Super Admin',
-                work_unit: null,
-            },
-            {
-                no: 6,
-                full_name: 'Rudi Tabuti 6',
-                email: 'ruditabutisbb@gmail.com',
-                phone_number: '081234567890',
-                job_position: 'Super Admin',
-                work_unit: null,
-            },
-            {
-                no: 7,
-                full_name: 'Rudi Tabuti 7',
-                email: 'ruditabutisbb@gmail.com',
-                phone_number: '081234567890',
-                job_position: 'Super Admin',
-                work_unit: null,
-            },
-            {
-                no: 8,
-                full_name: 'Rudi Tabuti 8',
-                email: 'ruditabutisbb@gmail.com',
-                phone_number: '081234567890',
-                job_position: 'Super Admin',
-                work_unit: null,
-            },
-            {
-                no: 9,
-                full_name: 'Rudi Tabuti 9',
-                email: 'ruditabutisbb@gmail.com',
-                phone_number: '081234567890',
-                job_position: 'Super Admin',
-                work_unit: null,
-            },
-            {
-                no: 10,
-                full_name: 'Rudi Tabuti 20',
-                email: 'ruditabutisbb@gmail.com',
-                phone_number: '081234567890',
-                job_position: 'Super Admin',
-                work_unit: null,
-            },
-        ]
+        this.getAllUserState();
     }
 
     ngOnDestroy(): void {
@@ -151,7 +76,34 @@ export class BerandaComponent implements OnInit, OnDestroy {
         this.Destroy$.complete();
     }
 
+    private getAllUserState() {
+        this._store
+            .select(UserState.userEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                this.GridProps.dataSource = result;
+            })
+    }
+
     onSearchGrid(args: any) {
+        if (args) {
+            this.GridQueryParams = {
+                ...this.GridQueryParams,
+                search: args
+            }
+        } else {
+            delete this.GridQueryParams.search;
+        }
+
+        this._store
+            .dispatch(new UserActions.GetAllUser(this.GridQueryParams))
+            .pipe(
+                takeUntil(this.Destroy$),
+                map((result) => result.user)
+            )
+            .subscribe((result) => {
+                this.GridProps.dataSource = result.entities;
+            })
     }
 
     onCellClicked(args: any): void {
@@ -186,7 +138,13 @@ export class BerandaComponent implements OnInit, OnDestroy {
     }
 
     onPageChanged(args: any): void {
-        console.log(args);
+        this.GridQueryParams = {
+            ...this.GridQueryParams,
+            page: args ? args.first + 1 : 1,
+            limit: args ? args.rows : 5
+        };
+
+        this.onSearchGrid(this.GridQueryParams.search)
     }
 
     handleNavigate(url: string) {

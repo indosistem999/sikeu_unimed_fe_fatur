@@ -158,24 +158,8 @@ export class GridComponent implements OnInit, AfterViewInit {
     }
 
     onSearchKeyword(search: string) {
-        if (!this.props.searchKeyword) {
-            console.warn("searchKeyword is undefined.");
-            return;
-        }
-
-        // Preserve the original data source
-        const originalDataSource = [...this.gridDatasource];
-
-        if (search.length) {
-            this.props.dataSource = originalDataSource.filter((item: any) => {
-                const value = item[this.props.searchKeyword!];
-                return value ? value.toString().toLowerCase().includes(search.toLowerCase()) : false;
-            });
-        } else {
-            this.props.dataSource = originalDataSource;
-        }
+        this.customSearchClicked.emit(search);
     }
-
 
     onAksiClicked(type: string, data: any) {
         this.aksiClicked.emit({ type: type, data: data });
@@ -283,6 +267,11 @@ export class GridComponent implements OnInit, AfterViewInit {
             type: EXCEL_TYPE
         });
         FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+    }
+
+    getNestedValue(obj: any, path: string): any {
+        const fields = path.split('.').reduce((o, key) => (o ? o[key] : ''), obj);
+        return fields;
     }
 
     onPageChanged(args: any) {

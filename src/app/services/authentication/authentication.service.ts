@@ -4,6 +4,8 @@ import { BehaviorSubject, Observable, map, of, switchMap, tap, throwError } from
 import { environment } from 'src/environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthenticationModel } from 'src/app/model/pages/authentication/authentication.model';
+import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 // import { SettingMenuRolesService } from '../management-user/setting-menu-roles.service';
 
 @Injectable({
@@ -137,7 +139,8 @@ export class AuthenticationService {
     ])
 
     constructor(
-        private _cookieService: CookieService,
+        private _router: Router,
+        private _messageService: MessageService,
         private _httpRequestService: HttpRequestService,
         // private _settingMenuRolesService: SettingMenuRolesService,
     ) { }
@@ -182,6 +185,15 @@ export class AuthenticationService {
                     }
                 })
             );
+    }
+
+    signOut() {
+        this._messageService.clear();
+        this._messageService.add({ severity: 'success', summary: 'Berhasil', detail: 'Sign Out Berhasil' })
+        setTimeout(() => {
+            localStorage.clear();
+            this._router.navigateByUrl('');
+        }, 1000);
     }
 
     getProfile(token: string) {

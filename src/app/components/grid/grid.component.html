@@ -66,7 +66,7 @@
         <ng-template pTemplate="header" let-columns>
             <tr class="bg-gray-100">
                 <th *ngFor="let col of columns" class="text-sm" [pSortableColumn]="col.field">
-                    {{ col.headerName }} <p-sortIcon [field]="col.field" style="font-size: 12px" />
+                    {{ col.headerName }} <p-sortIcon [field]="col.field" style="font-size: 10px" />
                 </th>
                 <th *ngIf="props.toolbar" class="text-sm text-center">
                     Aksi
@@ -110,10 +110,10 @@
                         {{ handleRenderIconBoolean(rowData[col.field]) }}
                         }
                         @case (undefined) {
-                        {{ rowData[col.field] }}
+                        {{ getNestedValue(rowData, col.field) }}
                         }
                         @default {
-                        {{ rowData[col.field] }}
+                        {{ getNestedValue(rowData, col.field) }}
                         }
                         }
                     </span>
@@ -202,10 +202,10 @@
                             <span [innerHtml]="handleRenderIconBoolean(rowData[col.field])"></span>
                             }
                             @case (undefined) {
-                            {{ rowData[col.field] }}
+                            {{ getNestedValue(rowData, col.field) }}
                             }
                             @default {
-                            {{ rowData[col.field] }}
+                            {{ getNestedValue(rowData, col.field) }}
                             }
                             }
                         </span>

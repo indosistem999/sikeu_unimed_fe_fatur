@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { Subject, takeUntil } from 'rxjs';
 import { AuthenticationService } from './services/authentication/authentication.service';
 import { AuthenticationActions, AuthenticationState } from './store/authentication';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
+import { ModulActions } from './store/pengaturan/module';
+import { UserActions } from './store/pengaturan/umum/user';
 
 @Component({
     selector: 'app-root',
@@ -20,6 +22,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
     isLoading = false;
 
+    IsPengaturanStateInited = false;
+
     constructor(
         private _store: Store,
         private _router: Router,
@@ -27,7 +31,19 @@ export class AppComponent implements OnInit, OnDestroy {
         private _renderer: Renderer2,
         private _activatedRoute: ActivatedRoute,
         private _authenticationService: AuthenticationService,
-    ) { }
+    ) {
+        this._router.events
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((event: any) => {
+                if (event instanceof NavigationEnd) {
+
+                    // ** Load setup data state
+                    if (event.url.includes('pengaturan') && !this.IsPengaturanStateInited) {
+                        this.initPengaturanState();
+                    }
+                }
+            });
+    }
 
     ngOnInit(): void {
         const isUserLoggedIn = this._authenticationService.getUserData();
@@ -47,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.Destroy$.complete();
     }
 
-    onGetProfileState() {
+    private onGetProfileState() {
         const isExist = this._store.dispatch(new AuthenticationActions.GetProfile());
         if (isExist) {
             this._store
@@ -64,5 +80,19 @@ export class AppComponent implements OnInit, OnDestroy {
                     }
                 })
         }
+    }
+
+    private initPengaturanState() {
+        this.IsPengaturanStateInited = true;
+
+        // ** Dispatch Modul State
+        this._store
+            .dispatch(new ModulActions.GetAllModul())
+            .pipe(takeUntil(this.Destroy$));
+
+        // ** Dispatch User State
+        this._store
+            .dispatch(new UserActions.GetAllUser({ page: '1', limit: '5' }))
+            .pipe(takeUntil(this.Destroy$));
     }
 }
