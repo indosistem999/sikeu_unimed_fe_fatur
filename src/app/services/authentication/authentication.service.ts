@@ -34,7 +34,7 @@ export class AuthenticationService {
         {
             module_id: '1',
             module_name: 'Pengaturan',
-            module_icon: '../../../assets/icon/pengaturan.png',
+            icon: '../../../assets/icon/pengaturan.png',
             module_path: 'pengaturan',
             order_number: 1,
             module_menu: [
@@ -111,28 +111,28 @@ export class AuthenticationService {
         {
             module_id: '2',
             module_name: 'SPPD',
-            module_icon: '../../../assets/icon/sppd.png',
+            icon: '../../../assets/icon/sppd.png',
             module_path: 'sppd',
             order_number: 2
         },
         {
             module_id: '3',
             module_name: 'BKU',
-            module_icon: '../../../assets/icon/bku.png',
+            icon: '../../../assets/icon/bku.png',
             module_path: 'bku',
             order_number: 3
         },
         {
             module_id: '4',
             module_name: 'Website',
-            module_icon: '../../../assets/icon/website.png',
+            icon: '../../../assets/icon/website.png',
             module_path: 'website',
             order_number: 4
         },
         {
             module_id: '5',
             module_name: 'Gaji Honor',
-            module_icon: '../../../assets/icon/gaji.png',
+            icon: '../../../assets/icon/gaji.png',
             module_path: 'gaji-honor',
             order_number: 5
         },
