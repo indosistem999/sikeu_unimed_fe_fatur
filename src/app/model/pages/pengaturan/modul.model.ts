@@ -23,4 +23,31 @@ export namespace ModulModel {
             totalRows: number
         }
     }
+
+    export class GetByIdModul implements HttpBaseResponse {
+        success!: boolean
+        message!: string
+        data!: IModul
+    }
+
+    export interface GetAllQuery {
+        direction_name: string;
+        order_name: string;
+        search: string;
+    }
+
+    export interface CreateModul {
+        module_name: string;
+        module_path: string;
+        order_number: number;
+        file_icon: string;
+    }
+
+    export interface UpdateModul {
+        module_id: string;
+        module_name: string;
+        module_path: string;
+        order_number: number;
+        file_icon: string;
+    }
 }

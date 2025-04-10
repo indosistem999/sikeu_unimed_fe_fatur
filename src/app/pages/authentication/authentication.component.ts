@@ -5,7 +5,7 @@ import { FormModel } from 'src/app/model/components/form.model';
 import { ButtonModule } from 'primeng/button';
 import { UtilityService } from 'src/app/services/utility/utility.service';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -14,6 +14,8 @@ import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { Store } from '@ngxs/store';
+import { AuthenticationActions } from 'src/app/store/authentication';
 
 @Component({
     selector: 'app-authentication',
@@ -50,6 +52,7 @@ export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy
     RememberMe: boolean = false;
 
     constructor(
+        private _store: Store,
         private _router: Router,
         private _messageService: MessageService,
         private _utilityService: UtilityService,
@@ -120,9 +123,14 @@ export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy
         const formValue = this.FormComps.onGetFormValue();
 
         if (formValue) {
-            this._authenticationService
-                .signIn({ ...formValue, remember_me: this.RememberMe })
-                .pipe(takeUntil(this.Destroy$))
+            const payload = { ...formValue, remember_me: this.RememberMe };
+
+            this._store
+                .dispatch(new AuthenticationActions.SignIn(payload))
+                .pipe(
+                    takeUntil(this.Destroy$),
+                    map(result => result.authentication)
+                )
                 .subscribe((result) => {
                     if (result.success) {
                         this._messageService.clear();
