@@ -241,6 +241,10 @@ export class DynamicFormComponent implements OnInit {
         return fields?.onChange?.(args);
     }
 
+    handleChangeRadioButton(args: any, fields: FormModel.IFormFields): any {
+        return fields?.onChange?.(args);
+    }
+
     handleChangeFileInput(args: any, fields: FormModel.IFormFields) {
         const files = args.target.files[0];
 

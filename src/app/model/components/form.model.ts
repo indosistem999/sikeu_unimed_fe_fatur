@@ -75,4 +75,9 @@ export namespace FormModel {
         onFilter?: (args: any) => any;
         onRefresh?: (args: any) => any;
     }
+
+    export enum PageState {
+        GRID = 'GRID',
+        INPUT = "INPUT"
+    }
 }

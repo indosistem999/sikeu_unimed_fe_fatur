@@ -16,7 +16,7 @@
                         {{ item.module_name }}
                     </p>
 
-                    <span class="text-sm cursor-pointer" (click)="op.toggle($event)">
+                    <span class="text-sm cursor-pointer" (click)="op.toggle($event); SelectedModule = item">
                         <i class="pi pi-ellipsis-v"></i>
                     </span>
                 </div>
@@ -31,7 +31,8 @@
             <p-overlayPanel #op>
                 <div class="flex flex-col p-3 gap-4">
                     <!-- Detail -->
-                    <div class="flex items-center gap-3 cursor-pointer">
+                    <div class="flex items-center gap-3 cursor-pointer"
+                        (click)="handleToolbarClick('detail', SelectedModule)">
                         <i class="pi pi-info-circle text-sky-500" style="font-size: 12px"></i>
                         <p class="text-sm text-gray-700 font-medium">
                             Detail
@@ -39,7 +40,8 @@
                     </div>
 
                     <!-- Maintenance -->
-                    <div class="flex items-center gap-3 cursor-pointer">
+                    <div class="flex items-center gap-3 cursor-pointer"
+                        (click)="handleToolbarClick('maintenance', SelectedModule)">
                         <i class="pi pi-wrench text-blue-500" style="font-size: 12px"></i>
                         <p class="text-sm text-gray-700 font-medium">
                             Maintenance
@@ -47,7 +49,8 @@
                     </div>
 
                     <!-- Edit Modul -->
-                    <div class="flex items-center gap-3 cursor-pointer">
+                    <div class="flex items-center gap-3 cursor-pointer"
+                        (click)="handleToolbarClick('edit', SelectedModule)">
                         <i class="pi pi-pencil text-yellow-500" style="font-size: 12px"></i>
                         <p class="text-sm text-gray-700 font-medium">
                             Edit Modul
@@ -55,7 +58,8 @@
                     </div>
 
                     <!-- Hapus Modul -->
-                    <div class="flex items-center gap-3 cursor-pointer">
+                    <div class="flex items-center gap-3 cursor-pointer"
+                        (click)="handleToolbarClick('hapus', SelectedModule)">
                         <i class="pi pi-trash text-red-500" style="font-size: 12px"></i>
                         <p class="text-sm text-gray-700 font-medium">
                             Hapus Modul
@@ -65,4 +69,24 @@
             </p-overlayPanel>
         </div>
     </div>
+
+    <!-- Dialog -->
+    <p-dialog [header]="FormState == 'insert' ? 'Tambah Modul' : 'Ubah Modul'" [(visible)]="FormDialogToggle"
+        [modal]="true" [style]="{ width: '35rem' }" [draggable]="false" [resizable]="false">
+
+        <div class="grid w-full my-2">
+            <app-dynamic-form #FormComps [props]="FormProps"></app-dynamic-form>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Batal" severity="secondary" styleClass="p-button-sm"
+                (onClick)="FormDialogToggle = false" />
+
+            <p-button label="Simpan" severity="success" styleClass="p-button-sm"
+                (onClick)="FormState == 'insert' ? handleSave(FormComps.FormGroup.value) : handleUpdate(FormComps.FormGroup.value)">
+            </p-button>
+        </ng-template>
+    </p-dialog>
+
+    <p-confirmDialog />
 </app-dashboard>

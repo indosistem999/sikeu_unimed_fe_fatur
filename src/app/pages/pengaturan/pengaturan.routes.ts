@@ -17,4 +17,8 @@ export const pengaturanRoutes: Routes = [
         path: 'modul',
         loadChildren: async () => (await import('./modul/modul.routes')).pengaturanModulRoutes
     },
+    {
+        path: 'hak-akses',
+        loadChildren: async () => (await import('./hak-akses/hak-akses.routes')).pengaturanHakAksesRoutes
+    },
 ]
