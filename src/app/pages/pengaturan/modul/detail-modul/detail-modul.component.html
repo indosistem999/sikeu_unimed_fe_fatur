@@ -1,1 +1,48 @@
-<p>detail-modul works!</p>
+<app-dashboard [ButtonNavigation]="ButtonNavigation" (onClickButtonNavigation)="handleClickButtonNavigation($event)">
+    <div class="grid w-full bg-white rounded-lg shadow-sm p-3">
+        <!-- Heading -->
+        <div *ngIf="ActiveModule$ | async as module" class="flex w-full justify-between gap-2 items-center">
+            <p class="text-gray-700 font-semibold text-lg">
+                {{ module.module_name }}
+            </p>
+
+            <div class="flex w-3/12">
+                <input type="text" pInputText placeholder="Cari menu disini" class="p-inputtext-sm w-full">
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div *ngIf="Menu$ | async as menu" class="flex flex-col w-full gap-2">
+
+            @if(menu.length) {
+            <p *ngFor="let item of menu" class="text-red-500 italic text-sm">
+                {{ item.menu_name }}
+            </p>
+            } @else {
+            <p class="text-red-500 italic text-sm">
+                Belum ada menu yang ditambahkan. Silahkan tambahkan terlebih dahulu
+            </p>
+            }
+        </div>
+    </div>
+
+    <!-- Dialog -->
+    <p-dialog [header]="FormState == 'insert' ? 'Tambah Menu' : 'Ubah Menu'" [(visible)]="FormDialogToggle"
+        [modal]="true" [style]="{ width: '35rem' }" [draggable]="false" [resizable]="false">
+
+        <div class="grid w-full my-2">
+            <app-dynamic-form #FormComps [props]="FormProps"></app-dynamic-form>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Batal" severity="secondary" styleClass="p-button-sm"
+                (onClick)="FormDialogToggle = false" />
+
+            <p-button label="Simpan" severity="success" styleClass="p-button-sm"
+                (onClick)="FormState == 'insert' ? handleSave(FormComps.FormGroup.value) : handleUpdate(FormComps.FormGroup.value)">
+            </p-button>
+        </ng-template>
+    </p-dialog>
+
+    <p-confirmDialog />
+</app-dashboard>

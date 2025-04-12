@@ -51,7 +51,7 @@ export class ModuleState {
                     ctx.setState({
                         ...state,
                         entities: result.data.rows,
-                        totalRows: result.data.totalRows
+                        totalRows: result.data.total_row
                     });
                 })
             )

@@ -20,7 +20,7 @@ export namespace ModulModel {
         message!: string
         data!: {
             rows: IModul[],
-            totalRows: number
+            total_row: number
         }
     }
 

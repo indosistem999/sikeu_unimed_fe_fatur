@@ -141,6 +141,7 @@ export class ListModulComponent implements OnInit, OnDestroy {
 
         switch (type) {
             case 'detail':
+                this._router.navigateByUrl(`/pengaturan/modul/detail?id=${data.module_id}`);
                 break;
             case 'maintenance':
                 this._messageService.clear();

@@ -20,6 +20,10 @@ const routes: Routes = [
     {
         path: 'pengaturan',
         loadChildren: async () => (await import('./pages/pengaturan/pengaturan.routes')).pengaturanRoutes
+    },
+    {
+        path: 'pengatuan',
+        loadChildren: async () => (await import('./pages/pengaturan/pengaturan.routes')).pengaturanRoutes
     }
 ];
 

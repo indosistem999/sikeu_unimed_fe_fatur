@@ -13,6 +13,8 @@ import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { AuthenticationModel } from 'src/app/model/pages/authentication/authentication.model';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { MenuState } from 'src/app/store/pengaturan/menu';
+import { Store } from '@ngxs/store';
 
 @Component({
     selector: 'app-navbar',
@@ -42,7 +44,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     ShowSearch = false;
 
-    Menu: AuthenticationModel.IModuleChildMenu[] = this._authenticationService.getModuleMenu();
+    Menu$ = this._store
+        .select(MenuState.menuEntities)
+        .pipe(takeUntil(this.Destroy$));
 
     SelectedMenu!: AuthenticationModel.IModuleChildMenu;
 
@@ -64,6 +68,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     ];
 
     constructor(
+        private _store: Store,
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
         private _messageService: MessageService,

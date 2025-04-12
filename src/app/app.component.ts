@@ -38,7 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 if (event instanceof NavigationEnd) {
 
                     // ** Load setup data state
-                    if (event.url.includes('pengaturan') && !this.IsPengaturanStateInited) {
+                    if ((event.url.includes('pengaturan') || event.url.includes('pengatuan')) && !this.IsPengaturanStateInited) {
                         this.initPengaturanState();
                     }
                 }
@@ -72,7 +72,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 .subscribe((result) => {
                     if (result) {
                         const url = this._location.path();
-                        !environment.production && console.log("url =>", url.length);
+                        !environment.production && console.log("url =>", url);
 
                         if (!url.length) {
                             this._router.navigateByUrl('/list-module')
