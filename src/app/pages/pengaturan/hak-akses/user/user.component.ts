@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
@@ -15,6 +15,8 @@ import { GridModel } from 'src/app/model/components/grid.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
 import { UserModel } from 'src/app/model/pages/pengaturan/module/user.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
+import { RoleState } from 'src/app/store/pengaturan/hak-akses/role';
+import { SatuanKerjaState } from 'src/app/store/pengaturan/umum/satuan-kerja';
 import { UserState, UserActions } from 'src/app/store/pengaturan/umum/user';
 
 @Component({
@@ -53,8 +55,8 @@ export class UserComponent implements OnInit, OnDestroy {
             { field: 'full_name', headerName: 'Nama', },
             { field: 'email', headerName: 'Email', },
             { field: 'phone_number', headerName: 'No. HP', },
-            { field: 'role.role_name', headerName: 'Role Akses', },
-            { field: 'work_unit', headerName: 'Satuan Kerja', },
+            { field: 'role.role_name', headerName: 'User Akses', },
+            { field: 'work_unit.unit_name', headerName: 'Satuan Kerja', },
         ],
         dataSource: [],
         height: "calc(100vh - 14.5rem)",
@@ -76,6 +78,7 @@ export class UserComponent implements OnInit, OnDestroy {
     constructor(
         private _store: Store,
         private _router: Router,
+        private _messageService: MessageService,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
     ) {
@@ -141,7 +144,7 @@ export class UserComponent implements OnInit, OnDestroy {
                 },
                 {
                     id: 'role_id',
-                    label: 'Role Akses',
+                    label: 'User Akses',
                     required: true,
                     type: 'select',
                     value: '',
@@ -162,7 +165,6 @@ export class UserComponent implements OnInit, OnDestroy {
                         { name: 'has_work_unit', label: 'Tidak', value: 0 },
                     ],
                     onChange: (args: any) => {
-                        console.log(args);
                         const index = this.FormProps.fields.findIndex(item => item.id == 'unit_id');
 
                         if (args.value == 1) {
@@ -197,6 +199,8 @@ export class UserComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.getAllUserState();
+        this.getAllRoleState();
+        this.getAllSatuanKerjaState();
     }
 
     ngOnDestroy(): void {
@@ -218,6 +222,26 @@ export class UserComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
                 this.GridProps.dataSource = result;
+            })
+    }
+
+    private getAllRoleState() {
+        this._store
+            .select(RoleState.roleEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                const index = this.FormProps.fields.findIndex(item => item.id == 'role_id');
+                this.FormProps.fields[index].dropdownProps.options = result;
+            })
+    }
+
+    private getAllSatuanKerjaState() {
+        this._store
+            .select(SatuanKerjaState.satuanKerjaEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                const index = this.FormProps.fields.findIndex(item => item.id == 'unit_id');
+                this.FormProps.fields[index].dropdownProps.options = result;
             })
     }
 
@@ -243,15 +267,34 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     onCellClicked(args: any): void {
-
+        this.GridSelectedData = args;
     }
 
     onRowDoubleClicked(args: any): void {
+        this.FormState = 'update';
+        this.FormDialogToggle = true;
 
+        const index = this.FormProps.fields.findIndex(item => item.id == 'unit_id');
+
+        if (args.work_unit) {
+            this.FormProps.fields[index].hidden = false;
+            this.FormProps.class = 'grid-rows-8 grid-cols-1';
+        } else {
+            this.FormProps.fields[index].hidden = true;
+            this.FormProps.class = 'grid-rows-7 grid-cols-1';
+        }
+
+        this.FormComps.FormGroup.patchValue({
+            ...args,
+            name: `${args.first_name} ${args.last_name}`,
+            role_id: args.role.role_id,
+            has_work_unit: args.work_unit ? 1 : 0,
+            unit_id: args.work_unit.unit_id
+        });
     }
 
     onToolbarClicked(args: any): void {
-        if (args.type == 'delete') {
+        if (args.type == 'hapus') {
             this._confirmationService.confirm({
                 target: (<any>event).target as EventTarget,
                 message: 'Data Yang Dihapus Tidak Dapat Dikembalikan',
@@ -264,11 +307,12 @@ export class UserComponent implements OnInit, OnDestroy {
                 rejectIcon: "none",
                 rejectLabel: 'Tidak, kembali',
                 accept: () => {
+                    this.handleDelete(args.data);
                 }
             });
         }
 
-        if (args.type == 'detail') {
+        if (args.type == 'edit') {
             this.onRowDoubleClicked(args.data);
         }
     }
@@ -288,15 +332,43 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     handleSave(args: any) {
-
+        this._store
+            .dispatch(new UserActions.CreateUser(args))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Disimpan' });
+                    this.FormDialogToggle = false;
+                    this.FormComps.FormGroup.reset();
+                }
+            })
     }
 
     handleUpdate(args: any) {
-
+        this._store
+            .dispatch(new UserActions.UpdateUser(args))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Diperbarui' });
+                    this.FormDialogToggle = false;
+                    this.FormComps.FormGroup.reset();
+                }
+            })
     }
 
     handleDelete(args: any) {
-
+        this._store
+            .dispatch(new UserActions.DeleteUser(args.unit_id))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Dihapus' });
+                }
+            })
     }
 
 }

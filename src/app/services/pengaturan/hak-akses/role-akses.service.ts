@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { RoleModel } from 'src/app/model/pages/pengaturan/hak-akses/role.model';
 import { environment } from 'src/environments/environment';
 import { HttpRequestService } from '../../http/http-request.service';
@@ -16,7 +16,22 @@ export class RoleAksesService {
     ) { }
 
     getAll(query?: RoleModel.GetAllQuery): Observable<RoleModel.GetAllRole> {
-        return this._httpRequestService.getRequest(`${environment.webApiUrl}/role`, {}, query);
+        return this._httpRequestService
+            .getRequest(`${environment.webApiUrl}/role`, {}, query)
+            .pipe(
+                map((result) => {
+                    if (result.data.records.length) {
+                        result.data.records = result.data.records.map((item: any, index: number) => {
+                            return {
+                                ...item,
+                                no: index + 1,
+                            }
+                        });
+                    }
+
+                    return result;
+                })
+            )
     }
 
     getById(role_id: string): Observable<RoleModel.GetByIdRole> {

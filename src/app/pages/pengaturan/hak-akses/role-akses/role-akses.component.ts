@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
@@ -13,9 +13,9 @@ import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboar
 import { FormModel } from 'src/app/model/components/form.model';
 import { GridModel } from 'src/app/model/components/grid.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
-import { UserModel } from 'src/app/model/pages/pengaturan/module/user.model';
+import { RoleModel } from 'src/app/model/pages/pengaturan/hak-akses/role.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
-import { UserState, UserActions } from 'src/app/store/pengaturan/umum/user';
+import { RoleState, RoleActions } from 'src/app/store/pengaturan/hak-akses/role';
 
 @Component({
     selector: 'app-role-akses',
@@ -61,7 +61,7 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
         searchKeyword: 'role_name',
         searchPlaceholder: 'Cari Role Name Disini',
     };
-    GridQueryParams: UserModel.GetAllQuery = { page: '1', limit: '5' };
+    GridQueryParams: RoleModel.GetAllQuery = { page: '1', limit: '5' };
     GridSelectedData: any;
 
     FormState: 'insert' | 'update' = 'insert';
@@ -72,6 +72,7 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
     constructor(
         private _store: Store,
         private _router: Router,
+        private _messageService: MessageService,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
     ) {
@@ -103,7 +104,7 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.getAllUserState();
+        this.getAllRoleState();
     }
 
     ngOnDestroy(): void {
@@ -119,9 +120,9 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
         };
     }
 
-    private getAllUserState() {
+    private getAllRoleState() {
         this._store
-            .select(UserState.userEntities)
+            .select(RoleState.roleEntities)
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
                 this.GridProps.dataSource = result;
@@ -139,7 +140,7 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
         }
 
         this._store
-            .dispatch(new UserActions.GetAllUser(this.GridQueryParams))
+            .dispatch(new RoleActions.GetAllRole(this.GridQueryParams))
             .pipe(
                 takeUntil(this.Destroy$),
                 map((result) => result.user)
@@ -150,15 +151,17 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
     }
 
     onCellClicked(args: any): void {
-
+        this.GridSelectedData = args;
     }
 
     onRowDoubleClicked(args: any): void {
-
+        this.FormState = 'update';
+        this.FormDialogToggle = true;
+        this.FormComps.FormGroup.patchValue(args);
     }
 
     onToolbarClicked(args: any): void {
-        if (args.type == 'delete') {
+        if (args.type == 'hapus') {
             this._confirmationService.confirm({
                 target: (<any>event).target as EventTarget,
                 message: 'Data Yang Dihapus Tidak Dapat Dikembalikan',
@@ -171,8 +174,13 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
                 rejectIcon: "none",
                 rejectLabel: 'Tidak, kembali',
                 accept: () => {
+                    this.handleDelete(args.data);
                 }
             });
+        }
+
+        if (args.type == 'edit') {
+            this.onRowDoubleClicked(args.data);
         }
 
         if (args.type == 'detail') {
@@ -195,15 +203,43 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
     }
 
     handleSave(args: any) {
-
+        this._store
+            .dispatch(new RoleActions.CreateRole(args))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Role Berhasil Disimpan' });
+                    this.FormDialogToggle = false;
+                    this.FormComps.FormGroup.reset();
+                }
+            })
     }
 
     handleUpdate(args: any) {
-
+        this._store
+            .dispatch(new RoleActions.UpdateRole(args))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Role Berhasil Diperbarui' });
+                    this.FormDialogToggle = false;
+                    this.FormComps.FormGroup.reset();
+                }
+            })
     }
 
     handleDelete(args: any) {
-
+        this._store
+            .dispatch(new RoleActions.DeleteRole(args.role_id))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Role Berhasil Dihapus' });
+                }
+            })
     }
 
 }

@@ -2,7 +2,7 @@ import { Routes } from "@angular/router";
 
 export const pengaturanHakAksesRoutes: Routes = [
     {
-        path: 'user',
+        path: 'daftar-user',
         loadComponent: async () => (await import('./user/user.component')).UserComponent,
         data: {
             title: 'User',
