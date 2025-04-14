@@ -41,4 +41,12 @@ export const pengaturanUmumRoutes: Routes = [
             breadcrumbs: ['Pengaturan', 'Umum', 'Sumber Dana']
         }
     },
+    {
+        path: 'kategori-jabatan',
+        loadComponent: async () => (await import('./kategori-jabatan/kategori-jabatan.component')).KategoriJabatanComponent,
+        data: {
+            title: 'Kategori Jabatan',
+            breadcrumbs: ['Pengaturan', 'Umum', 'Kategori Jabatan']
+        }
+    },
 ]

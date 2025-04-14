@@ -50,6 +50,12 @@ interface MenuStateModel {
                         menu_name: 'Sumber Dana',
                         menu_path: '/pengaturan/umum/sumber-dana',
                     },
+                    {
+                        module_id: '1',
+                        menu_id: '125',
+                        menu_name: 'Kategori Jabatan',
+                        menu_path: '/pengaturan/umum/kategori-jabatan',
+                    },
                 ]
             },
             {

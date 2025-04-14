@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { HttpRequestService } from '../../http/http-request.service';
 import { UtilityService } from '../../utility/utility.service';
@@ -16,7 +16,22 @@ export class KategoriJabatanService {
     ) { }
 
     getAll(query?: KategoriJabatanModel.GetAllQuery): Observable<KategoriJabatanModel.GetAllKategoriJabatan> {
-        return this._httpRequestService.getRequest(`${environment.webApiUrl}/master-job-category`, {}, query);
+        return this._httpRequestService
+            .getRequest(`${environment.webApiUrl}/master-job-category`, {}, query)
+            .pipe(
+                map((result) => {
+                    if (result.data.records.length) {
+                        result.data.records = result.data.records.map((item: any, index: number) => {
+                            return {
+                                ...item,
+                                no: index + 1,
+                            }
+                        });
+                    }
+
+                    return result;
+                })
+            )
     }
 
     getById(job_category_id: string): Observable<KategoriJabatanModel.GetByIdKategoriJabatan> {
@@ -24,7 +39,8 @@ export class KategoriJabatanService {
     }
 
     create(payload: KategoriJabatanModel.CreateKategoriJabatan): Observable<KategoriJabatanModel.GetByIdKategoriJabatan> {
-        return this._httpRequestService.postRequest(`${environment.webApiUrl}/master-job-category`, payload);
+        const { job_category_id, ...data } = payload as any;
+        return this._httpRequestService.postRequest(`${environment.webApiUrl}/master-job-category`, data);
     }
 
     update(payload: KategoriJabatanModel.UpdateKategoriJabatan): Observable<KategoriJabatanModel.GetByIdKategoriJabatan> {

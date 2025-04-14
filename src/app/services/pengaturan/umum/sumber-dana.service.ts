@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { HttpRequestService } from '../../http/http-request.service';
 import { UtilityService } from '../../utility/utility.service';
@@ -16,7 +16,22 @@ export class SumberDanaService {
     ) { }
 
     getAll(query?: SumberDanaModel.GetAllQuery): Observable<SumberDanaModel.GetAllSumberDana> {
-        return this._httpRequestService.getRequest(`${environment.webApiUrl}/master-sumber-dana`, {}, query);
+        return this._httpRequestService
+            .getRequest(`${environment.webApiUrl}/master-sumber-dana`, {}, query)
+            .pipe(
+                map((result) => {
+                    if (result.data.records.length) {
+                        result.data.records = result.data.records.map((item: any, index: number) => {
+                            return {
+                                ...item,
+                                no: index + 1,
+                            }
+                        });
+                    }
+
+                    return result;
+                })
+            )
     }
 
     getById(sumber_dana_id: string): Observable<SumberDanaModel.GetByIdSumberDana> {
