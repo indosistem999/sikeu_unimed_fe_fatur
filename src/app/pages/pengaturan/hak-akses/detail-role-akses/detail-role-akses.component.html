@@ -1,28 +1,203 @@
 <app-dashboard [ButtonNavigation]="ButtonNavigation" (onClickButtonNavigation)="handleClickButtonNavigation($event)">
     <div class="flex flex-col w-full rounded-xl bg-white">
         <!-- Module List -->
-        <div class="flex flex-col w-full p-5 rounded-l-xl">
+        <div *ngIf="PageState == 'list'" class="flex flex-col w-full p-5 rounded-l-xl">
             <p class="text-gray-700 font-semibold text-base mb-3">
                 Daftar Modul
             </p>
 
             <div *ngIf="Module$ | async as module" class="grid grid-cols-3 gap-20">
-                <div *ngFor="let item of module" class="flex w-full flex-col gap-3 pt-3 px-3 pb-5 justify-center items-center 
+                <div *ngFor="let item of module" class="{{item.module_name != 'Pengaturan' ? 'flex' : 'hidden'}} w-full flex-col gap-3 pt-3 px-3 pb-5 justify-center items-center 
                  bg-sky-50 rounded-lg shadow cursor-pointer">
                     <div class="flex w-full justify-between items-center">
                         <p class="text-gray-700 font-semibold text-lg">
                             {{ item.module_name }}
                         </p>
 
-                        <p-inputSwitch />
+                        <p-inputSwitch [(ngModel)]="item.checked" (onChange)="handleChangeSwitch($event, item)" />
                     </div>
                     <img [src]="item.icon" alt="icon" class="w-[100px] h-[100px]">
 
-                    <p class="text-gray-600 font-medium text-sm text-center">
-                        Tidak Aktif
+                    <p class="text-gray-600 font-medium text-sm text-center mb-2">
+                        {{ item.assigned_status == "0" ? 'Tidak Aktif' : 'Aktif' }}
                     </p>
+
+                    <p-button *ngIf=" item.assigned_status == '1'" severity="info" label="Aktifkan Fitur"
+                        styleClass="p-button-sm" (onClick)="handleOpenConfig(item)">
+                    </p-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Config List -->
+        <div *ngIf="PageState == 'config'" class="flex flex-col w-full p-5 rounded-l-xl">
+            <p class="text-gray-700 font-semibold text-lg mb-3">
+                Konfigurasi Akses Fitur
+            </p>
+
+            <div *ngIf="SelectedRole$ | async as role" class="flex w-full gap-2 items-center mb-2">
+                <div class="w-2/12">
+                    <p class="text-gray-700 text-sm mb-0">
+                        Nama Role
+                    </p>
+                </div>
+                <div class="w-10/12">
+                    <p class="text-gray-700 font-medium text-sm mb-0">
+                        : {{ role.role_name }}
+                    </p>
+                </div>
+            </div>
+
+            <div *ngIf="SelectedModule$ | async as module" class="flex w-full gap-2 items-center mb-3">
+                <div class="w-2/12">
+                    <p class="text-gray-700 text-sm mb-0">
+                        Modul
+                    </p>
+                </div>
+                <div class="w-10/12">
+                    <p class="text-gray-700 font-medium text-sm mb-0">
+                        : {{ module.module_name }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div *ngIf="Config as menus" class="flex flex-col w-full gap-2">
+                <div *ngFor="let menu of menus"
+                    class="flex gap-2 w-full border-l border-t-0 border-b border-r-0 border-gray-200 border-solid p-2 items-center">
+                    <!-- Menu Items -->
+                    <div class="flex flex-col gap-2 w-full text-sm text-gray-700 py-2">
+                        <!-- Main Menu Item -->
+                        <div class="flex w-full items-center">
+                            <div class="w-4/12">
+                                <div class="pl-4 py-2 hover:text-blue-600 cursor-pointer relative">
+                                    {{ menu.name }}
+                                </div>
+                            </div>
+
+                            <div *ngFor="let access of menu.access_menu"
+                                class="w-1/12 flex justify-center items-center gap-2">
+                                <div *ngIf="access.access_status == '1'"
+                                    (click)="access.access_status = '0'; handleSaveConfig(menu.menu_id, menu.access_menu)"
+                                    class="flex items-center justify-center cursor-pointer rounded-md border border-solid border-gray-300 h-[20px] w-[20px]">
+                                    <i class="pi pi-check text-blue-500" style="font-size: 10px"></i>
+                                </div>
+
+                                <div *ngIf="access.access_status == '0'"
+                                    (click)="access.access_status = '1'; handleSaveConfig(menu.menu_id, menu.access_menu)"
+                                    class="flex items-center justify-center cursor-pointer rounded-md border border-solid border-gray-300 h-[20px] w-[20px]">
+                                </div>
+
+                                <p class="text-sm font-medium text-gray-700 text-center">
+                                    {{ access.access_label }}
+                                </p>
+                            </div>
+
+                            <div *ngIf="menu.children?.length" class="flex gap-5 items-center ml-auto">
+                                <span (click)="menu.toggle_children = !menu.toggle_children">
+                                    <i class="pi pi-chevron-{{ menu.toggle_children ? 'up' : 'down' }}"
+                                        style="font-size: 12px"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Children with L-shaped lines -->
+                        <div *ngIf="menu.children?.length && menu.toggle_children" class="relative ml-6">
+                            <!-- Vertical line -->
+                            <div
+                                class="absolute top-0 left-[0] h-full border-solid border-l border-r-0 border-y-0 border-gray-300">
+                            </div>
+
+                            <div *ngFor="let child of menu.children" class="flex flex-col w-full relative pl-6 py-2">
+                                <div class="flex w-full relative">
+                                    <!-- Horizontal line -->
+                                    <div
+                                        class="absolute left-[-2%] top-1/2 w-4 border-t border-solid border-b-0 border-x-0 border-gray-300">
+                                    </div>
+
+                                    <!-- Child Menu Item -->
+                                    <div class="w-4/12">
+                                        <div class="pl-4 py-2 hover:text-blue-600 cursor-pointer relative">
+                                            {{ child.name }}
+                                        </div>
+                                    </div>
+
+                                    <div *ngFor="let access of child.access_menu"
+                                        class="w-1/12 flex justify-center items-center gap-2">
+                                        <div *ngIf="access.access_status == '1'"
+                                            (click)="access.access_status = '0'; handleSaveConfig(child.menu_id, child.access_menu)"
+                                            class="flex items-center justify-center cursor-pointer rounded-md border border-solid border-gray-300 h-[20px] w-[20px]">
+                                            <i class="pi pi-check text-blue-500" style="font-size: 10px"></i>
+                                        </div>
+
+                                        <div *ngIf="access.access_status == '0'"
+                                            (click)="access.access_status = '1'; handleSaveConfig(child.menu_id, child.access_menu)"
+                                            class="flex items-center justify-center cursor-pointer rounded-md border border-solid border-gray-300 h-[20px] w-[20px]">
+                                        </div>
+
+                                        <p class="text-sm font-medium text-gray-700 text-center">
+                                            {{ access.access_label }}
+                                        </p>
+                                    </div>
+
+                                    <div *ngIf="child.children?.length" class="flex ml-auto gap-5 items-center">
+                                        <span (click)="child.toggle_children = !child.toggle_children">
+                                            <i class="pi pi-chevron-{{ child.toggle_children ? 'up' : 'down' }}"
+                                                style="font-size: 12px"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Item Children with L-shaped lines -->
+                                <div *ngIf="child.children?.length && child.toggle_children" class="relative ml-6 py-2">
+                                    <!-- Vertical line -->
+                                    <div
+                                        class="absolute top-0 left-[0] h-full border-solid border-l border-r-0 border-y-0 border-gray-300">
+                                    </div>
+
+                                    <div *ngFor="let subchild of child.children"
+                                        class="flex flex-col w-full relative pl-6 py-2">
+                                        <div class="flex w-full relative">
+                                            <!-- Horizontal line -->
+                                            <div
+                                                class="absolute left-[-2%] top-1/2 w-4 border-t border-solid border-b-0 border-x-0 border-gray-300">
+                                            </div>
+
+                                            <!-- Child Menu Item -->
+                                            <div class="w-4/12">
+                                                <div class="pl-4 py-2 hover:text-blue-600 cursor-pointer relative">
+                                                    {{ subchild.name }}
+                                                </div>
+                                            </div>
+
+                                            <div *ngFor="let access of subchild.access_menu"
+                                                class="w-1/12 flex justify-center items-center gap-2">
+                                                <div *ngIf="access.access_status == '1'"
+                                                    (click)="access.access_status = '0'; handleSaveConfig(subchild.menu_id, subchild.access_menu)"
+                                                    class="flex items-center justify-center cursor-pointer rounded-md border border-solid border-gray-300 h-[20px] w-[20px]">
+                                                    <i class="pi pi-check text-blue-500" style="font-size: 10px"></i>
+                                                </div>
+
+                                                <div *ngIf="access.access_status == '0'"
+                                                    (click)="access.access_status = '1'; handleSaveConfig(subchild.menu_id, subchild.access_menu)"
+                                                    class="flex items-center justify-center cursor-pointer rounded-md border border-solid border-gray-300 h-[20px] w-[20px]">
+                                                </div>
+
+                                                <p class="text-sm font-medium text-gray-700 text-center">
+                                                    {{ access.access_label }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <p-confirmDialog></p-confirmDialog>
 </app-dashboard>

@@ -50,4 +50,6 @@ export class RoleAksesService {
     delete(role_id: string): Observable<RoleModel.GetByIdRole> {
         return this._httpRequestService.deleteRequest(`${environment.webApiUrl}/role/${role_id}`);
     }
+
+
 }

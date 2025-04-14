@@ -184,7 +184,7 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
         }
 
         if (args.type == 'detail') {
-            this.onRowDoubleClicked(args.data);
+            this._router.navigateByUrl(`/pengaturan/hak-akses/role-akses/detail/${args.data.role_id}`)
         }
     }
 
