@@ -13,7 +13,7 @@ import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboar
 import { FormModel } from 'src/app/model/components/form.model';
 import { GridModel } from 'src/app/model/components/grid.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
-import { UserModel } from 'src/app/model/pages/pengaturan/user.model';
+import { UserModel } from 'src/app/model/pages/pengaturan/module/user.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { UserState, UserActions } from 'src/app/store/pengaturan/umum/user';
 

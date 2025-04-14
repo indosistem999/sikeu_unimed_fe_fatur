@@ -8,7 +8,7 @@
         </div>
 
         <div *ngIf="Module$ | async as module" class="grid grid-cols-3 gap-5">
-            <div *ngFor="let item of module" class="flex w-full flex-col gap-3 p-3 justify-center items-center 
+            <div *ngFor="let item of module" class="{{ item.module_name != 'Pengaturan' ? 'flex' : 'hidden'}} w-full flex-col gap-3 p-3 justify-center items-center 
                 bg-gray-50 rounded-lg shadow">
 
                 <div class="flex w-full justify-between gap-2 items-center">

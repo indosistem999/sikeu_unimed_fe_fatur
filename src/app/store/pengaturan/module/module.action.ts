@@ -1,4 +1,4 @@
-import { ModulModel } from "src/app/model/pages/pengaturan/modul.model";
+import { ModulModel } from "src/app/model/pages/pengaturan/module/modul.model";
 
 export namespace ModulActions {
     export class GetAllModul {

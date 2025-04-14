@@ -49,15 +49,20 @@ export class DetailModulComponent implements OnInit, OnDestroy {
         .select(ModuleState.modulSingle)
         .pipe(takeUntil(this.Destroy$));
 
-    Menu$ = this._store
-        .select(MenuState.menuEntities)
-        .pipe(takeUntil(this.Destroy$));
+    Menu: any[] = [];
+
+    ToolbarMenu = [
+        { id: 'insert_children', icon: 'pi pi-plus text-sky-500', label: 'Tambah Sub Menu' },
+        { id: 'edit', icon: 'pi pi-pencil text-yellow-500', label: 'Edit Menu' },
+        { id: 'hapus', icon: 'pi pi-trash text-red-500', label: 'Hapus Menu' },
+    ];
 
     SelectedMenu!: any;
 
-    FormState: 'insert' | 'update' = 'insert';
+    FormState: 'insert_parent' | 'insert_children' | 'insert_subchildren' | 'update' = 'insert_parent';
     FormProps: FormModel.IForm;
     FormDialogToggle: boolean = false;
+    FormDialogHeader: string = "Tambah Menu";
     @ViewChild('FormComps') FormComps!: DynamicFormComponent;
 
     constructor(
@@ -93,6 +98,15 @@ export class DetailModulComponent implements OnInit, OnDestroy {
                     required: true,
                     type: 'text',
                     value: '',
+                    hidden: true,
+                },
+                {
+                    id: 'parent_name',
+                    label: 'Menu Utama',
+                    required: true,
+                    type: 'text',
+                    value: '',
+                    readonly: true,
                     hidden: true,
                 },
                 {
@@ -158,31 +172,86 @@ export class DetailModulComponent implements OnInit, OnDestroy {
     private getAllMenu(module_id: string) {
         this._store
             .dispatch(new MenuActions.GetAllMenu({ module_id: module_id }))
-            .pipe(takeUntil(this.Destroy$));
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.menu.success) {
+                    this.Menu = result.menu.entities;
+                    this.Menu = this.Menu.map((item: any) => {
+                        return {
+                            ...item,
+                            toggle_children: false,
+                        }
+                    })
+                }
+            })
     }
 
     handleClickButtonNavigation(data: LayoutModel.IButtonNavigation) {
         if (data.id == 'add') {
-            this.FormState = 'insert';
+            this.FormState = 'insert_parent';
+            this.FormDialogHeader = "Tambah Menu";
+            const index = this.FormProps.fields.findIndex(item => item.id == 'parent_name');
+            this.FormProps.fields[index].hidden = true;
+            this.FormProps.class = "grid-rows-4 grid-cols-1"
             this.FormDialogToggle = true;
             this.FormComps.FormGroup.reset();
         };
     }
 
-    handleToolbarClick(type: 'detail' | 'maintenance' | 'edit' | 'hapus', data: any) {
+    handleTogglingToolbar(is_child: boolean, data: any) {
+        this.SelectedMenu = data;
+
+        if (is_child) {
+            this.ToolbarMenu = [
+                { id: 'insert_children', icon: 'pi pi-plus text-sky-500', label: 'Tambah Sub Menu' },
+                { id: 'edit', icon: 'pi pi-pencil text-yellow-500', label: 'Edit Menu' },
+                { id: 'hapus', icon: 'pi pi-trash text-red-500', label: 'Hapus Menu' },
+            ];
+        } else {
+            this.ToolbarMenu = [
+                { id: 'insert_subchildren', icon: 'pi pi-plus text-sky-500', label: 'Tambah Item Menu' },
+                { id: 'edit', icon: 'pi pi-pencil text-yellow-500', label: 'Edit Menu' },
+                { id: 'hapus', icon: 'pi pi-trash text-red-500', label: 'Hapus Menu' },
+            ];
+        }
+    }
+
+    handleToolbarClick(type: string, data: any) {
         console.log(type, data);
+        const index = this.FormProps.fields.findIndex(item => item.id == 'parent_name');
 
         switch (type) {
-            case 'detail':
-                this._router.navigateByUrl(`/pengaturan/modul/detail?id=${data.module_id}`);
+            case 'insert_children':
+                this.FormState = 'insert_children';
+                this.FormDialogHeader = "Tambah Sub Menu";
+                this.FormDialogToggle = true;
+                this.FormComps.ImagePreviews = {};
+                this.FormComps.ImagePreviews['file_icon'] = data.icon;
+
+                this.FormProps.fields[index].hidden = false;
+                this.FormProps.class = "grid-rows-5 grid-cols-1"
+
+                this.FormComps.FormGroup.get('parent_id')?.setValue(data.menu_id);
+                this.FormComps.FormGroup.get('parent_name')?.setValue(data.name);
+
                 break;
-            case 'maintenance':
-                this._messageService.clear();
-                this._messageService.add({ severity: 'warning', summary: 'Coming Soon', detail: 'Fitur Akan Segera Datang' })
+            case 'insert_subchildren':
+                this.FormState = 'insert_subchildren';
+                this.FormDialogHeader = "Tambah Item Menu";
+                this.FormDialogToggle = true;
+                this.FormComps.ImagePreviews = {};
+                this.FormComps.ImagePreviews['file_icon'] = data.icon;
+
+                this.FormProps.fields[index].hidden = false;
+                this.FormProps.class = "grid-rows-5 grid-cols-1"
+
+                this.FormComps.FormGroup.get('parent_id')?.setValue(data.menu_id);
+                this.FormComps.FormGroup.get('parent_name')?.setValue(data.name);
                 break;
             case 'edit':
                 this.FormState = 'update';
                 this.FormDialogToggle = true;
+                this.FormDialogHeader = "Ubah Menu";
                 this.FormComps.FormGroup.patchValue(data);
                 this.FormComps.ImagePreviews = {};
                 this.FormComps.ImagePreviews['file_icon'] = data.icon;
@@ -198,6 +267,8 @@ export class DetailModulComponent implements OnInit, OnDestroy {
     handleSave(args: any) {
         args.module_id = this._activatedRoute.snapshot.queryParams['id'];
         delete args.menu_id;
+        delete args.parent_id;
+        delete args.parent_name;
 
         this._store
             .dispatch(new MenuActions.CreateMenu(args))
@@ -213,8 +284,29 @@ export class DetailModulComponent implements OnInit, OnDestroy {
             })
     }
 
+    handleSaveSubmenu(args: any) {
+        args.module_id = this._activatedRoute.snapshot.queryParams['id'];
+        delete args.menu_id;
+        delete args.parent_name;
+
+        this._store
+            .dispatch(new MenuActions.CreateSubMenu(args))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Menu Berhasil Disimpan' });
+                    this.FormDialogToggle = false;
+                    this.FormComps.FormGroup.reset();
+                    this.FormComps.ImagePreviews = {};
+                }
+            })
+    }
+
     handleUpdate(args: any) {
         args.module_id = this._activatedRoute.snapshot.queryParams['id'];
+
+        delete args.parent_name;
 
         this._store
             .dispatch(new MenuActions.UpdateMenu(args))
@@ -257,4 +349,4 @@ export class DetailModulComponent implements OnInit, OnDestroy {
 
     }
 
-}
+}   

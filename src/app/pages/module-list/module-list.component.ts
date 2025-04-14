@@ -5,7 +5,7 @@ import { Store } from '@ngxs/store';
 import { ButtonModule } from 'primeng/button';
 import { BehaviorSubject, map, Subject, takeUntil } from 'rxjs';
 import { AuthenticationModel } from 'src/app/model/pages/authentication/authentication.model';
-import { ModulModel } from 'src/app/model/pages/pengaturan/modul.model';
+import { ModulModel } from 'src/app/model/pages/pengaturan/module/modul.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { AuthenticationState } from 'src/app/store/authentication';
 import { ModulActions, ModuleState } from 'src/app/store/pengaturan/module';

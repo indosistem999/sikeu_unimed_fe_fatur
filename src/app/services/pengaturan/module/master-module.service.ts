@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpRequestService } from '../http/http-request.service';
-import { ModulModel } from 'src/app/model/pages/pengaturan/modul.model';
+import { ModulModel } from 'src/app/model/pages/pengaturan/module/modul.model';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { UtilityService } from '../utility/utility.service';
+import { HttpRequestService } from '../../http/http-request.service';
+import { UtilityService } from '../../utility/utility.service';
 
 @Injectable({
     providedIn: 'root'

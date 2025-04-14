@@ -1,65 +1,65 @@
 import { Injectable } from "@angular/core";
 import { Action, Selector, State, StateContext } from "@ngxs/store";
 import { of, switchMap, tap } from "rxjs";
-import { ModulModel } from "src/app/model/pages/pengaturan/module/modul.model";
-import { ModulActions } from "./module.action";
-import { MasterModuleService } from "src/app/services/pengaturan/module/master-module.service";
+import { SumberDanaModel } from "src/app/model/pages/pengaturan/umum/sumber-dana.model";
+import { SumberDanaService } from "src/app/services/pengaturan/umum/sumber-dana.service";
+import { SumberDanaActions } from "./sumber-dana.action";
 
-interface ModuleStateModel {
-    entities: ModulModel.IModul[];
-    single?: ModulModel.IModul;
+interface SumberDanaStateModel {
+    entities: SumberDanaModel.ISumberDana[];
+    single?: SumberDanaModel.ISumberDana;
     success?: boolean;
     totalRows?: number;
 }
 
-@State<ModuleStateModel>({
-    name: 'module',
+@State<SumberDanaStateModel>({
+    name: 'sumber_dana',
     defaults: {
         entities: [],
         success: true
     }
 })
 @Injectable()
-export class ModuleState {
+export class SumberDanaState {
 
     constructor(
-        private _masterModulService: MasterModuleService,
+        private _masterSumberDanaService: SumberDanaService,
     ) { }
 
     @Selector()
-    static modulEntities(state: ModuleStateModel) {
+    static sumberDanaEntities(state: SumberDanaStateModel) {
         return state.entities;
     }
 
     @Selector()
-    static modulSingle(state: ModuleStateModel) {
+    static sumberDanaSingle(state: SumberDanaStateModel) {
         return state.single;
     }
 
     @Selector()
-    static modulTotalRows(state: ModuleStateModel) {
+    static sumberDanaTotalRows(state: SumberDanaStateModel) {
         return state.totalRows;
     }
 
-    @Action(ModulActions.GetAllModul)
-    getAll(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(SumberDanaActions.GetAllSumberDana)
+    getAll(ctx: StateContext<SumberDanaStateModel>, actions: any) {
+        return this._masterSumberDanaService
             .getAll(actions.query)
             .pipe(
                 tap((result) => {
                     const state = ctx.getState();
                     ctx.setState({
                         ...state,
-                        entities: result.data.rows,
+                        entities: result.data.records,
                         totalRows: result.data.total_row
                     });
                 })
             )
     }
 
-    @Action(ModulActions.GetByIdModul)
-    getById(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(SumberDanaActions.GetByIdSumberDana)
+    getById(ctx: StateContext<SumberDanaStateModel>, actions: any) {
+        return this._masterSumberDanaService
             .getById(actions.payload)
             .pipe(
                 tap((result) => {
@@ -72,9 +72,9 @@ export class ModuleState {
             )
     }
 
-    @Action(ModulActions.CreateModul)
-    create(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(SumberDanaActions.CreateSumberDana)
+    create(ctx: StateContext<SumberDanaStateModel>, actions: any) {
+        return this._masterSumberDanaService
             .create(actions.payload)
             .pipe(
                 tap((result) => {
@@ -92,8 +92,8 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.success) {
-                        return ctx.dispatch(new ModulActions.GetAllModul());
+                    if (result.responseResult) {
+                        return ctx.dispatch(new SumberDanaActions.GetAllSumberDana());
                     } else {
                         return of([]);
                     }
@@ -101,9 +101,9 @@ export class ModuleState {
             )
     }
 
-    @Action(ModulActions.UpdateModul)
-    update(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(SumberDanaActions.UpdateSumberDana)
+    update(ctx: StateContext<SumberDanaStateModel>, actions: any) {
+        return this._masterSumberDanaService
             .update(actions.payload)
             .pipe(
                 tap((result) => {
@@ -121,8 +121,8 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.success) {
-                        return ctx.dispatch(new ModulActions.GetAllModul());
+                    if (result.responseResult) {
+                        return ctx.dispatch(new SumberDanaActions.GetAllSumberDana());
                     } else {
                         return of([]);
                     }
@@ -130,9 +130,9 @@ export class ModuleState {
             )
     }
 
-    @Action(ModulActions.DeleteModul)
-    delete(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(SumberDanaActions.DeleteSumberDana)
+    delete(ctx: StateContext<SumberDanaStateModel>, actions: any) {
+        return this._masterSumberDanaService
             .delete(actions.payload)
             .pipe(
                 tap((result) => {
@@ -150,8 +150,8 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.success) {
-                        return ctx.dispatch(new ModulActions.GetAllModul());
+                    if (result.responseResult) {
+                        return ctx.dispatch(new SumberDanaActions.GetAllSumberDana());
                     } else {
                         return of([]);
                     }

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Action, Selector, State, StateContext } from "@ngxs/store";
 import { of, switchMap, tap } from "rxjs";
-import { MasterMenuService } from "src/app/services/pengaturan/master-menu.service";
+import { MasterMenuService } from "src/app/services/pengaturan/module/master-menu.service";
 import { MenuActions } from "./menu.action";
 
 interface MenuStateModel {
@@ -160,7 +160,7 @@ export class MenuState {
                 }),
                 switchMap((result: any) => {
                     if (result.success) {
-                        return ctx.dispatch(new MenuActions.GetAllMenu());
+                        return ctx.dispatch(new MenuActions.GetAllMenu({ module_id: actions.payload.module_id }));
                     } else {
                         return of([]);
                     }
@@ -189,7 +189,7 @@ export class MenuState {
                 }),
                 switchMap((result: any) => {
                     if (result.success) {
-                        return ctx.dispatch(new MenuActions.GetAllMenu());
+                        return ctx.dispatch(new MenuActions.GetAllMenu({ module_id: actions.payload.module_id }));
                     } else {
                         return of([]);
                     }
@@ -218,7 +218,7 @@ export class MenuState {
                 }),
                 switchMap((result: any) => {
                     if (result.success) {
-                        return ctx.dispatch(new MenuActions.GetAllMenu());
+                        return ctx.dispatch(new MenuActions.GetAllMenu({ module_id: actions.payload.module_id }));
                     } else {
                         return of([]);
                     }
@@ -247,7 +247,7 @@ export class MenuState {
                 }),
                 switchMap((result: any) => {
                     if (result.success) {
-                        return ctx.dispatch(new MenuActions.GetAllMenu());
+                        return ctx.dispatch(new MenuActions.GetAllMenu({ module_id: actions.payload.module_id }));
                     } else {
                         return of([]);
                     }

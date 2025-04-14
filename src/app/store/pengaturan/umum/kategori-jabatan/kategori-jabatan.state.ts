@@ -1,65 +1,65 @@
 import { Injectable } from "@angular/core";
 import { Action, Selector, State, StateContext } from "@ngxs/store";
 import { of, switchMap, tap } from "rxjs";
-import { ModulModel } from "src/app/model/pages/pengaturan/module/modul.model";
-import { ModulActions } from "./module.action";
-import { MasterModuleService } from "src/app/services/pengaturan/module/master-module.service";
+import { KategoriJabatanModel } from "src/app/model/pages/pengaturan/umum/kategori-jabatan.model";
+import { KategoriJabatanService } from "src/app/services/pengaturan/umum/kategori-jabatan.service";
+import { KategoriJabatanActions } from "./kategori-jabatan.action";
 
-interface ModuleStateModel {
-    entities: ModulModel.IModul[];
-    single?: ModulModel.IModul;
+interface KategoriJabatanStateModel {
+    entities: KategoriJabatanModel.IKategoriJabatan[];
+    single?: KategoriJabatanModel.IKategoriJabatan;
     success?: boolean;
     totalRows?: number;
 }
 
-@State<ModuleStateModel>({
-    name: 'module',
+@State<KategoriJabatanStateModel>({
+    name: 'kategori_jabatan',
     defaults: {
         entities: [],
         success: true
     }
 })
 @Injectable()
-export class ModuleState {
+export class KategoriJabatanState {
 
     constructor(
-        private _masterModulService: MasterModuleService,
+        private _masterKategoriJabatanService: KategoriJabatanService,
     ) { }
 
     @Selector()
-    static modulEntities(state: ModuleStateModel) {
+    static kategoriJabatanEntities(state: KategoriJabatanStateModel) {
         return state.entities;
     }
 
     @Selector()
-    static modulSingle(state: ModuleStateModel) {
+    static kategoriJabatanSingle(state: KategoriJabatanStateModel) {
         return state.single;
     }
 
     @Selector()
-    static modulTotalRows(state: ModuleStateModel) {
+    static kategoriJabatanTotalRows(state: KategoriJabatanStateModel) {
         return state.totalRows;
     }
 
-    @Action(ModulActions.GetAllModul)
-    getAll(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(KategoriJabatanActions.GetAllKategoriJabatan)
+    getAll(ctx: StateContext<KategoriJabatanStateModel>, actions: any) {
+        return this._masterKategoriJabatanService
             .getAll(actions.query)
             .pipe(
                 tap((result) => {
                     const state = ctx.getState();
                     ctx.setState({
                         ...state,
-                        entities: result.data.rows,
+                        entities: result.data.records,
                         totalRows: result.data.total_row
                     });
                 })
             )
     }
 
-    @Action(ModulActions.GetByIdModul)
-    getById(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(KategoriJabatanActions.GetByIdKategoriJabatan)
+    getById(ctx: StateContext<KategoriJabatanStateModel>, actions: any) {
+        return this._masterKategoriJabatanService
             .getById(actions.payload)
             .pipe(
                 tap((result) => {
@@ -72,9 +72,9 @@ export class ModuleState {
             )
     }
 
-    @Action(ModulActions.CreateModul)
-    create(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(KategoriJabatanActions.CreateKategoriJabatan)
+    create(ctx: StateContext<KategoriJabatanStateModel>, actions: any) {
+        return this._masterKategoriJabatanService
             .create(actions.payload)
             .pipe(
                 tap((result) => {
@@ -92,8 +92,8 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.success) {
-                        return ctx.dispatch(new ModulActions.GetAllModul());
+                    if (result.responseResult) {
+                        return ctx.dispatch(new KategoriJabatanActions.GetAllKategoriJabatan());
                     } else {
                         return of([]);
                     }
@@ -101,9 +101,9 @@ export class ModuleState {
             )
     }
 
-    @Action(ModulActions.UpdateModul)
-    update(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(KategoriJabatanActions.UpdateKategoriJabatan)
+    update(ctx: StateContext<KategoriJabatanStateModel>, actions: any) {
+        return this._masterKategoriJabatanService
             .update(actions.payload)
             .pipe(
                 tap((result) => {
@@ -121,8 +121,8 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.success) {
-                        return ctx.dispatch(new ModulActions.GetAllModul());
+                    if (result.responseResult) {
+                        return ctx.dispatch(new KategoriJabatanActions.GetAllKategoriJabatan());
                     } else {
                         return of([]);
                     }
@@ -130,9 +130,9 @@ export class ModuleState {
             )
     }
 
-    @Action(ModulActions.DeleteModul)
-    delete(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(KategoriJabatanActions.DeleteKategoriJabatan)
+    delete(ctx: StateContext<KategoriJabatanStateModel>, actions: any) {
+        return this._masterKategoriJabatanService
             .delete(actions.payload)
             .pipe(
                 tap((result) => {
@@ -150,8 +150,8 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.success) {
-                        return ctx.dispatch(new ModulActions.GetAllModul());
+                    if (result.responseResult) {
+                        return ctx.dispatch(new KategoriJabatanActions.GetAllKategoriJabatan());
                     } else {
                         return of([]);
                     }

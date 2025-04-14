@@ -13,7 +13,7 @@ import { DynamicFormComponent } from 'src/app/components/form/dynamic-form/dynam
 import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboard.component';
 import { FormModel } from 'src/app/model/components/form.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
-import { ModulModel } from 'src/app/model/pages/pengaturan/modul.model';
+import { ModulModel } from 'src/app/model/pages/pengaturan/module/modul.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { ModulActions, ModuleState } from 'src/app/store/pengaturan/module';
 

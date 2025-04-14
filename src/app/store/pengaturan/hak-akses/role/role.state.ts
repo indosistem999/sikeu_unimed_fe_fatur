@@ -1,65 +1,65 @@
 import { Injectable } from "@angular/core";
 import { Action, Selector, State, StateContext } from "@ngxs/store";
 import { of, switchMap, tap } from "rxjs";
-import { ModulModel } from "src/app/model/pages/pengaturan/module/modul.model";
-import { ModulActions } from "./module.action";
-import { MasterModuleService } from "src/app/services/pengaturan/module/master-module.service";
+import { RoleModel } from "src/app/model/pages/pengaturan/hak-akses/role.model";
+import { RoleActions } from "./role.action";
+import { RoleAksesService } from "src/app/services/pengaturan/hak-akses/role-akses.service";
 
-interface ModuleStateModel {
-    entities: ModulModel.IModul[];
-    single?: ModulModel.IModul;
+interface RoleStateModel {
+    entities: RoleModel.IRole[];
+    single?: RoleModel.IRole;
     success?: boolean;
     totalRows?: number;
 }
 
-@State<ModuleStateModel>({
-    name: 'module',
+@State<RoleStateModel>({
+    name: 'role',
     defaults: {
         entities: [],
         success: true
     }
 })
 @Injectable()
-export class ModuleState {
+export class RoleState {
 
     constructor(
-        private _masterModulService: MasterModuleService,
+        private _masterRoleService: RoleAksesService,
     ) { }
 
     @Selector()
-    static modulEntities(state: ModuleStateModel) {
+    static roleEntities(state: RoleStateModel) {
         return state.entities;
     }
 
     @Selector()
-    static modulSingle(state: ModuleStateModel) {
+    static roleSingle(state: RoleStateModel) {
         return state.single;
     }
 
     @Selector()
-    static modulTotalRows(state: ModuleStateModel) {
+    static roleTotalRows(state: RoleStateModel) {
         return state.totalRows;
     }
 
-    @Action(ModulActions.GetAllModul)
-    getAll(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(RoleActions.GetAllRole)
+    getAll(ctx: StateContext<RoleStateModel>, actions: any) {
+        return this._masterRoleService
             .getAll(actions.query)
             .pipe(
                 tap((result) => {
                     const state = ctx.getState();
                     ctx.setState({
                         ...state,
-                        entities: result.data.rows,
+                        entities: result.data.records,
                         totalRows: result.data.total_row
                     });
                 })
             )
     }
 
-    @Action(ModulActions.GetByIdModul)
-    getById(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(RoleActions.GetByIdRole)
+    getById(ctx: StateContext<RoleStateModel>, actions: any) {
+        return this._masterRoleService
             .getById(actions.payload)
             .pipe(
                 tap((result) => {
@@ -72,9 +72,9 @@ export class ModuleState {
             )
     }
 
-    @Action(ModulActions.CreateModul)
-    create(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(RoleActions.CreateRole)
+    create(ctx: StateContext<RoleStateModel>, actions: any) {
+        return this._masterRoleService
             .create(actions.payload)
             .pipe(
                 tap((result) => {
@@ -92,8 +92,8 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.success) {
-                        return ctx.dispatch(new ModulActions.GetAllModul());
+                    if (result.responseResult) {
+                        return ctx.dispatch(new RoleActions.GetAllRole());
                     } else {
                         return of([]);
                     }
@@ -101,9 +101,9 @@ export class ModuleState {
             )
     }
 
-    @Action(ModulActions.UpdateModul)
-    update(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(RoleActions.UpdateRole)
+    update(ctx: StateContext<RoleStateModel>, actions: any) {
+        return this._masterRoleService
             .update(actions.payload)
             .pipe(
                 tap((result) => {
@@ -121,8 +121,8 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.success) {
-                        return ctx.dispatch(new ModulActions.GetAllModul());
+                    if (result.responseResult) {
+                        return ctx.dispatch(new RoleActions.GetAllRole());
                     } else {
                         return of([]);
                     }
@@ -130,9 +130,9 @@ export class ModuleState {
             )
     }
 
-    @Action(ModulActions.DeleteModul)
-    delete(ctx: StateContext<ModuleStateModel>, actions: any) {
-        return this._masterModulService
+    @Action(RoleActions.DeleteRole)
+    delete(ctx: StateContext<RoleStateModel>, actions: any) {
+        return this._masterRoleService
             .delete(actions.payload)
             .pipe(
                 tap((result) => {
@@ -150,8 +150,8 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.success) {
-                        return ctx.dispatch(new ModulActions.GetAllModul());
+                    if (result.responseResult) {
+                        return ctx.dispatch(new RoleActions.GetAllRole());
                     } else {
                         return of([]);
                     }

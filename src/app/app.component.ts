@@ -8,6 +8,11 @@ import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { ModulActions } from './store/pengaturan/module';
 import { UserActions } from './store/pengaturan/umum/user';
+import { SatuanKerjaActions } from './store/pengaturan/umum/satuan-kerja';
+import { IdentitasActions } from './store/pengaturan/umum/identitas';
+import { SumberDanaActions } from './store/pengaturan/umum/sumber-dana';
+import { KategoriJabatanActions } from './store/pengaturan/umum/kategori-jabatan';
+import { RoleActions } from './store/pengaturan/hak-akses/role';
 
 @Component({
     selector: 'app-root',
@@ -93,6 +98,31 @@ export class AppComponent implements OnInit, OnDestroy {
         // ** Dispatch User State
         this._store
             .dispatch(new UserActions.GetAllUser({ page: '1', limit: '5' }))
+            .pipe(takeUntil(this.Destroy$));
+
+        // ** Dispatch Satuan Kerja State
+        this._store
+            .dispatch(new SatuanKerjaActions.GetAllSatuanKerja({ page: '1', limit: '5' }))
+            .pipe(takeUntil(this.Destroy$));
+
+        // ** Dispatch Identitas State
+        this._store
+            .dispatch(new IdentitasActions.GetAllIdentitas({ page: '1', limit: '5' }))
+            .pipe(takeUntil(this.Destroy$));
+
+        // ** Dispatch Sumber Dana State
+        this._store
+            .dispatch(new SumberDanaActions.GetAllSumberDana({ page: '1', limit: '5' }))
+            .pipe(takeUntil(this.Destroy$));
+
+        // ** Dispatch Kategori Jabatan State
+        this._store
+            .dispatch(new KategoriJabatanActions.GetAllKategoriJabatan({ page: '1', limit: '5' }))
+            .pipe(takeUntil(this.Destroy$));
+
+        // ** Dispatch Role State
+        this._store
+            .dispatch(new RoleActions.GetAllRole({ page: '1', limit: '5' }))
             .pipe(takeUntil(this.Destroy$));
     }
 }
