@@ -16,7 +16,23 @@ export class SatuanKerjaService {
     ) { }
 
     getAll(query?: SatuanKerjaModel.GetAllQuery): Observable<SatuanKerjaModel.GetAllSatuanKerja> {
-        return this._httpRequestService.getRequest(`${environment.webApiUrl}/work-unit`, {}, query);
+        return this._httpRequestService
+            .getRequest(`${environment.webApiUrl}/work-unit`, {}, query)
+            .pipe(
+                map((result) => {
+                    if (result.data.records.length) {
+                        result.data.records = result.data.records.map((item: any, index: number) => {
+                            return {
+                                ...item,
+                                no: index + 1,
+                            }
+                        });
+                    }
+
+                    return result;
+                })
+            )
+
     }
 
     getById(unit_id: string): Observable<SatuanKerjaModel.GetByIdSatuanKerja> {

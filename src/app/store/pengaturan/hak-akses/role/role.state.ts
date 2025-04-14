@@ -92,7 +92,7 @@ export class RoleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new RoleActions.GetAllRole());
                     } else {
                         return of([]);
@@ -121,7 +121,7 @@ export class RoleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new RoleActions.GetAllRole());
                     } else {
                         return of([]);
@@ -150,7 +150,7 @@ export class RoleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new RoleActions.GetAllRole());
                     } else {
                         return of([]);

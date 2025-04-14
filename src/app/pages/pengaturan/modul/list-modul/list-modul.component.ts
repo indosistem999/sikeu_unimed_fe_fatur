@@ -216,6 +216,5 @@ export class ListModulComponent implements OnInit, OnDestroy {
                     })
             }
         });
-
     }
 }

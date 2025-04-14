@@ -92,7 +92,7 @@ export class IdentitasState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new IdentitasActions.GetAllIdentitas());
                     } else {
                         return of([]);
@@ -121,7 +121,7 @@ export class IdentitasState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new IdentitasActions.GetAllIdentitas());
                     } else {
                         return of([]);
@@ -150,7 +150,7 @@ export class IdentitasState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new IdentitasActions.GetAllIdentitas());
                     } else {
                         return of([]);
