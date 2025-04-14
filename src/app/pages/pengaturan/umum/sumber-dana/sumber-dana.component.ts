@@ -1,18 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ConfirmationService } from 'primeng/api';
+import { Store } from '@ngxs/store';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
-import { Subject } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
 import { DynamicFormComponent } from 'src/app/components/form/dynamic-form/dynamic-form.component';
 import { GridComponent } from 'src/app/components/grid/grid.component';
 import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboard.component';
 import { FormModel } from 'src/app/model/components/form.model';
 import { GridModel } from 'src/app/model/components/grid.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
+import { SumberDanaModel } from 'src/app/model/pages/pengaturan/umum/sumber-dana.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
+import { SumberDanaActions, SumberDanaState } from 'src/app/store/pengaturan/umum/sumber-dana';
 
 @Component({
     selector: 'app-sumber-dana',
@@ -45,9 +48,9 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
         id: 'GridUser',
         column: [
             { field: 'no', headerName: '#', },
-            { field: 'unit_id', headerName: 'ID', },
-            { field: 'unit_code', headerName: 'Kode', },
-            { field: 'unit_type', headerName: 'Uraian', },
+            { field: 'sumber_dana_id', headerName: 'ID', },
+            { field: 'code', headerName: 'Kode', },
+            { field: 'description', headerName: 'Uraian', },
         ],
         dataSource: [],
         height: "calc(100vh - 14.5rem)",
@@ -59,6 +62,8 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
         searchPlaceholder: 'Cari Sumber Dana Disini',
     };
     GridSelectedData: any;
+    GridQueryParams: SumberDanaModel.GetAllQuery = { page: '1', limit: '5' };
+
 
     FormState: 'insert' | 'update' = 'insert';
     FormProps: FormModel.IForm;
@@ -66,7 +71,9 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
     @ViewChild('FormComps') FormComps!: DynamicFormComponent;
 
     constructor(
+        private _store: Store,
         private _router: Router,
+        private _messageService: MessageService,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
     ) {
@@ -74,7 +81,7 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
             id: 'form_satuan_kerja',
             fields: [
                 {
-                    id: 'unit_id',
+                    id: 'sumber_dana_id',
                     label: 'ID',
                     required: true,
                     type: 'text',
@@ -82,14 +89,14 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
                     readonly: true
                 },
                 {
-                    id: 'unit_code',
+                    id: 'code',
                     label: 'Kode',
                     required: true,
                     type: 'text',
                     value: '',
                 },
                 {
-                    id: 'unit_type',
+                    id: 'description',
                     label: 'Uraian',
                     required: true,
                     type: 'text',
@@ -97,31 +104,30 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
                 },
             ],
             style: 'not_inline',
-            class: 'grid-rows-4 grid-cols-1',
+            class: 'grid-rows-3 grid-cols-1',
             state: 'write',
             defaultValue: null,
         };
     }
 
     ngOnInit(): void {
-        this.GridProps.dataSource = [
-            { no: 1, unit_id: 101, unit_code: 'SD-01', unit_type: 'Biaya Belanja' },
-            { no: 2, unit_id: 102, unit_code: 'SD-02', unit_type: 'Biaya Belanja' },
-            { no: 3, unit_id: 103, unit_code: 'SD-03', unit_type: 'Biaya Belanja' },
-            { no: 4, unit_id: 104, unit_code: 'SD-04', unit_type: 'Biaya Belanja' },
-            { no: 5, unit_id: 105, unit_code: 'SD-05', unit_type: 'Biaya Belanja' },
-            { no: 6, unit_id: 106, unit_code: 'SD-06', unit_type: 'Biaya Belanja' },
-            { no: 7, unit_id: 107, unit_code: 'SD-07', unit_type: 'Biaya Belanja' },
-            { no: 8, unit_id: 108, unit_code: 'SD-08', unit_type: 'Biaya Belanja' },
-            { no: 9, unit_id: 109, unit_code: 'SD-09', unit_type: 'Biaya Belanja' },
-            { no: 10, unit_id: 110, unit_code: 'SD-10', unit_type: 'Biaya Belanja' },
-        ];
+        this.getAllSumberDanaState();
     }
 
     ngOnDestroy(): void {
         this.Destroy$.next(0);
         this.Destroy$.complete();
     }
+
+    private getAllSumberDanaState() {
+        this._store
+            .select(SumberDanaState.sumberDanaEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                this.GridProps.dataSource = result;
+            })
+    }
+
 
     handleClickButtonNavigation(data: LayoutModel.IButtonNavigation) {
         if (data.id == 'add') {
@@ -132,6 +138,24 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
     }
 
     onSearchGrid(args: any) {
+        if (args) {
+            this.GridQueryParams = {
+                ...this.GridQueryParams,
+                search: args
+            }
+        } else {
+            delete this.GridQueryParams.search;
+        }
+
+        this._store
+            .dispatch(new SumberDanaActions.GetAllSumberDana(this.GridQueryParams))
+            .pipe(
+                takeUntil(this.Destroy$),
+                map((result) => result.sumber_dana)
+            )
+            .subscribe((result) => {
+                this.GridProps.dataSource = result.entities;
+            })
     }
 
     onCellClicked(args: any): void {
@@ -158,6 +182,7 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
                 rejectIcon: "none",
                 rejectLabel: 'Tidak, kembali',
                 accept: () => {
+                    this.handleDelete(args.data);
                 }
             });
         }
@@ -168,7 +193,13 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
     }
 
     onPageChanged(args: any): void {
-        console.log(args);
+        this.GridQueryParams = {
+            ...this.GridQueryParams,
+            page: args ? args.first + 1 : 1,
+            limit: args ? args.rows : 5
+        };
+
+        this.onSearchGrid(this.GridQueryParams.search)
     }
 
     handleNavigate(url: string) {
@@ -176,15 +207,43 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
     }
 
     handleSave(args: any) {
-
+        this._store
+            .dispatch(new SumberDanaActions.CreateSumberDana(args))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Sumber Dana Berhasil Disimpan' });
+                    this.FormDialogToggle = false;
+                    this.FormComps.FormGroup.reset();
+                }
+            })
     }
 
     handleUpdate(args: any) {
-
+        this._store
+            .dispatch(new SumberDanaActions.UpdateSumberDana(args))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Sumber Dana Berhasil Diperbarui' });
+                    this.FormDialogToggle = false;
+                    this.FormComps.FormGroup.reset();
+                }
+            })
     }
 
     handleDelete(args: any) {
-
+        this._store
+            .dispatch(new SumberDanaActions.DeleteSumberDana(args.unit_id))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Sumber Dana Berhasil Dihapus' });
+                }
+            })
     }
 
 }

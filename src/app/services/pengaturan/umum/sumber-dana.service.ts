@@ -24,7 +24,8 @@ export class SumberDanaService {
     }
 
     create(payload: SumberDanaModel.CreateSumberDana): Observable<SumberDanaModel.GetByIdSumberDana> {
-        return this._httpRequestService.postRequest(`${environment.webApiUrl}/master-sumber-dana`, payload);
+        const { sumber_dana_id, ...data } = payload as any;
+        return this._httpRequestService.postRequest(`${environment.webApiUrl}/master-sumber-dana`, data);
     }
 
     update(payload: SumberDanaModel.UpdateSumberDana): Observable<SumberDanaModel.GetByIdSumberDana> {
