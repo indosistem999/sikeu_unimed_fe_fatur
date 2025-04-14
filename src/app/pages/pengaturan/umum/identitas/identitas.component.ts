@@ -1,19 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ConfirmationService } from 'primeng/api';
+import { Store } from '@ngxs/store';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { TabViewModule } from 'primeng/tabview';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { DynamicFormComponent } from 'src/app/components/form/dynamic-form/dynamic-form.component';
 import { GridComponent } from 'src/app/components/grid/grid.component';
 import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboard.component';
 import { FormModel } from 'src/app/model/components/form.model';
 import { GridModel } from 'src/app/model/components/grid.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
+import { IdentitasActions, IdentitasState } from 'src/app/store/pengaturan/umum/identitas';
 
 @Component({
     selector: 'app-identitas',
@@ -69,13 +71,23 @@ export class IdentitasComponent implements OnInit, OnDestroy {
     @ViewChild('FormPejabatComps') FormPejabatComps!: DynamicFormComponent;
 
     constructor(
+        private _store: Store,
         private _router: Router,
+        private _messageService: MessageService,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
     ) {
         this.FormProps = {
             id: 'form_logo',
             fields: [
+                {
+                    id: 'identity_id',
+                    label: 'ID',
+                    required: true,
+                    type: 'text',
+                    value: '',
+                    hidden: true,
+                },
                 {
                     id: 'name',
                     label: 'Nama Universitas',
@@ -191,6 +203,8 @@ export class IdentitasComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.getAllIdentitasState();
+
         this.GridProps.dataSource = [
             { no: 1, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Rektor', group: 'Rektor', id_group: 1 },
             { no: 2, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Rektor', group: 'Rektor', id_group: 1 },
@@ -209,6 +223,21 @@ export class IdentitasComponent implements OnInit, OnDestroy {
         this.Destroy$.next(0);
         this.Destroy$.complete();
     }
+
+    private getAllIdentitasState() {
+        this._store
+            .select(IdentitasState.identitasEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result) {
+                    this.FormComps.FormGroup.patchValue(result);
+                    this.FormComps.ImagePreviews = {};
+                    this.FormComps.ImagePreviews['file_logo'] = result.logo;
+                    this.FormKontakComps.FormGroup.patchValue(result);
+                }
+            })
+    }
+
 
     onSearchGrid(args: any) {
     }
@@ -250,15 +279,51 @@ export class IdentitasComponent implements OnInit, OnDestroy {
         console.log(args);
     }
 
-    handleSave(args: any) {
+    handleSave() {
+        const payload = {
+            ...this.FormComps.FormGroup.value,
+            ...this.FormKontakComps.FormGroup.value,
+        };
 
+        const { identity_id, ...data } = payload;
+
+        this._store
+            .dispatch(new IdentitasActions.CreateIdentitas(data))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Identitas Berhasil Disimpan' });
+                }
+            })
     }
 
     handleUpdate(args: any) {
+        const payload = {
+            ...this.FormComps.FormGroup.value,
+            ...this.FormKontakComps.FormGroup.value,
+        };
 
+        this._store
+            .dispatch(new IdentitasActions.UpdateIdentitas(payload))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Identitas Berhasil Diperbarui' });
+                }
+            })
     }
 
     handleDelete(args: any) {
-
+        this._store
+            .dispatch(new IdentitasActions.DeleteIdentitas(args.identity_id))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.module.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Identitas Berhasil Dihapus' });
+                }
+            })
     }
 }

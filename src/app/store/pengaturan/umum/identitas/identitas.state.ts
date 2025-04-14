@@ -6,7 +6,7 @@ import { IdentitasService } from "src/app/services/pengaturan/umum/identitas.ser
 import { IdentitasActions } from "./identitas.action";
 
 interface IdentitasStateModel {
-    entities: IdentitasModel.IIdentitas[];
+    entities: IdentitasModel.IIdentitas | any;
     single?: IdentitasModel.IIdentitas;
     success?: boolean;
     totalRows?: number;
@@ -15,7 +15,7 @@ interface IdentitasStateModel {
 @State<IdentitasStateModel>({
     name: 'identitas',
     defaults: {
-        entities: [],
+        entities: null,
         success: true
     }
 })
@@ -50,8 +50,8 @@ export class IdentitasState {
                     const state = ctx.getState();
                     ctx.setState({
                         ...state,
-                        entities: result.data.records,
-                        totalRows: result.data.total_row
+                        entities: result.data,
+                        totalRows: result.data ? 1 : 0
                     });
                 })
             )

@@ -20,10 +20,7 @@ export namespace IdentitasModel {
     export class GetAllIdentitas implements HttpBaseResponse {
         success!: boolean
         message!: string
-        data!: {
-            records: IIdentitas[],
-            total_row: number
-        }
+        data!: IIdentitas
     }
 
     export class GetByIdIdentitas implements HttpBaseResponse {
