@@ -13,6 +13,7 @@ import { IdentitasActions } from './store/pengaturan/umum/identitas';
 import { SumberDanaActions } from './store/pengaturan/umum/sumber-dana';
 import { KategoriJabatanActions } from './store/pengaturan/umum/kategori-jabatan';
 import { RoleActions } from './store/pengaturan/hak-akses/role';
+import { TahunAnggaranActions } from './store/pengaturan/tahun-anggaran';
 
 @Component({
     selector: 'app-root',
@@ -123,6 +124,11 @@ export class AppComponent implements OnInit, OnDestroy {
         // ** Dispatch Role State
         this._store
             .dispatch(new RoleActions.GetAllRole({ page: '1', limit: '5' }))
+            .pipe(takeUntil(this.Destroy$));
+
+        // ** Dispatch Tahun Anggaran
+        this._store
+            .dispatch(new TahunAnggaranActions.GetAllTahunAnggaran({ page: '1', limit: '5' }))
             .pipe(takeUntil(this.Destroy$));
     }
 }

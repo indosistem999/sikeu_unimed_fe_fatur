@@ -291,7 +291,7 @@ export class IdentitasComponent implements OnInit, OnDestroy {
             .dispatch(new IdentitasActions.CreateIdentitas(data))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.identitas.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Identitas Berhasil Disimpan' });
                 }
@@ -308,7 +308,7 @@ export class IdentitasComponent implements OnInit, OnDestroy {
             .dispatch(new IdentitasActions.UpdateIdentitas(payload))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.identitas.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Identitas Berhasil Diperbarui' });
                 }
@@ -320,7 +320,7 @@ export class IdentitasComponent implements OnInit, OnDestroy {
             .dispatch(new IdentitasActions.DeleteIdentitas(args.identity_id))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.identitas.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Identitas Berhasil Dihapus' });
                 }

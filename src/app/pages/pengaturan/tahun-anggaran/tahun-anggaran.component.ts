@@ -2,23 +2,23 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
-import { map, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, map } from 'rxjs';
 import { DynamicFormComponent } from 'src/app/components/form/dynamic-form/dynamic-form.component';
 import { GridComponent } from 'src/app/components/grid/grid.component';
 import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboard.component';
 import { FormModel } from 'src/app/model/components/form.model';
 import { GridModel } from 'src/app/model/components/grid.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
-import { SatuanKerjaModel } from 'src/app/model/pages/pengaturan/umum/satuan-kerja.model';
+import { TahunAnggaranModel } from 'src/app/model/pages/pengaturan/tahun-anggaran/tahun-anggaran.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
-import { SatuanKerjaActions, SatuanKerjaState } from 'src/app/store/pengaturan/umum/satuan-kerja';
+import { TahunAnggaranState, TahunAnggaranActions } from 'src/app/store/pengaturan/tahun-anggaran';
 
 @Component({
-    selector: 'app-satuan-kerja',
+    selector: 'app-tahun-anggaran',
     standalone: true,
     imports: [
         CommonModule,
@@ -29,10 +29,10 @@ import { SatuanKerjaActions, SatuanKerjaState } from 'src/app/store/pengaturan/u
         ConfirmDialogModule,
         DynamicFormComponent,
     ],
-    templateUrl: './satuan-kerja.component.html',
-    styleUrl: './satuan-kerja.component.scss'
+    templateUrl: './tahun-anggaran.component.html',
+    styleUrl: './tahun-anggaran.component.scss'
 })
-export class SatuanKerjaComponent implements OnInit, OnDestroy {
+export class TahunAnggaranComponent implements OnInit, OnDestroy {
 
     Destroy$ = new Subject();
 
@@ -48,10 +48,10 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
         id: 'GridUser',
         column: [
             { field: 'no', headerName: '#', },
-            { field: 'unit_id', headerName: 'ID', },
-            { field: 'unit_code', headerName: 'Kode Unit', },
-            { field: 'unit_type', headerName: 'Singkatan', },
-            { field: 'unit_name', headerName: 'Satuan Kerja', },
+            { field: 'budget_id', headerName: 'ID', },
+            { field: 'budget_name', headerName: 'Tahun Anggaran', },
+            { field: 'budget_start_date', headerName: 'Tanggal Mulai', format: 'date' },
+            { field: 'budget_end_date', headerName: 'Tanggal AKhir', format: 'date' },
         ],
         dataSource: [],
         height: "calc(100vh - 14.5rem)",
@@ -63,7 +63,7 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
         searchPlaceholder: 'Cari Satuan Kerja Disini',
     };
     GridSelectedData: any;
-    GridQueryParams: SatuanKerjaModel.GetAllQuery = { page: '1', limit: '5' };
+    GridQueryParams: TahunAnggaranModel.GetAllQuery = { page: '1', limit: '5' };
 
     FormState: 'insert' | 'update' = 'insert';
     FormProps: FormModel.IForm;
@@ -78,10 +78,10 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
         private _authenticationService: AuthenticationService,
     ) {
         this.FormProps = {
-            id: 'form_satuan_kerja',
+            id: 'form_tahun_anggaran',
             fields: [
                 {
-                    id: 'unit_id',
+                    id: 'budget_id',
                     label: 'ID',
                     required: true,
                     type: 'text',
@@ -89,24 +89,24 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
                     readonly: true
                 },
                 {
-                    id: 'unit_code',
-                    label: 'Kode Unit',
+                    id: 'budget_name',
+                    label: 'Tahun Anggaran',
                     required: true,
                     type: 'text',
                     value: '',
                 },
                 {
-                    id: 'unit_type',
-                    label: 'Singkatan',
+                    id: 'budget_start_date',
+                    label: 'Tanggal Mulai',
                     required: true,
-                    type: 'text',
+                    type: 'date',
                     value: '',
                 },
                 {
-                    id: 'unit_name',
-                    label: 'Nama Satuan Kerja',
+                    id: 'budget_end_date',
+                    label: 'Tanggal Akhir',
                     required: true,
-                    type: 'text',
+                    type: 'date',
                     value: '',
                 },
             ],
@@ -118,7 +118,7 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.getAllSatuanKerjaState();
+        this.getAllTahunAnggaranState();
     }
 
     ngOnDestroy(): void {
@@ -126,9 +126,9 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
         this.Destroy$.complete();
     }
 
-    private getAllSatuanKerjaState() {
+    private getAllTahunAnggaranState() {
         this._store
-            .select(SatuanKerjaState.satuanKerjaEntities)
+            .select(TahunAnggaranState.tahunAnggaranEntities)
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
                 this.GridProps.dataSource = result;
@@ -154,7 +154,7 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
         }
 
         this._store
-            .dispatch(new SatuanKerjaActions.GetAllSatuanKerja(this.GridQueryParams))
+            .dispatch(new TahunAnggaranActions.GetAllTahunAnggaran(this.GridQueryParams))
             .pipe(
                 takeUntil(this.Destroy$),
                 map((result) => result.user)
@@ -171,6 +171,8 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
     onRowDoubleClicked(args: any): void {
         this.FormState = 'update';
         this.FormDialogToggle = true;
+        args.budget_start_date = new Date(args.budget_start_date);
+        args.budget_end_date = new Date(args.budget_end_date);
         this.FormComps.FormGroup.patchValue(args);
     }
 
@@ -214,10 +216,10 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
 
     handleSave(args: any) {
         this._store
-            .dispatch(new SatuanKerjaActions.CreateSatuanKerja(args))
+            .dispatch(new TahunAnggaranActions.CreateTahunAnggaran(args))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.satuan_kerja.success) {
+                if (result.tahun_anggaran.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Disimpan' });
                     this.FormDialogToggle = false;
@@ -228,10 +230,10 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
 
     handleUpdate(args: any) {
         this._store
-            .dispatch(new SatuanKerjaActions.UpdateSatuanKerja(args))
+            .dispatch(new TahunAnggaranActions.UpdateTahunAnggaran(args))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.satuan_kerja.success) {
+                if (result.tahun_anggaran.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Diperbarui' });
                     this.FormDialogToggle = false;
@@ -242,13 +244,14 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
 
     handleDelete(args: any) {
         this._store
-            .dispatch(new SatuanKerjaActions.DeleteSatuanKerja(args.unit_id))
+            .dispatch(new TahunAnggaranActions.DeleteTahunAnggaran(args.unit_id))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.satuan_kerja.success) {
+                if (result.tahun_anggaran.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Dihapus' });
                 }
             })
     }
+
 }

@@ -207,7 +207,7 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
             .dispatch(new RoleActions.CreateRole(args))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.role.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Role Berhasil Disimpan' });
                     this.FormDialogToggle = false;
@@ -221,7 +221,7 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
             .dispatch(new RoleActions.UpdateRole(args))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.role.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Role Berhasil Diperbarui' });
                     this.FormDialogToggle = false;
@@ -235,7 +235,7 @@ export class RoleAksesComponent implements OnInit, OnDestroy {
             .dispatch(new RoleActions.DeleteRole(args.role_id))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.role.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Role Berhasil Dihapus' });
                 }

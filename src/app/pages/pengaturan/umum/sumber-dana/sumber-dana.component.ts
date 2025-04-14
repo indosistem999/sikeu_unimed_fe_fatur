@@ -211,7 +211,7 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
             .dispatch(new SumberDanaActions.CreateSumberDana(args))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.sumber_dana.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Sumber Dana Berhasil Disimpan' });
                     this.FormDialogToggle = false;
@@ -225,7 +225,7 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
             .dispatch(new SumberDanaActions.UpdateSumberDana(args))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.sumber_dana.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Sumber Dana Berhasil Diperbarui' });
                     this.FormDialogToggle = false;
@@ -239,7 +239,7 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
             .dispatch(new SumberDanaActions.DeleteSumberDana(args.unit_id))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.sumber_dana.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Sumber Dana Berhasil Dihapus' });
                 }

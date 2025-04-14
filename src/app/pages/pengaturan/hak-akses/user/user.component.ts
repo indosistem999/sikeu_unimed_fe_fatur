@@ -336,7 +336,7 @@ export class UserComponent implements OnInit, OnDestroy {
             .dispatch(new UserActions.CreateUser(args))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.user.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Disimpan' });
                     this.FormDialogToggle = false;
@@ -350,7 +350,7 @@ export class UserComponent implements OnInit, OnDestroy {
             .dispatch(new UserActions.UpdateUser(args))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.user.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Diperbarui' });
                     this.FormDialogToggle = false;
@@ -364,7 +364,7 @@ export class UserComponent implements OnInit, OnDestroy {
             .dispatch(new UserActions.DeleteUser(args.unit_id))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.user.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Dihapus' });
                 }

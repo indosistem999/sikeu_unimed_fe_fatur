@@ -209,7 +209,7 @@ export class KategoriJabatanComponent implements OnInit, OnDestroy {
             .dispatch(new KategoriJabatanActions.CreateKategoriJabatan(args))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.kategori_jabatan.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Disimpan' });
                     this.FormDialogToggle = false;
@@ -223,7 +223,7 @@ export class KategoriJabatanComponent implements OnInit, OnDestroy {
             .dispatch(new KategoriJabatanActions.UpdateKategoriJabatan(args))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.kategori_jabatan.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Diperbarui' });
                     this.FormDialogToggle = false;
@@ -237,7 +237,7 @@ export class KategoriJabatanComponent implements OnInit, OnDestroy {
             .dispatch(new KategoriJabatanActions.DeleteKategoriJabatan(args.unit_id))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                if (result.module.success) {
+                if (result.kategori_jabatan.success) {
                     this._messageService.clear();
                     this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Dihapus' });
                 }

@@ -21,4 +21,12 @@ export const pengaturanRoutes: Routes = [
         path: 'hak-akses',
         loadChildren: async () => (await import('./hak-akses/hak-akses.routes')).pengaturanHakAksesRoutes
     },
+    {
+        path: 'tahun-anggaran',
+        loadComponent: async () => (await import('./tahun-anggaran/tahun-anggaran.component')).TahunAnggaranComponent,
+        data: {
+            title: 'Tahun Anggaran',
+            breadcrumbs: ['Pengaturan', 'Tahun Anggaran']
+        }
+    },
 ]
