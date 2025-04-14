@@ -175,14 +175,21 @@ export class DetailModulComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
                 if (result.menu.success) {
-                    this.Menu = result.menu.entities;
+                    this.Menu = JSON.parse(JSON.stringify(result.menu.entities));
+
                     this.Menu = this.Menu.map((item: any) => {
                         return {
                             ...item,
+                            children: item.children.map((child: any) => {
+                                return {
+                                    ...child,
+                                    toggle_children: false
+                                }
+                            }),
                             toggle_children: false,
                         }
-                    })
-                }
+                    });
+                };
             })
     }
 
@@ -198,18 +205,27 @@ export class DetailModulComponent implements OnInit, OnDestroy {
         };
     }
 
-    handleTogglingToolbar(is_child: boolean, data: any) {
+    handleTogglingToolbar(type: string, data: any) {
         this.SelectedMenu = data;
 
-        if (is_child) {
+        if (type == 'parent') {
             this.ToolbarMenu = [
                 { id: 'insert_children', icon: 'pi pi-plus text-sky-500', label: 'Tambah Sub Menu' },
                 { id: 'edit', icon: 'pi pi-pencil text-yellow-500', label: 'Edit Menu' },
                 { id: 'hapus', icon: 'pi pi-trash text-red-500', label: 'Hapus Menu' },
             ];
-        } else {
+        };
+
+        if (type == 'children') {
             this.ToolbarMenu = [
                 { id: 'insert_subchildren', icon: 'pi pi-plus text-sky-500', label: 'Tambah Item Menu' },
+                { id: 'edit', icon: 'pi pi-pencil text-yellow-500', label: 'Edit Menu' },
+                { id: 'hapus', icon: 'pi pi-trash text-red-500', label: 'Hapus Menu' },
+            ];
+        };
+
+        if (type == 'item') {
+            this.ToolbarMenu = [
                 { id: 'edit', icon: 'pi pi-pencil text-yellow-500', label: 'Edit Menu' },
                 { id: 'hapus', icon: 'pi pi-trash text-red-500', label: 'Hapus Menu' },
             ];
@@ -280,6 +296,7 @@ export class DetailModulComponent implements OnInit, OnDestroy {
                     this.FormDialogToggle = false;
                     this.FormComps.FormGroup.reset();
                     this.FormComps.ImagePreviews = {};
+                    this.getAllMenu(args.module_id);
                 }
             })
     }
@@ -299,6 +316,7 @@ export class DetailModulComponent implements OnInit, OnDestroy {
                     this.FormDialogToggle = false;
                     this.FormComps.FormGroup.reset();
                     this.FormComps.ImagePreviews = {};
+                    this.getAllMenu(args.module_id);
                 }
             })
     }
@@ -318,6 +336,7 @@ export class DetailModulComponent implements OnInit, OnDestroy {
                     this.FormDialogToggle = false;
                     this.FormComps.FormGroup.reset();
                     this.FormComps.ImagePreviews = {};
+                    this.getAllMenu(args.module_id);
                 }
             })
     }
@@ -336,12 +355,13 @@ export class DetailModulComponent implements OnInit, OnDestroy {
             rejectLabel: 'Tidak, kembali',
             accept: () => {
                 this._store
-                    .dispatch(new MenuActions.DeleteMenu(args.module_id))
+                    .dispatch(new MenuActions.DeleteMenu(args.menu_id))
                     .pipe(takeUntil(this.Destroy$))
                     .subscribe((result) => {
                         if (result.module.success) {
                             this._messageService.clear();
                             this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Menu Berhasil Dihapus' });
+                            this.getAllMenu(args.module_id);
                         }
                     })
             }

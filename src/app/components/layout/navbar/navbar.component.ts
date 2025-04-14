@@ -4,7 +4,7 @@ import { UtilityService } from 'src/app/services/utility/utility.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
-import { map, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, map, Subject, takeUntil } from 'rxjs';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -44,9 +44,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     ShowSearch = false;
 
-    Menu$ = this._store
-        .select(MenuState.menuEntities)
-        .pipe(takeUntil(this.Destroy$));
+    // Menu$ = this._store
+    //     .select(MenuState.menuEntities)
+    //     .pipe(takeUntil(this.Destroy$));
+
+    Menu$ = new BehaviorSubject<any>([]);
 
     SelectedMenu!: AuthenticationModel.IModuleChildMenu;
 
@@ -77,7 +79,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
-
+        const module = this._authenticationService.Module$.value;
+        this.Menu$.next(module[0].module_menu);
     }
 
     ngOnDestroy(): void {
