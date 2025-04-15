@@ -6,6 +6,11 @@ export namespace SatuanKerjaActions {
         constructor(public query?: SatuanKerjaModel.GetAllQuery) { }
     }
 
+    export class GetAllPejabatSatuanKerja {
+        static readonly type = '[SATUAN KERJA] Get All Pejabat Satuan Kerja';
+        constructor(public query?: SatuanKerjaModel.GetAllQuery) { }
+    }
+
     export class GetByIdSatuanKerja {
         static readonly type = '[SATUAN KERJA] Get By Id Satuan Kerja';
         constructor(public payload: string) { }

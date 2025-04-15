@@ -51,4 +51,25 @@ export class SatuanKerjaService {
     delete(unit_id: string): Observable<SatuanKerjaModel.GetByIdSatuanKerja> {
         return this._httpRequestService.deleteRequest(`${environment.webApiUrl}/work-unit/${unit_id}`);
     }
+
+    getAllPejabatSatker(query?: SatuanKerjaModel.GetAllQuery): Observable<SatuanKerjaModel.GetAllSatuanKerja> {
+        return this._httpRequestService
+            .getRequest(`${environment.webApiUrl}/pejabat-satker/list-satker`, {}, query)
+            .pipe(
+                map((result) => {
+                    if (result.data.records.length) {
+                        result.data.records = result.data.records.map((item: any, index: number) => {
+                            return {
+                                ...item,
+                                no: index + 1,
+                            }
+                        });
+                    }
+
+                    return result;
+                })
+            )
+
+    }
+
 }

@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ConfirmationService } from 'primeng/api';
+import { Store } from '@ngxs/store';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { DynamicFormComponent } from 'src/app/components/form/dynamic-form/dynamic-form.component';
 import { GridComponent } from 'src/app/components/grid/grid.component';
 import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboard.component';
@@ -13,6 +14,9 @@ import { FormModel } from 'src/app/model/components/form.model';
 import { GridModel } from 'src/app/model/components/grid.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
+import { KategoriJabatanState } from 'src/app/store/pengaturan/umum/kategori-jabatan';
+import { PejabatActions, PejabatState } from 'src/app/store/pengaturan/umum/pejabat';
+import { SatuanKerjaState } from 'src/app/store/pengaturan/umum/satuan-kerja';
 
 @Component({
     selector: 'app-detail-pejabat',
@@ -53,10 +57,11 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
         column: [
             { field: 'no', headerName: '#', },
             { field: 'nip', headerName: 'NIP', },
-            { field: 'full_name', headerName: 'Kode Unit', },
-            { field: 'job_position', headerName: 'Jabatan', },
-            { field: 'start_work_at', headerName: 'Tanggal Mulai', format: 'date' },
-            { field: 'end_work_at', headerName: 'Tanggal Berakhir', format: 'date' },
+            { field: 'full_name', headerName: 'Nama Lengkap', },
+            { field: 'job_category.name', headerName: 'Jabatan', },
+            { field: 'work_unit.unit_name', headerName: 'Satuan Kerja', },
+            { field: 'start_date_position', headerName: 'Tanggal Mulai', format: 'date' },
+            { field: 'end_date_position', headerName: 'Tanggal Berakhir', format: 'date' },
         ],
         dataSource: [],
         height: "calc(100vh - 14.5rem)",
@@ -75,13 +80,23 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
     @ViewChild('FormComps') FormComps!: DynamicFormComponent;
 
     constructor(
+        private _store: Store,
         private _router: Router,
+        private _messageService: MessageService,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
     ) {
         this.FormProps = {
             id: 'form_pejabat',
             fields: [
+                {
+                    id: 'officers_id',
+                    label: 'ID',
+                    required: true,
+                    type: 'text',
+                    value: '',
+                    hidden: true
+                },
                 {
                     id: 'nip',
                     label: 'NIP',
@@ -97,60 +112,123 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
                     value: '',
                 },
                 {
-                    id: 'job_position',
+                    id: 'posititon_name',
                     label: 'Jabatan',
                     required: true,
                     type: 'text',
                     value: '',
                 },
                 {
-                    id: 'start_work_at',
+                    id: 'position_type',
+                    label: 'Jenis Pejabat',
+                    required: true,
+                    type: 'select',
+                    value: '',
+                    dropdownProps: {
+                        options: [
+                            { name: 'Satker', value: 'satker' },
+                            { name: 'Umum', value: 'umum' },
+                        ],
+                        optionName: 'name',
+                        optionValue: 'value'
+                    }
+                },
+                {
+                    id: 'job_category_id',
+                    label: 'Kategori Jabatan',
+                    required: true,
+                    type: 'select',
+                    value: '',
+                    dropdownProps: {
+                        options: [],
+                        optionName: 'name',
+                        optionValue: 'job_category_id'
+                    }
+                },
+                {
+                    id: 'unit_id',
+                    label: 'Satuan Kerja',
+                    required: true,
+                    type: 'select',
+                    value: '',
+                    dropdownProps: {
+                        options: [],
+                        optionName: 'unit_name',
+                        optionValue: 'unit_id'
+                    }
+                },
+                {
+                    id: 'start_date_position',
                     label: 'Tanggal Mulai',
                     required: true,
                     type: 'date',
                     value: '',
                 },
                 {
-                    id: 'end_work_at',
+                    id: 'end_date_position',
                     label: 'Tanggal Berakhir',
                     required: true,
                     type: 'date',
                     value: '',
                 },
                 {
-                    id: 'has_determined',
+                    id: 'is_not_specified',
                     label: 'Belum Bisa Ditentukan',
                     required: true,
-                    type: 'checkbox',
+                    type: 'radio',
                     value: '',
+                    radioButtonProps: [
+                        { name: 'is_not_specified', label: 'Iya', value: 1 },
+                        { name: 'is_not_specified', label: 'Tidak', value: 0 },
+                    ]
                 },
             ],
             style: 'not_inline',
-            class: 'grid-rows-6 grid-cols-1',
+            class: 'grid-rows-9 grid-cols-1',
             state: 'write',
             defaultValue: null,
         };
     }
 
     ngOnInit(): void {
-        this.GridProps.dataSource = [
-            { no: 1, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Kaprodi', start_work_at: new Date('2000-01-01'), end_work_at: null },
-            { no: 2, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Kaprodi', start_work_at: new Date('2000-01-01'), end_work_at: null },
-            { no: 3, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Kaprodi', start_work_at: new Date('2000-01-01'), end_work_at: null },
-            { no: 4, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Kaprodi', start_work_at: new Date('2000-01-01'), end_work_at: null },
-            { no: 5, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Kaprodi', start_work_at: new Date('2000-01-01'), end_work_at: null },
-            { no: 6, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Kaprodi', start_work_at: new Date('2000-01-01'), end_work_at: null },
-            { no: 7, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Kaprodi', start_work_at: new Date('2000-01-01'), end_work_at: null },
-            { no: 8, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Kaprodi', start_work_at: new Date('2000-01-01'), end_work_at: null },
-            { no: 9, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Kaprodi', start_work_at: new Date('2000-01-01'), end_work_at: null },
-            { no: 10, nip: '12345678910', full_name: 'Rudi Tabuti', job_position: 'Kaprodi', start_work_at: new Date('2000-01-01'), end_work_at: null },
-        ];
+        this.getAllPejabat();
+        this.getSatuanKerja();
+        this.getKategoriJabatan();
     }
 
     ngOnDestroy(): void {
         localStorage.removeItem("_SIMKEU_PJB_");
         this.Destroy$.next(0);
         this.Destroy$.complete();
+    }
+
+    private getAllPejabat() {
+        this._store
+            .select(PejabatState.pejabatEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                this.GridProps.dataSource = result;
+            })
+    }
+
+    private getKategoriJabatan() {
+        this._store
+            .select(KategoriJabatanState.kategoriJabatanEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                const index = this.FormProps.fields.findIndex(item => item.id == 'job_category_id');
+                this.FormProps.fields[index].dropdownProps.options = result;
+            })
+    }
+
+    private getSatuanKerja() {
+        this._store
+            .select(SatuanKerjaState.satuanKerjaEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                const index = this.FormProps.fields.findIndex(item => item.id == 'unit_id');
+                this.FormProps.fields[index].dropdownProps.options = result;
+            })
     }
 
     handleClickButtonNavigation(data: LayoutModel.IButtonNavigation) {
@@ -210,7 +288,17 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
     }
 
     handleSave(args: any) {
-
+        this._store
+            .dispatch(new PejabatActions.CreatePejabat(args))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.satuan_kerja.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Disimpan' });
+                    this.FormDialogToggle = false;
+                    this.FormComps.FormGroup.reset();
+                }
+            })
     }
 
     handleUpdate(args: any) {

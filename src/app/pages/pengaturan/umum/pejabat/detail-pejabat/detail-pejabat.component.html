@@ -31,9 +31,8 @@
     </div>
 
     <!-- Dialog -->
-    <p-dialog [header]="FormState == 'insert' ? 'Tambah Satuan Kerja' : 'Ubah Satuan Kerja'"
-        [(visible)]="FormDialogToggle" [modal]="true" [style]="{ width: '35rem' }" [draggable]="false"
-        [resizable]="false">
+    <p-dialog [header]="FormState == 'insert' ? 'Tambah Pejabat' : 'Ubah Pejabat'" [(visible)]="FormDialogToggle"
+        [modal]="true" [style]="{ width: '35rem' }" [draggable]="false" [resizable]="false">
 
         <div class="grid w-full my-2">
             <app-dynamic-form #FormComps [props]="FormProps"></app-dynamic-form>

@@ -14,6 +14,7 @@ import { SumberDanaActions } from './store/pengaturan/umum/sumber-dana';
 import { KategoriJabatanActions } from './store/pengaturan/umum/kategori-jabatan';
 import { RoleActions } from './store/pengaturan/hak-akses/role';
 import { TahunAnggaranActions } from './store/pengaturan/tahun-anggaran';
+import { PejabatActions } from './store/pengaturan/umum/pejabat';
 
 @Component({
     selector: 'app-root',
@@ -119,6 +120,11 @@ export class AppComponent implements OnInit, OnDestroy {
         // ** Dispatch Kategori Jabatan State
         this._store
             .dispatch(new KategoriJabatanActions.GetAllKategoriJabatan({ page: '1', limit: '5' }))
+            .pipe(takeUntil(this.Destroy$));
+
+        // ** Dispatch Pejabat State
+        this._store
+            .dispatch(new PejabatActions.GetAllPejabat({ page: '1', limit: '5' }))
             .pipe(takeUntil(this.Destroy$));
 
         // ** Dispatch Role State

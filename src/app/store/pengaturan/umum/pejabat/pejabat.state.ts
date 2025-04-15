@@ -1,56 +1,56 @@
 import { Injectable } from "@angular/core";
 import { Action, Selector, State, StateContext } from "@ngxs/store";
 import { of, switchMap, tap } from "rxjs";
-import { SatuanKerjaModel } from "src/app/model/pages/pengaturan/umum/satuan-kerja.model";
-import { SatuanKerjaService } from "src/app/services/pengaturan/umum/satuan-kerja.service";
-import { SatuanKerjaActions } from "./satuan-kerja.action";
+import { PejabatModel } from "src/app/model/pages/pengaturan/umum/pejabat.model";
+import { PejabatService } from "src/app/services/pengaturan/umum/pejabat.service";
+import { PejabatActions } from "./pejabat.action";
 
-interface SatuanKerjaStateModel {
-    entities: SatuanKerjaModel.ISatuanKerja[];
-    pejabat?: SatuanKerjaModel.ISatuanKerja[];
-    single?: SatuanKerjaModel.ISatuanKerja;
+interface PejabatStateModel {
+    entities: PejabatModel.IPejabat[];
+    single?: PejabatModel.IPejabat;
+    satker?: PejabatModel.IPejabat[];
     success?: boolean;
     totalRows?: number;
 }
 
-@State<SatuanKerjaStateModel>({
-    name: 'satuan_kerja',
+@State<PejabatStateModel>({
+    name: 'pejabat',
     defaults: {
         entities: [],
-        pejabat: [],
+        satker: [],
         success: true
     }
 })
 @Injectable()
-export class SatuanKerjaState {
+export class PejabatState {
 
     constructor(
-        private _masterSatuanKerjaService: SatuanKerjaService,
+        private _masterPejabatService: PejabatService,
     ) { }
 
     @Selector()
-    static satuanKerjaEntities(state: SatuanKerjaStateModel) {
+    static pejabatEntities(state: PejabatStateModel) {
         return state.entities;
     }
 
     @Selector()
-    static satuanKerjaPejabatEntities(state: SatuanKerjaStateModel) {
-        return state.pejabat;
+    static pejabatSatker(state: PejabatStateModel) {
+        return state.satker;
     }
 
     @Selector()
-    static satuanKerjaSingle(state: SatuanKerjaStateModel) {
+    static pejabatSingle(state: PejabatStateModel) {
         return state.single;
     }
 
     @Selector()
-    static satuanKerjaTotalRows(state: SatuanKerjaStateModel) {
+    static pejabatTotalRows(state: PejabatStateModel) {
         return state.totalRows;
     }
 
-    @Action(SatuanKerjaActions.GetAllSatuanKerja)
-    getAll(ctx: StateContext<SatuanKerjaStateModel>, actions: any) {
-        return this._masterSatuanKerjaService
+    @Action(PejabatActions.GetAllPejabat)
+    getAll(ctx: StateContext<PejabatStateModel>, actions: any) {
+        return this._masterPejabatService
             .getAll(actions.query)
             .pipe(
                 tap((result) => {
@@ -64,25 +64,24 @@ export class SatuanKerjaState {
             )
     }
 
-    @Action(SatuanKerjaActions.GetAllPejabatSatuanKerja)
-    getAllPejabatSatker(ctx: StateContext<SatuanKerjaStateModel>, actions: any) {
-        return this._masterSatuanKerjaService
-            .getAllPejabatSatker(actions.query)
+    @Action(PejabatActions.GetAllPejabatInSatker)
+    getAllInSatker(ctx: StateContext<PejabatStateModel>, actions: any) {
+        return this._masterPejabatService
+            .getAll(actions.query)
             .pipe(
                 tap((result) => {
                     const state = ctx.getState();
                     ctx.setState({
                         ...state,
-                        pejabat: result.data.records,
-                        totalRows: result.data.total_row
+                        satker: result.data.records,
                     });
                 })
             )
     }
 
-    @Action(SatuanKerjaActions.GetByIdSatuanKerja)
-    getById(ctx: StateContext<SatuanKerjaStateModel>, actions: any) {
-        return this._masterSatuanKerjaService
+    @Action(PejabatActions.GetByIdPejabat)
+    getById(ctx: StateContext<PejabatStateModel>, actions: any) {
+        return this._masterPejabatService
             .getById(actions.payload)
             .pipe(
                 tap((result) => {
@@ -95,9 +94,9 @@ export class SatuanKerjaState {
             )
     }
 
-    @Action(SatuanKerjaActions.CreateSatuanKerja)
-    create(ctx: StateContext<SatuanKerjaStateModel>, actions: any) {
-        return this._masterSatuanKerjaService
+    @Action(PejabatActions.CreatePejabat)
+    create(ctx: StateContext<PejabatStateModel>, actions: any) {
+        return this._masterPejabatService
             .create(actions.payload)
             .pipe(
                 tap((result) => {
@@ -116,7 +115,7 @@ export class SatuanKerjaState {
                 }),
                 switchMap((result: any) => {
                     if (result.success) {
-                        return ctx.dispatch(new SatuanKerjaActions.GetAllSatuanKerja());
+                        return ctx.dispatch(new PejabatActions.GetAllPejabatInSatker({ unit_id: actions.payload.unit_id }));
                     } else {
                         return of([]);
                     }
@@ -124,9 +123,9 @@ export class SatuanKerjaState {
             )
     }
 
-    @Action(SatuanKerjaActions.UpdateSatuanKerja)
-    update(ctx: StateContext<SatuanKerjaStateModel>, actions: any) {
-        return this._masterSatuanKerjaService
+    @Action(PejabatActions.UpdatePejabat)
+    update(ctx: StateContext<PejabatStateModel>, actions: any) {
+        return this._masterPejabatService
             .update(actions.payload)
             .pipe(
                 tap((result) => {
@@ -145,7 +144,7 @@ export class SatuanKerjaState {
                 }),
                 switchMap((result: any) => {
                     if (result.success) {
-                        return ctx.dispatch(new SatuanKerjaActions.GetAllSatuanKerja());
+                        return ctx.dispatch(new PejabatActions.GetAllPejabatInSatker({ unit_id: actions.payload.unit_id }));
                     } else {
                         return of([]);
                     }
@@ -153,9 +152,9 @@ export class SatuanKerjaState {
             )
     }
 
-    @Action(SatuanKerjaActions.DeleteSatuanKerja)
-    delete(ctx: StateContext<SatuanKerjaStateModel>, actions: any) {
-        return this._masterSatuanKerjaService
+    @Action(PejabatActions.DeletePejabat)
+    delete(ctx: StateContext<PejabatStateModel>, actions: any) {
+        return this._masterPejabatService
             .delete(actions.payload)
             .pipe(
                 tap((result) => {
@@ -174,7 +173,7 @@ export class SatuanKerjaState {
                 }),
                 switchMap((result: any) => {
                     if (result.success) {
-                        return ctx.dispatch(new SatuanKerjaActions.GetAllSatuanKerja());
+                        return ctx.dispatch(new PejabatActions.GetAllPejabatInSatker({ unit_id: actions.payload.unit_id }));
                     } else {
                         return of([]);
                     }
