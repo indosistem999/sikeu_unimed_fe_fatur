@@ -3,7 +3,7 @@ import { Component, model, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { ButtonModule } from 'primeng/button';
-import { BehaviorSubject, map, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, map, Subject, takeUntil, tap } from 'rxjs';
 import { AuthenticationModel } from 'src/app/model/pages/authentication/authentication.model';
 import { ModulModel } from 'src/app/model/pages/pengaturan/module/modul.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
@@ -31,7 +31,10 @@ export class ModuleListComponent implements OnInit, OnDestroy {
 
     User$ = this._store
         .select(AuthenticationState.authEntities)
-        .pipe(takeUntil(this.Destroy$));
+        .pipe(
+            takeUntil(this.Destroy$),
+            tap((result) => { console.log(result) })
+        );
 
     ActiveModule!: ModulModel.IModul;
 
@@ -61,4 +64,7 @@ export class ModuleListComponent implements OnInit, OnDestroy {
         this._router.navigateByUrl(url);
     }
 
+    handleSignOut() {
+        this._authenticationService.signOut();
+    }
 }

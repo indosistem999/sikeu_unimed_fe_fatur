@@ -1,31 +1,42 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
-import { Subject, takeUntil } from 'rxjs';
+import { DropdownModule } from 'primeng/dropdown';
+import { map, Subject, takeUntil } from 'rxjs';
 import { DynamicFormComponent } from 'src/app/components/form/dynamic-form/dynamic-form.component';
 import { GridComponent } from 'src/app/components/grid/grid.component';
 import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboard.component';
 import { FormModel } from 'src/app/model/components/form.model';
 import { GridModel } from 'src/app/model/components/grid.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
+import { UserModel } from 'src/app/model/pages/pengaturan/module/user.model';
+import { PejabatModel } from 'src/app/model/pages/pengaturan/umum/pejabat.model';
+import { SatuanKerjaModel } from 'src/app/model/pages/pengaturan/umum/satuan-kerja.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
+import { UtilityService } from 'src/app/services/utility/utility.service';
 import { KategoriJabatanState } from 'src/app/store/pengaturan/umum/kategori-jabatan';
 import { PejabatActions, PejabatState } from 'src/app/store/pengaturan/umum/pejabat';
 import { SatuanKerjaState } from 'src/app/store/pengaturan/umum/satuan-kerja';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-detail-pejabat',
     standalone: true,
     imports: [
+        FormsModule,
         CommonModule,
         ButtonModule,
         DialogModule,
         GridComponent,
+        DropdownModule,
+        CalendarModule,
         DashboardComponent,
         ConfirmDialogModule,
         DynamicFormComponent,
@@ -52,6 +63,12 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
         }
     ];
 
+    KelompokJabatanDatasource: any[] = [];
+
+    job_category_id: any;
+    start_date_position: any;
+    end_date_position: any;
+
     GridProps: GridModel.IGrid = {
         id: 'GridUser',
         column: [
@@ -73,6 +90,11 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
         searchPlaceholder: 'Cari Nama Pejabat Disini',
     };
     GridSelectedData: any;
+    GridQueryParams: PejabatModel.GetAllInSatkerQuery = {
+        unit_id: this._activatedRoute.snapshot.queryParams['id'],
+        page: '1',
+        limit: '5'
+    };
 
     FormState: 'insert' | 'update' = 'insert';
     FormProps: FormModel.IForm;
@@ -82,7 +104,9 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
     constructor(
         private _store: Store,
         private _router: Router,
+        private _activatedRoute: ActivatedRoute,
         private _messageService: MessageService,
+        private _utilityService: UtilityService,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
     ) {
@@ -194,6 +218,8 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
         this.getAllPejabat();
         this.getSatuanKerja();
         this.getKategoriJabatan();
+
+        this.onSearchGrid("");
     }
 
     ngOnDestroy(): void {
@@ -204,10 +230,10 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
 
     private getAllPejabat() {
         this._store
-            .select(PejabatState.pejabatEntities)
+            .select(PejabatState.pejabatSatker)
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                this.GridProps.dataSource = result;
+                this.GridProps.dataSource = result!;
             })
     }
 
@@ -218,6 +244,8 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
             .subscribe((result) => {
                 const index = this.FormProps.fields.findIndex(item => item.id == 'job_category_id');
                 this.FormProps.fields[index].dropdownProps.options = result;
+
+                this.KelompokJabatanDatasource = result;
             })
     }
 
@@ -243,7 +271,40 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
         };
     }
 
-    onSearchGrid(args: any) {
+    onSearchGrid(args: any, job_category_id?: string, start_date_position?: Date, end_date_position?: Date) {
+        if (args) {
+            this.GridQueryParams = {
+                ...this.GridQueryParams,
+                search: args
+            }
+        } else {
+            delete this.GridQueryParams.search;
+        }
+
+        if (job_category_id) {
+            this.GridQueryParams.job_category_id = job_category_id;
+        } else {
+            delete this.GridQueryParams.job_category_id;
+        }
+
+        if (start_date_position) {
+            this.GridQueryParams.start_date_position = this._utilityService.onFormatDate(new Date(start_date_position), 'yyyy-MM-DD')
+        } else {
+            delete this.GridQueryParams.start_date_position;
+        }
+
+        if (end_date_position) {
+            this.GridQueryParams.end_date_position = this._utilityService.onFormatDate(new Date(end_date_position), 'yyyy-MM-DD')
+        } else {
+            delete this.GridQueryParams.end_date_position;
+        }
+
+        this._store
+            .dispatch(new PejabatActions.GetAllPejabatInSatker(this.GridQueryParams))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                !environment.production && console.log(result.pejabat.satker);
+            })
     }
 
     onCellClicked(args: any): void {
@@ -253,7 +314,15 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
     onRowDoubleClicked(args: any): void {
         this.FormState = 'update';
         this.FormDialogToggle = true;
-        this.FormComps.FormGroup.patchValue(args);
+        this.FormComps.FormGroup.patchValue({
+            ...args,
+            full_name: args.full_name,
+            job_category_id: args.job_category.job_category_id,
+            unit_id: args.work_unit.unit_id,
+            start_date_position: new Date(args.start_date_position),
+            end_date_position: new Date(args.end_date_position),
+            is_not_specified: args.end_date_position ? 0 : 1
+        });
     }
 
     onToolbarClicked(args: any): void {

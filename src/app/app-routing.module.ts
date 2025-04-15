@@ -22,9 +22,9 @@ const routes: Routes = [
         loadChildren: async () => (await import('./pages/pengaturan/pengaturan.routes')).pengaturanRoutes
     },
     {
-        path: 'pengatuan',
-        loadChildren: async () => (await import('./pages/pengaturan/pengaturan.routes')).pengaturanRoutes
-    }
+        path: 'sppd',
+        loadChildren: async () => (await import('./pages/sppd/sppd.routes')).sppdRoutes
+    },
 ];
 
 @NgModule({

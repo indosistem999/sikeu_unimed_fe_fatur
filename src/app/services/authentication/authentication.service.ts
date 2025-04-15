@@ -204,7 +204,17 @@ export class AuthenticationService {
 
     getProfile(token: string) {
         const headers = { Authorization: `Bearer ${token}` };
-        return this._httpRequestService.getRequest(`${environment.webApiUrl}/auth/profile`, headers);
+        return this._httpRequestService
+            .getRequest(`${environment.webApiUrl}/auth/profile`, headers)
+            .pipe(
+                map((result) => {
+                    if (result.success) {
+                        result.data = Array(result.data) ? result.data[0] : result.data
+                    };
+
+                    return result;
+                })
+            )
     }
 
     setUserData() {

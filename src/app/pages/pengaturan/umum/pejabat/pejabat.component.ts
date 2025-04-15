@@ -10,6 +10,7 @@ import { GridModel } from 'src/app/model/components/grid.model';
 import { SatuanKerjaModel } from 'src/app/model/pages/pengaturan/umum/satuan-kerja.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { SatuanKerjaActions, SatuanKerjaState } from 'src/app/store/pengaturan/umum/satuan-kerja';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-pejabat',
@@ -32,8 +33,7 @@ export class PejabatComponent implements OnInit, OnDestroy {
         column: [
             { field: 'no', headerName: '#', },
             { field: 'unit_name', headerName: 'Satuan Kerja', },
-            { field: 'pejabat', headerName: 'Pejabat', },
-            { field: 'bendahara', headerName: 'Bendahara', },
+            { field: 'total_officers', headerName: 'Jumlah Pejabat', },
         ],
         dataSource: [],
         height: "calc(100vh - 14.5rem)",
@@ -55,6 +55,7 @@ export class PejabatComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.getAllSatuanKerjaState();
+        this.onSearchGrid("");
     }
 
     ngOnDestroy(): void {
@@ -83,19 +84,16 @@ export class PejabatComponent implements OnInit, OnDestroy {
 
         this._store
             .dispatch(new SatuanKerjaActions.GetAllPejabatSatuanKerja(this.GridQueryParams))
-            .pipe(
-                takeUntil(this.Destroy$),
-                map((result) => result.user)
-            )
+            .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                this.GridProps.dataSource = result.pejabat;
+                !environment.production && console.log("pejabat in satker =>", result.satuan_kerja.pejabat)
             })
     }
 
     onToolbarClicked(args: any): void {
         if (args.type == 'detail') {
             localStorage.setItem("_SIMKEU_PJB_", JSON.stringify(args.data));
-            this._router.navigateByUrl(`/pengaturan/umum/pejabat/detail?id=${args.data.no}`)
+            this._router.navigateByUrl(`/pengaturan/umum/pejabat/detail?id=${args.data.unit_id}`)
         }
     }
 
