@@ -119,7 +119,70 @@ export class AuthenticationService {
             module_name: 'SPPD',
             icon: '../../../assets/icon/sppd.png',
             module_path: 'sppd',
-            order_number: 2
+            order_number: 2,
+            module_menu: [
+                {
+                    module_id: '2',
+                    menu_id: '21',
+                    menu_name: 'Beranda',
+                    menu_path: '/sppd/beranda',
+                },
+                {
+                    module_id: '2',
+                    menu_id: '22',
+                    menu_name: 'Data Pegawai',
+                    menu_path: '/sppd/data-pegawai',
+                },
+                {
+                    module_id: '2',
+                    menu_id: '23',
+                    menu_name: 'Referensi',
+                    sub_menu: [
+                        {
+                            module_id: '2',
+                            menu_id: '231',
+                            menu_name: 'Kop Surat',
+                            menu_path: '/sppd/referensi/kop-surat',
+                        },
+                        {
+                            module_id: '2',
+                            menu_id: '232',
+                            menu_name: 'Bagian Surat',
+                            menu_path: '/sppd/referensi/bagian-surat',
+                        },
+                        {
+                            module_id: '2',
+                            menu_id: '233',
+                            menu_name: 'Pangkat & Golongan',
+                            menu_path: '/sppd/referensi/pangkat-golongan',
+                        },
+                        {
+                            module_id: '2',
+                            menu_id: '234',
+                            menu_name: 'Jenis Transportasi',
+                            menu_path: '/sppd/referensi/jenis-transportasi',
+                        },
+                        {
+                            module_id: '2',
+                            menu_id: '235',
+                            menu_name: 'Jenis Biaya',
+                            menu_path: '/sppd/referensi/jenis-biaya',
+                        }
+                    ]
+                },
+                {
+                    module_id: '2',
+                    menu_id: '24',
+                    menu_name: 'Surat Tugas & SPD',
+                    menu_path: '/sppd/surat-tugas',
+                },
+                {
+                    module_id: '2',
+                    menu_id: '25',
+                    menu_name: 'Laporan',
+                    menu_path: '/sppd/laporan',
+                },
+            ]
         },
         {
             module_id: '3',

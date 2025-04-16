@@ -1,0 +1,45 @@
+<app-dashboard>
+    <div class="flex flex-col gap-3 w-ful bg-white rounded-lg shadow-sm p-3">
+        <div *ngFor="let item of KopSuratDatasource" class="flex flex-row items-center w-full gap-3">
+            <!-- Order Number -->
+            <div class="flex w-1/12">
+                <p class="text-sm text-gray-700 font-medium">
+                    Urutan {{ item.order_number }}
+                </p>
+            </div>
+
+            <!-- Description -->
+            <div class="flex w-5/12">
+                <input type="text" pInputText class="p-inputtext-sm w-full" [(ngModel)]="item.description"
+                    placeholder="{{ 'Isi urutan ' + item.order_number }}">
+            </div>
+
+            <!-- Jenis Font -->
+            <div class="grid w-2/12">
+                <p-dropdown [options]="JenisFontDatasource" [(ngModel)]="item.font_type" [filter]="true" appendTo="body"
+                    styleClass="p-inputtext-sm w-full" placeholder="Pilih jenis font">
+                </p-dropdown>
+            </div>
+
+            <!-- Gaya Font -->
+            <div class="grid w-2/12">
+                <p-dropdown [options]="GayaFontDatasource" [(ngModel)]="item.font_style" [filter]="true" appendTo="body"
+                    styleClass="p-inputtext-sm w-full" placeholder="Pilih gaya font">
+                </p-dropdown>
+            </div>
+
+            <!-- Ukuran Font -->
+            <div class="grid w-2/12">
+                <p-dropdown [options]="UkuranDatasource" [(ngModel)]="item.font_size" [filter]="true" appendTo="body"
+                    styleClass="p-inputtext-sm w-full" placeholder="Pilih ukuran font">
+                </p-dropdown>
+            </div>
+        </div>
+
+        <div class="flex flex-row w-full justify-between mt-3">
+            <p-button severity="secondary" label="Preview" styleClass="p-button-sm"></p-button>
+
+            <p-button severity="info" label="Simpan Kop Surat" styleClass="p-button-sm"></p-button>
+        </div>
+    </div>
+</app-dashboard>
