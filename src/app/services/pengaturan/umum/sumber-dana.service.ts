@@ -45,7 +45,7 @@ export class SumberDanaService {
 
     update(payload: SumberDanaModel.UpdateSumberDana): Observable<SumberDanaModel.GetByIdSumberDana> {
         const { sumber_dana_id, ...data } = payload;
-        return this._httpRequestService.postRequest(`${environment.webApiUrl}/master-sumber-dana/${sumber_dana_id}`, data);
+        return this._httpRequestService.putRequest(`${environment.webApiUrl}/master-sumber-dana/${sumber_dana_id}`, data);
     }
 
     delete(sumber_dana_id: string): Observable<SumberDanaModel.GetByIdSumberDana> {

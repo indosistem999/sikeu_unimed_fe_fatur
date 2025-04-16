@@ -45,7 +45,7 @@ export class KategoriJabatanService {
 
     update(payload: KategoriJabatanModel.UpdateKategoriJabatan): Observable<KategoriJabatanModel.GetByIdKategoriJabatan> {
         const { job_category_id, ...data } = payload;
-        return this._httpRequestService.postRequest(`${environment.webApiUrl}/master-job-category/${job_category_id}`, data);
+        return this._httpRequestService.putRequest(`${environment.webApiUrl}/master-job-category/${job_category_id}`, data);
     }
 
     delete(job_category_id: string): Observable<KategoriJabatanModel.GetByIdKategoriJabatan> {

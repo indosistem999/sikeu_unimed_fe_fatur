@@ -47,7 +47,7 @@ export class MasterUserService {
     update(payload: UserModel.UpdateUser): Observable<UserModel.GetByIdUser> {
         const { user_id, ...data } = payload;
         const formData = this._utilityService.jsonToFormData(data);
-        return this._httpRequestService.postRequest(`${environment.webApiUrl}/user/${user_id}`, formData);
+        return this._httpRequestService.putRequest(`${environment.webApiUrl}/user/${user_id}`, formData);
     }
 
     delete(user_id: string): Observable<UserModel.GetByIdUser> {
