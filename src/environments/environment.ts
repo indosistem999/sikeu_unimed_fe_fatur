@@ -4,8 +4,8 @@
 
 export const environment = {
     production: false,
-    webApiUrl: 'http://dev-sikeu-unimed.avnet.id/api/v1',
-    socketUrl: 'http://dev-sikeu-unimed.avnet.id',
+    webApiUrl: 'https://dev-sikeu-unimed.avnet.id/api/v1',
+    socketUrl: 'https://dev-sikeu-unimed.avnet.id',
     version: 'v0.0.1-alpha'
 };
 

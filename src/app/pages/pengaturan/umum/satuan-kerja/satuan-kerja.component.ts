@@ -1,18 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ConfirmationService } from 'primeng/api';
+import { Store } from '@ngxs/store';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
-import { Subject } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
 import { DynamicFormComponent } from 'src/app/components/form/dynamic-form/dynamic-form.component';
 import { GridComponent } from 'src/app/components/grid/grid.component';
 import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboard.component';
 import { FormModel } from 'src/app/model/components/form.model';
 import { GridModel } from 'src/app/model/components/grid.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
+import { SatuanKerjaModel } from 'src/app/model/pages/pengaturan/umum/satuan-kerja.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
+import { SatuanKerjaActions, SatuanKerjaState } from 'src/app/store/pengaturan/umum/satuan-kerja';
 
 @Component({
     selector: 'app-satuan-kerja',
@@ -60,6 +63,7 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
         searchPlaceholder: 'Cari Satuan Kerja Disini',
     };
     GridSelectedData: any;
+    GridQueryParams: SatuanKerjaModel.GetAllQuery = { page: '1', limit: '5' };
 
     FormState: 'insert' | 'update' = 'insert';
     FormProps: FormModel.IForm;
@@ -67,7 +71,9 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
     @ViewChild('FormComps') FormComps!: DynamicFormComponent;
 
     constructor(
+        private _store: Store,
         private _router: Router,
+        private _messageService: MessageService,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
     ) {
@@ -112,23 +118,21 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.GridProps.dataSource = [
-            { no: 1, unit_id: 101, unit_code: 'FIN-01', unit_type: 'FIN', unit_name: 'Finance Department' },
-            { no: 2, unit_id: 102, unit_code: 'HR-01', unit_type: 'HR', unit_name: 'Human Resources' },
-            { no: 3, unit_id: 103, unit_code: 'IT-01', unit_type: 'IT', unit_name: 'Information Technology' },
-            { no: 4, unit_id: 104, unit_code: 'MKT-01', unit_type: 'MKT', unit_name: 'Marketing Division' },
-            { no: 5, unit_id: 105, unit_code: 'OPS-01', unit_type: 'OPS', unit_name: 'Operations Unit' },
-            { no: 6, unit_id: 106, unit_code: 'PRC-01', unit_type: 'PRC', unit_name: 'Procurement Division' },
-            { no: 7, unit_id: 107, unit_code: 'ENG-01', unit_type: 'ENG', unit_name: 'Engineering Team' },
-            { no: 8, unit_id: 108, unit_code: 'QA-01', unit_type: 'QA', unit_name: 'Quality Assurance' },
-            { no: 9, unit_id: 109, unit_code: 'RND-01', unit_type: 'R&D', unit_name: 'Research and Development' },
-            { no: 10, unit_id: 110, unit_code: 'ADM-01', unit_type: 'ADM', unit_name: 'Administration' }
-        ];
+        this.getAllSatuanKerjaState();
     }
 
     ngOnDestroy(): void {
         this.Destroy$.next(0);
         this.Destroy$.complete();
+    }
+
+    private getAllSatuanKerjaState() {
+        this._store
+            .select(SatuanKerjaState.satuanKerjaEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                this.GridProps.dataSource = result;
+            })
     }
 
     handleClickButtonNavigation(data: LayoutModel.IButtonNavigation) {
@@ -140,6 +144,24 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
     }
 
     onSearchGrid(args: any) {
+        if (args) {
+            this.GridQueryParams = {
+                ...this.GridQueryParams,
+                search: args
+            }
+        } else {
+            delete this.GridQueryParams.search;
+        }
+
+        this._store
+            .dispatch(new SatuanKerjaActions.GetAllSatuanKerja(this.GridQueryParams))
+            .pipe(
+                takeUntil(this.Destroy$),
+                map((result) => result.user)
+            )
+            .subscribe((result) => {
+                this.GridProps.dataSource = result.entities;
+            })
     }
 
     onCellClicked(args: any): void {
@@ -166,6 +188,7 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
                 rejectIcon: "none",
                 rejectLabel: 'Tidak, kembali',
                 accept: () => {
+                    this.handleDelete(args.data);
                 }
             });
         }
@@ -176,7 +199,13 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
     }
 
     onPageChanged(args: any): void {
-        console.log(args);
+        this.GridQueryParams = {
+            ...this.GridQueryParams,
+            page: args ? args.first + 1 : 1,
+            limit: args ? args.rows : 5
+        };
+
+        this.onSearchGrid(this.GridQueryParams.search)
     }
 
     handleNavigate(url: string) {
@@ -184,14 +213,42 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
     }
 
     handleSave(args: any) {
-
+        this._store
+            .dispatch(new SatuanKerjaActions.CreateSatuanKerja(args))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.satuan_kerja.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Disimpan' });
+                    this.FormDialogToggle = false;
+                    this.FormComps.FormGroup.reset();
+                }
+            })
     }
 
     handleUpdate(args: any) {
-
+        this._store
+            .dispatch(new SatuanKerjaActions.UpdateSatuanKerja(args))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.satuan_kerja.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Diperbarui' });
+                    this.FormDialogToggle = false;
+                    this.FormComps.FormGroup.reset();
+                }
+            })
     }
 
     handleDelete(args: any) {
-
+        this._store
+            .dispatch(new SatuanKerjaActions.DeleteSatuanKerja(args.unit_id))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.satuan_kerja.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Dihapus' });
+                }
+            })
     }
 }

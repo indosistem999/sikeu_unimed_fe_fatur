@@ -23,7 +23,8 @@
                     <div class="flex w-full justify-end gap-2 mt-2">
                         <p-button severity="secondary" label="Batal" styleClass="p-button-sm"></p-button>
 
-                        <p-button severity="success" label="Simpan" styleClass="p-button-sm"></p-button>
+                        <p-button severity="success" label="Simpan" styleClass="p-button-sm" (onClick)="handleSave()">
+                        </p-button>
                     </div>
                 </div>
             </p-tabPanel>
@@ -49,7 +50,8 @@
                     <div class="flex w-full justify-end gap-2 mt-2">
                         <p-button severity="secondary" label="Batal" styleClass="p-button-sm"></p-button>
 
-                        <p-button severity="success" label="Simpan" styleClass="p-button-sm"></p-button>
+                        <p-button severity="success" label="Simpan" styleClass="p-button-sm" (onClick)="handleSave()">
+                        </p-button>
                     </div>
                 </div>
             </p-tabPanel>
@@ -96,9 +98,9 @@
                             <p-button label="Batal" severity="secondary" styleClass="p-button-sm"
                                 (onClick)="FormPejabatDialogToggle = false" />
 
-                            <p-button label="Simpan" severity="success" styleClass="p-button-sm"
+                            <!-- <p-button label="Simpan" severity="success" styleClass="p-button-sm"
                                 (onClick)="FormState == 'insert' ? handleSave(FormPejabatComps.FormGroup.value) : handleUpdate(FormPejabatComps.FormGroup.value)">
-                            </p-button>
+                            </p-button> -->
                         </ng-template>
                     </p-dialog>
 

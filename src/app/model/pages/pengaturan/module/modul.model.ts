@@ -1,4 +1,4 @@
-import { HttpBaseResponse } from "../../http/http-request.model"
+import { HttpBaseResponse } from "../../../http/http-request.model"
 
 export namespace ModulModel {
     export interface IModul {
@@ -20,7 +20,7 @@ export namespace ModulModel {
         message!: string
         data!: {
             rows: IModul[],
-            totalRows: number
+            total_row: number
         }
     }
 

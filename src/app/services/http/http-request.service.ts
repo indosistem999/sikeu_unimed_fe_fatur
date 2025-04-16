@@ -5,6 +5,7 @@ import { Observable, catchError, map } from 'rxjs';
 import { HttpBaseResponse } from 'src/app/model/http/http-request.model';
 import { UtilityService } from '../utility/utility.service';
 import { TitleCasePipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -12,6 +13,7 @@ import { TitleCasePipe } from '@angular/common';
 export class HttpRequestService {
 
     constructor(
+        private _router: Router,
         private _httpClient: HttpClient,
         private _titleCasePipe: TitleCasePipe,
         private _utilityService: UtilityService,
@@ -191,7 +193,6 @@ export class HttpRequestService {
             )
     }
 
-
     /**
      * @description Put Request Method
      * @param url 
@@ -278,8 +279,15 @@ export class HttpRequestService {
     }
 
     private handlingError(error: HttpErrorResponse): void {
-        this._utilityService.ShowLoading$.next(false);
-        this._messageService.clear();
-        this._messageService.add({ severity: 'error', summary: error.statusText, detail: error.error.message })
+        if ((<string>error.error.message).includes('expired token')) {
+            this._utilityService.ShowLoading$.next(false);
+            this._messageService.clear();
+            this._messageService.add({ severity: 'error', summary: 'Sesi Anda Berakhir', detail: 'Mohon Login Ulang Untuk Akses Aplikasi' });
+            this._router.navigateByUrl('/');
+        } else {
+            this._utilityService.ShowLoading$.next(false);
+            this._messageService.clear();
+            this._messageService.add({ severity: 'error', summary: error.statusText, detail: error.error.message })
+        }
     }
 }

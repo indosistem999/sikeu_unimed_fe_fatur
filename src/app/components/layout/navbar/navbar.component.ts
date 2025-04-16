@@ -4,7 +4,7 @@ import { UtilityService } from 'src/app/services/utility/utility.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
-import { map, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, map, Subject, takeUntil } from 'rxjs';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,6 +13,8 @@ import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { AuthenticationModel } from 'src/app/model/pages/authentication/authentication.model';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { MenuState } from 'src/app/store/pengaturan/menu';
+import { Store } from '@ngxs/store';
 
 @Component({
     selector: 'app-navbar',
@@ -42,7 +44,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     ShowSearch = false;
 
-    Menu: AuthenticationModel.IModuleChildMenu[] = this._authenticationService.getModuleMenu();
+    // Menu$ = this._store
+    //     .select(MenuState.menuEntities)
+    //     .pipe(takeUntil(this.Destroy$));
+
+    Menu$ = new BehaviorSubject<any>([]);
 
     SelectedMenu!: AuthenticationModel.IModuleChildMenu;
 
@@ -64,6 +70,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     ];
 
     constructor(
+        private _store: Store,
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
         private _messageService: MessageService,
@@ -72,7 +79,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
-
+        const module = this._authenticationService.Module$.value;
+        this.Menu$.next(module[0].module_menu);
     }
 
     ngOnDestroy(): void {

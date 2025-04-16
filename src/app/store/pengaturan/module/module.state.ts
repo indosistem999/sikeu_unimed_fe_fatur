@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { Action, Selector, State, StateContext } from "@ngxs/store";
 import { of, switchMap, tap } from "rxjs";
-import { ModulModel } from "src/app/model/pages/pengaturan/modul.model";
-import { MasterModuleService } from "src/app/services/pengaturan/master-module.service";
+import { ModulModel } from "src/app/model/pages/pengaturan/module/modul.model";
 import { ModulActions } from "./module.action";
+import { MasterModuleService } from "src/app/services/pengaturan/module/master-module.service";
 
 interface ModuleStateModel {
     entities: ModulModel.IModul[];
@@ -51,7 +51,7 @@ export class ModuleState {
                     ctx.setState({
                         ...state,
                         entities: result.data.rows,
-                        totalRows: result.data.totalRows
+                        totalRows: result.data.total_row
                     });
                 })
             )
@@ -92,7 +92,7 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new ModulActions.GetAllModul());
                     } else {
                         return of([]);
@@ -121,7 +121,7 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new ModulActions.GetAllModul());
                     } else {
                         return of([]);
@@ -150,7 +150,7 @@ export class ModuleState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new ModulActions.GetAllModul());
                     } else {
                         return of([]);

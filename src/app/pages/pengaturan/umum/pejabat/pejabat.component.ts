@@ -1,12 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Store } from '@ngxs/store';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Subject } from 'rxjs';
+import { map, Subject, takeUntil } from 'rxjs';
 import { GridComponent } from 'src/app/components/grid/grid.component';
 import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboard.component';
 import { GridModel } from 'src/app/model/components/grid.model';
+import { SatuanKerjaModel } from 'src/app/model/pages/pengaturan/umum/satuan-kerja.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
+import { SatuanKerjaActions, SatuanKerjaState } from 'src/app/store/pengaturan/umum/satuan-kerja';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-pejabat',
@@ -29,8 +33,7 @@ export class PejabatComponent implements OnInit, OnDestroy {
         column: [
             { field: 'no', headerName: '#', },
             { field: 'unit_name', headerName: 'Satuan Kerja', },
-            { field: 'pejabat', headerName: 'Pejabat', },
-            { field: 'bendahara', headerName: 'Bendahara', },
+            { field: 'total_officers', headerName: 'Jumlah Pejabat', },
         ],
         dataSource: [],
         height: "calc(100vh - 14.5rem)",
@@ -42,25 +45,17 @@ export class PejabatComponent implements OnInit, OnDestroy {
         searchPlaceholder: 'Cari Satuan Kerja Disini',
     };
     GridSelectedData: any;
+    GridQueryParams: SatuanKerjaModel.GetAllQuery = { page: '1', limit: '5' };
 
     constructor(
+        private _store: Store,
         private _router: Router,
         private _authenticationService: AuthenticationService,
     ) { }
 
     ngOnInit(): void {
-        this.GridProps.dataSource = [
-            { no: 1, pejabat: 'Andi', bendahara: 'Jane Doe', unit_name: 'Finance Department' },
-            { no: 2, pejabat: 'Andi', bendahara: 'Jane Doe', unit_name: 'Human Resources' },
-            { no: 3, pejabat: 'Andi', bendahara: 'Jane Doe', unit_name: 'Information Technology' },
-            { no: 4, pejabat: 'Andi', bendahara: 'Jane Doe', unit_name: 'Marketing Division' },
-            { no: 5, pejabat: 'Andi', bendahara: 'Jane Doe', unit_name: 'Operations Unit' },
-            { no: 6, pejabat: 'Andi', bendahara: 'Jane Doe', unit_name: 'Procurement Division' },
-            { no: 7, pejabat: 'Andi', bendahara: 'Jane Doe', unit_name: 'Engineering Team' },
-            { no: 8, pejabat: 'Andi', bendahara: 'Jane Doe', unit_name: 'Quality Assurance' },
-            { no: 9, pejabat: 'Andi', bendahara: 'Jane Doe', unit_name: 'Research and Development' },
-            { no: 10, pejabat: 'Andi', bendahara: 'Jane Doe', unit_name: 'Administration' }
-        ];
+        this.getAllSatuanKerjaState();
+        this.onSearchGrid("");
     }
 
     ngOnDestroy(): void {
@@ -68,18 +63,48 @@ export class PejabatComponent implements OnInit, OnDestroy {
         this.Destroy$.complete();
     }
 
+    private getAllSatuanKerjaState() {
+        this._store
+            .select(SatuanKerjaState.satuanKerjaPejabatEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                this.GridProps.dataSource = result!;
+            })
+    }
+
     onSearchGrid(args: any) {
+        if (args) {
+            this.GridQueryParams = {
+                ...this.GridQueryParams,
+                search: args
+            }
+        } else {
+            delete this.GridQueryParams.search;
+        }
+
+        this._store
+            .dispatch(new SatuanKerjaActions.GetAllPejabatSatuanKerja(this.GridQueryParams))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                !environment.production && console.log("pejabat in satker =>", result.satuan_kerja.pejabat)
+            })
     }
 
     onToolbarClicked(args: any): void {
         if (args.type == 'detail') {
             localStorage.setItem("_SIMKEU_PJB_", JSON.stringify(args.data));
-            this._router.navigateByUrl(`/pengaturan/umum/pejabat/detail?id=${args.data.no}`)
+            this._router.navigateByUrl(`/pengaturan/umum/pejabat/detail?id=${args.data.unit_id}`)
         }
     }
 
     onPageChanged(args: any): void {
-        console.log(args);
+        this.GridQueryParams = {
+            ...this.GridQueryParams,
+            page: args ? args.first + 1 : 1,
+            limit: args ? args.rows : 5
+        };
+
+        this.onSearchGrid(this.GridQueryParams.search)
     }
 
     handleNavigate(url: string) {

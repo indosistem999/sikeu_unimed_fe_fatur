@@ -42,7 +42,7 @@ export namespace AuthenticationModel {
         module_id: string;
         module_name: string;
         module_path: string;
-        module_icon: string;
+        icon: string;
         order_number: number;
         module_menu?: IModuleChildMenu[]
     }

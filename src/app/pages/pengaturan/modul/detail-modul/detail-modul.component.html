@@ -1,1 +1,147 @@
-<p>detail-modul works!</p>
+<app-dashboard [ButtonNavigation]="ButtonNavigation" (onClickButtonNavigation)="handleClickButtonNavigation($event)">
+    <div class="grid w-full bg-white rounded-lg shadow-sm p-3">
+        <!-- Heading -->
+        <div *ngIf="ActiveModule$ | async as module" class="flex w-full justify-between gap-2 items-center">
+            <p class="text-gray-700 font-semibold text-lg">
+                {{ module.module_name }}
+            </p>
+
+            <div class="flex w-3/12">
+                <input type="text" pInputText placeholder="Cari menu disini" class="p-inputtext-sm w-full">
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div *ngIf="Menu as menus" class="flex flex-col w-full gap-2">
+
+            @if(menus.length) {
+            <!-- Menu Items -->
+            <div class="w-full bg-white h-full border-l border-y-0 border-r-0 border-gray-200 border-solid p-2">
+                <div *ngFor="let menu of menus"
+                    class="flex flex-col gap-2 w-full text-sm text-gray-700 border-b border-t-0 border-x-0 border-gray-200 border-solid py-2">
+                    <!-- Main Menu Item -->
+                    <div class="flex w-full justify-between items-center">
+                        <div class="pl-4 py-2 hover:text-blue-600 cursor-pointer relative">
+                            {{ menu.name }}
+                        </div>
+
+                        <div class="flex gap-5 items-center">
+                            <span *ngIf="menu.children?.length" (click)="menu.toggle_children = !menu.toggle_children">
+                                <i class="pi pi-chevron-{{ menu.toggle_children ? 'up' : 'down' }}"
+                                    style="font-size: 12px"></i>
+                            </span>
+
+                            <span (click)="handleTogglingToolbar('parent', menu); op.toggle($event)">
+                                <i class="pi pi-ellipsis-h"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Children with L-shaped lines -->
+                    <div *ngIf="menu.children?.length && menu.toggle_children" class="relative ml-6">
+                        <!-- Vertical line -->
+                        <div
+                            class="absolute top-0 left-[0] h-full border-solid border-l border-r-0 border-y-0 border-gray-300">
+                        </div>
+
+                        <div *ngFor="let child of menu.children" class="flex flex-col w-full relative pl-6 py-2">
+                            <div class="flex w-full relative">
+                                <!-- Horizontal line -->
+                                <div
+                                    class="absolute left-[-2%] top-1/2 w-4 border-t border-solid border-b-0 border-x-0 border-gray-300">
+                                </div>
+
+                                <!-- Child Menu Item -->
+                                <div class="hover:text-blue-500 cursor-pointer">
+                                    {{ child.name }}
+                                </div>
+
+                                <div class="flex ml-auto gap-5 items-center">
+                                    <span *ngIf="child.children?.length"
+                                        (click)="child.toggle_children = !child.toggle_children">
+                                        <i class="pi pi-chevron-{{ child.toggle_children ? 'up' : 'down' }}"
+                                            style="font-size: 12px"></i>
+                                    </span>
+
+                                    <span (click)="handleTogglingToolbar('children', child); op.toggle($event)">
+                                        <i class="pi pi-ellipsis-h"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Item Children with L-shaped lines -->
+                            <div *ngIf="child.children?.length && child.toggle_children" class="relative ml-6 py-2">
+                                <!-- Vertical line -->
+                                <div
+                                    class="absolute top-0 left-[0] h-full border-solid border-l border-r-0 border-y-0 border-gray-300">
+                                </div>
+
+                                <div *ngFor="let subchild of child.children"
+                                    class="flex flex-col w-full relative pl-6 py-2">
+                                    <div class="flex w-full relative">
+                                        <!-- Horizontal line -->
+                                        <div
+                                            class="absolute left-[-2%] top-1/2 w-4 border-t border-solid border-b-0 border-x-0 border-gray-300">
+                                        </div>
+
+                                        <!-- Child Menu Item -->
+                                        <div class="hover:text-blue-500 cursor-pointer">
+                                            {{ subchild.name }}
+                                        </div>
+
+                                        <div class="flex ml-auto gap-2 items-center">
+                                            <span (click)="handleTogglingToolbar('item', subchild); op.toggle($event)">
+                                                <i class="pi pi-ellipsis-h"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p-overlayPanel #op>
+                    <div class="flex flex-col p-3 gap-4">
+                        <!-- Detail -->
+                        <div *ngFor="let item of ToolbarMenu" class="flex items-center gap-3 cursor-pointer"
+                            (click)="handleToolbarClick(item.id, SelectedMenu)">
+                            <i [class]="item.icon" style="font-size: 12px"></i>
+                            <p class="text-sm text-gray-700 font-medium">
+                                {{ item.label }}
+                            </p>
+                        </div>
+                    </div>
+                </p-overlayPanel>
+            </div>
+            } @else{
+            <p class="text-red-500 italic text-sm">
+                Belum ada menu yang ditambahkan. Silahkan tambahkan terlebih dahulu
+            </p>
+            }
+        </div>
+    </div>
+
+    <!-- Dialog -->
+    <p-dialog [header]="FormDialogHeader" [(visible)]="FormDialogToggle" [modal]="true" [style]="{ width: '35rem' }"
+        [draggable]="false" [resizable]="false">
+
+        <div class="grid w-full my-2 z-20">
+            <app-dynamic-form #FormComps [props]="FormProps"></app-dynamic-form>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Batal" severity="secondary" styleClass="p-button-sm"
+                (onClick)="FormDialogToggle = false" />
+
+            <p-button label="Simpan" severity="success" styleClass="p-button-sm" (onClick)="FormState == 'insert_parent' ? 
+                handleSave(FormComps.FormGroup.value) : 
+                ((FormState == 'insert_children' || FormState == 'insert_subchildren') ? handleSaveSubmenu(FormComps.FormGroup.value) : handleUpdate(FormComps.FormGroup.value))
+                ">
+            </p-button>
+        </ng-template>
+    </p-dialog>
+
+    <p-confirmDialog />
+</app-dashboard>

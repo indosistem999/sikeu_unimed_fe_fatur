@@ -1,4 +1,4 @@
-import { UserModel } from "src/app/model/pages/pengaturan/user.model";
+import { UserModel } from "src/app/model/pages/pengaturan/module/user.model";
 
 export namespace UserActions {
     export class GetAllUser {

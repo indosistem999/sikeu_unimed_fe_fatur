@@ -1,10 +1,9 @@
 import { Injectable } from "@angular/core";
 import { Action, Selector, State, StateContext } from "@ngxs/store";
 import { of, switchMap, tap } from "rxjs";
-import { UserModel } from "src/app/model/pages/pengaturan/user.model";
-
-import { MasterUserService } from "src/app/services/pengaturan/master-user.service";
 import { UserActions } from "./user.action";
+import { MasterUserService } from "src/app/services/pengaturan/hak-akses/master-user.service";
+import { UserModel } from "src/app/model/pages/pengaturan/module/user.model";
 
 interface UserStateModel {
     entities: UserModel.IUser[];
@@ -93,7 +92,7 @@ export class UserState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new UserActions.GetAllUser());
                     } else {
                         return of([]);
@@ -122,7 +121,7 @@ export class UserState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new UserActions.GetAllUser());
                     } else {
                         return of([]);
@@ -151,7 +150,7 @@ export class UserState {
                     }
                 }),
                 switchMap((result: any) => {
-                    if (result.responseResult) {
+                    if (result.success) {
                         return ctx.dispatch(new UserActions.GetAllUser());
                     } else {
                         return of([]);

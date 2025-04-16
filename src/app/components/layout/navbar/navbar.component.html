@@ -34,8 +34,8 @@
     </div>
 
     <!-- Menu -->
-    <div class="flex w-full gap-5 mt-2 mb-[1px]">
-        <div *ngFor="let item of Menu"
+    <div *ngIf="Menu$ | async as menu" class="flex w-full gap-5 mt-2 mb-[1px]">
+        <div *ngFor="let item of menu"
             class="flex px-5 pb-1 cursor-pointer 
             {{ SelectedMenu && SelectedMenu.menu_id == item.menu_id ? 'border-b-2 border-t-0 border-x-0 border-white border-solid' : 'border-b-2 border-t-0 border-x-0 border-transparent border-solid ' }}">
             @if(item.sub_menu) {

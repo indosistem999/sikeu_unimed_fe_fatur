@@ -1,4 +1,4 @@
-import { HttpBaseResponse } from "../../http/http-request.model"
+import { HttpBaseResponse } from "../../../http/http-request.model"
 
 export namespace UserModel {
     export interface IUser {

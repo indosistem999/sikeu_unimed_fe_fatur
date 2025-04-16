@@ -121,7 +121,7 @@
             <div *ngIf="item.type == 'radio'" class="flex flex-wrap gap-3">
                 <div *ngFor="let radio of item.radioButtonProps; let i = index" class="flex align-items-center">
                     <p-radioButton [value]="radio.value" [name]="radio.id" formControlName="{{ item.id }}"
-                        styleClass="p-inputtext-sm">
+                        styleClass="p-inputtext-sm" (onClick)="handleChangeRadioButton($event, item)">
                     </p-radioButton>
                     <label for="{{ radio.id }}" class="ml-2 text-sm">
                         {{ radio.label }}

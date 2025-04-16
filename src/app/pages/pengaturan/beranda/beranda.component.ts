@@ -10,7 +10,7 @@ import { GridModel } from 'src/app/model/components/grid.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Store } from '@ngxs/store';
-import { UserModel } from 'src/app/model/pages/pengaturan/user.model';
+import { UserModel } from 'src/app/model/pages/pengaturan/module/user.model';
 import { UserActions, UserState } from 'src/app/store/pengaturan/umum/user';
 
 @Component({
