@@ -9,4 +9,8 @@ export const sppdRoutes: Routes = [
             breadcrumbs: ['SPPD', 'Beranda']
         }
     },
+    {
+        path: 'referensi',
+        loadChildren: async () => (await import('./referensi/referensi.routes')).sppdReferensiRoutes
+    },
 ]

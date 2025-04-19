@@ -45,7 +45,7 @@ export class SatuanKerjaService {
 
     update(payload: SatuanKerjaModel.UpdateSatuanKerja): Observable<SatuanKerjaModel.GetByIdSatuanKerja> {
         const { unit_id, ...data } = payload;
-        return this._httpRequestService.postRequest(`${environment.webApiUrl}/work-unit/${unit_id}`, data);
+        return this._httpRequestService.putRequest(`${environment.webApiUrl}/work-unit/${unit_id}`, data);
     }
 
     delete(unit_id: string): Observable<SatuanKerjaModel.GetByIdSatuanKerja> {

@@ -50,7 +50,10 @@ export class TahunAnggaranService {
 
     update(payload: TahunAnggaranModel.UpdateTahunAnggaran): Observable<TahunAnggaranModel.GetByIdTahunAnggaran> {
         const { budget_id, ...data } = payload;
-        return this._httpRequestService.postRequest(`${environment.webApiUrl}/master-budget-year/${budget_id}`, data);
+        data.budget_start_date = this._utilityService.onFormatDate(new Date(data.budget_start_date), 'yyyy-MM-DD');
+        data.budget_end_date = this._utilityService.onFormatDate(new Date(data.budget_end_date), 'yyyy-MM-DD');
+
+        return this._httpRequestService.putRequest(`${environment.webApiUrl}/master-budget-year/${budget_id}`, data);
     }
 
     delete(budget_id: string): Observable<TahunAnggaranModel.GetByIdTahunAnggaran> {

@@ -44,7 +44,7 @@ export class RoleAksesService {
 
     update(payload: RoleModel.UpdateRole): Observable<RoleModel.GetByIdRole> {
         const { role_id, ...data } = payload;
-        return this._httpRequestService.postRequest(`${environment.webApiUrl}/role/${role_id}`, data);
+        return this._httpRequestService.putRequest(`${environment.webApiUrl}/role/${role_id}`, data);
     }
 
     delete(role_id: string): Observable<RoleModel.GetByIdRole> {

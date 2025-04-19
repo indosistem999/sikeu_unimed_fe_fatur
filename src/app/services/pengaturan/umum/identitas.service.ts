@@ -32,7 +32,7 @@ export class IdentitasService {
     update(payload: IdentitasModel.UpdateIdentitas): Observable<IdentitasModel.GetByIdIdentitas> {
         const { identity_id, ...data } = payload;
         const formData = this._utilityService.jsonToFormData(data);
-        return this._httpRequestService.postRequest(`${environment.webApiUrl}/master-identity/${identity_id}`, formData);
+        return this._httpRequestService.putRequest(`${environment.webApiUrl}/master-identity/${identity_id}`, formData);
     }
 
     delete(identity_id: string): Observable<IdentitasModel.GetByIdIdentitas> {

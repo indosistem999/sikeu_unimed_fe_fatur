@@ -2,9 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UtilityService } from 'src/app/services/utility/utility.service';
 import { TooltipModule } from 'primeng/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
-import { BehaviorSubject, map, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, map, Subject, takeUntil } from 'rxjs';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -80,7 +80,31 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         const module = this._authenticationService.Module$.value;
-        this.Menu$.next(module[0].module_menu);
+
+        this._router
+            .events
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((event: any) => {
+                if (event.routerEvent) {
+                    if (event.routerEvent.url.includes('pengaturan')) {
+                        this.Menu$.next(module[0].module_menu);
+                    };
+
+                    if (event.routerEvent.url.includes('sppd')) {
+                        this.Menu$.next(module[1].module_menu);
+                    };
+                }
+
+                if (event instanceof NavigationEnd) {
+                    if (event.url.includes('pengaturan')) {
+                        this.Menu$.next(module[0].module_menu);
+                    };
+
+                    if (event.url.includes('sppd')) {
+                        this.Menu$.next(module[1].module_menu);
+                    };
+                }
+            });
     }
 
     ngOnDestroy(): void {
