@@ -87,20 +87,33 @@
 
                     <!-- Dialog -->
                     <p-dialog [header]="FormState == 'insert' ? 'Tambah Pejabat' : 'Ubah Pejabat'"
-                        [(visible)]="FormPejabatDialogToggle" [modal]="true" [style]="{ width: '35rem' }"
+                        [(visible)]="FormPejabatDialogToggle" [modal]="true" [style]="{ width: '40rem' }"
                         [draggable]="false" [resizable]="false">
 
                         <div class="grid w-full my-2">
                             <app-dynamic-form #FormPejabatComps [props]="FormPejabatProps"></app-dynamic-form>
+
+                            <div class="flex w-full gap-2 mt-2">
+                                <div class="w-3/12">
+
+                                </div>
+                                <div class="flex w-9/12 gap-2">
+                                    <p-checkbox [(ngModel)]="is_not_specified" [binary]="true" inputId="binary"
+                                        (onChange)="handleChangeIsNotSpecified($event)" />
+                                    <p class="text-sm text-gray-700 font-medium">
+                                        Belum Bisa Ditentukan
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                         <ng-template pTemplate="footer">
                             <p-button label="Batal" severity="secondary" styleClass="p-button-sm"
                                 (onClick)="FormPejabatDialogToggle = false" />
 
-                            <!-- <p-button label="Simpan" severity="success" styleClass="p-button-sm"
-                                (onClick)="FormState == 'insert' ? handleSave(FormPejabatComps.FormGroup.value) : handleUpdate(FormPejabatComps.FormGroup.value)">
-                            </p-button> -->
+                            <p-button label="Simpan" severity="success" styleClass="p-button-sm"
+                                (onClick)="FormState == 'insert' ? handleSavePejabat(FormPejabatComps.FormGroup.value) : handleUpdatePejabat(FormPejabatComps.FormGroup.value)">
+                            </p-button>
                         </ng-template>
                     </p-dialog>
 
