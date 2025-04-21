@@ -272,7 +272,7 @@ export class AuthenticationService {
             .pipe(
                 map((result) => {
                     if (result.success) {
-                        result.data = Array(result.data) ? result.data[0] : result.data
+                        result.data = result.data;
                     };
 
                     return result;
@@ -352,5 +352,13 @@ export class AuthenticationService {
 
     resetPassword(payload: any) {
         return this._httpRequestService.postRequest(`${environment.webApiUrl}/auth/reset-password`, payload);
+    }
+
+    changePassword(payload: any) {
+        return this._httpRequestService.postRequest(`${environment.webApiUrl}/auth/manual-change-password`, payload);
+    }
+
+    getLogActivity(query?: any) {
+        return this._httpRequestService.getRequest(`${environment.webApiUrl}/user-log-activity`, {}, query);
     }
 }

@@ -78,7 +78,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
             label: 'Ganti Password',
             icon: 'pi pi-lock text-yellow-500',
             command: () => {
-                this._authenticationService.signOut();
+                this._router.navigateByUrl('/ubah-password')
             }
         },
         {

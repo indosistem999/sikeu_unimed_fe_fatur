@@ -38,7 +38,7 @@ export class BerandaComponent implements OnInit, OnDestroy {
             { field: 'email', headerName: 'Email', },
             { field: 'phone_number', headerName: 'No. HP', },
             { field: 'role.role_name', headerName: 'Role Akses', },
-            { field: 'work_unit', headerName: 'Satuan Kerja', },
+            { field: 'work_unit.unit_name', headerName: 'Satuan Kerja', },
         ],
         dataSource: [],
         height: "calc(100vh - 14.5rem)",

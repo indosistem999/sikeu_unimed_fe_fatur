@@ -5,7 +5,7 @@ import { DashboardComponent } from 'src/app/components/layout/dashboard/dashboar
 import { DetailProfileComponent } from './detail-profile/detail-profile.component';
 import { UbahPasswordComponent } from './ubah-password/ubah-password.component';
 import { LogAktifitasComponent } from './log-aktifitas/log-aktifitas.component';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -35,7 +35,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
-
+        this._activatedRoute
+            .url
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result[0].path == 'ubah-password') {
+                    this.SelectedTab = 'Ubah Password';
+                } else {
+                    this.SelectedTab = 'Profil';
+                }
+            })
     }
 
     ngOnDestroy(): void {

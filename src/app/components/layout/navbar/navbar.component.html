@@ -25,7 +25,8 @@
             </span>
 
             <span class="text-gray-100 cursor-pointer">
-                <p-avatar *ngIf="user.photo" [image]="user.photo | safeUrl: 'url'" styleClass="mr-2" shape="circle" />
+                <p-avatar *ngIf="user.photo" [image]="user.photo | safeUrl: 'url'" (click)="menu.toggle($event)"
+                    styleClass="mr-2" shape="circle" />
 
                 <p-avatar *ngIf="!user.photo" (click)="menu.toggle($event)" [label]="user.first_name[0]"
                     styleClass="mr-2" shape="circle" [style]="{ 'background-color': '#dee9fc', color: '#1a2551' }" />

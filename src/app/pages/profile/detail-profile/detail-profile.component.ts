@@ -6,9 +6,11 @@ import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { FormModel } from 'src/app/model/components/form.model';
-import { AuthenticationState } from 'src/app/store/authentication';
+import { AuthenticationActions, AuthenticationState } from 'src/app/store/authentication';
 import { UtilityService } from 'src/app/services/utility/utility.service';
 import { SafeUrlPipe } from 'src/app/middleware/pipe/safeUrl.pipe';
+import { RoleState } from 'src/app/store/pengaturan/hak-akses/role';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-detail-profile',
@@ -35,10 +37,13 @@ export class DetailProfileComponent implements OnInit, OnDestroy {
     FormProps: FormModel.IForm;
     @ViewChild('FormComps') FormComps!: DynamicFormComponent;
 
+    ImagePreview: any;
+
     constructor(
         private _store: Store,
         private _utilityService: UtilityService,
-        private _activatedRoute: ActivatedRoute
+        private _activatedRoute: ActivatedRoute,
+        private _messageService: MessageService,
     ) {
         this.FormProps = {
             id: 'form_user',
@@ -46,6 +51,15 @@ export class DetailProfileComponent implements OnInit, OnDestroy {
                 {
                     id: 'user_id',
                     label: 'ID',
+                    required: true,
+                    type: 'text',
+                    value: '',
+                    readonly: true,
+                    hidden: true
+                },
+                {
+                    id: 'file_image',
+                    label: 'File Image',
                     required: true,
                     type: 'text',
                     value: '',
@@ -93,7 +107,7 @@ export class DetailProfileComponent implements OnInit, OnDestroy {
                 },
                 {
                     id: 'role_id',
-                    label: 'User Akses',
+                    label: 'Jabatan',
                     required: true,
                     type: 'select',
                     value: '',
@@ -140,18 +154,16 @@ export class DetailProfileComponent implements OnInit, OnDestroy {
                     hidden: true,
                 },
                 {
-                    id: 'start_work_at',
-                    label: 'Jam Mulai Kerja',
+                    id: 'work_time',
+                    label: 'Jam Kerja',
                     required: true,
-                    type: 'time',
+                    type: 'time_split',
                     value: '',
-                },
-                {
-                    id: 'end_work_at',
-                    label: 'Jam Selesai Kerja',
-                    required: true,
-                    type: 'time',
-                    value: '',
+                    splitProps: [
+                        { id: 'start_work_at', required: true, value: '' },
+                        { id: 's.d', required: true, value: '', is_only_label: true },
+                        { id: 'end_work_at', required: true, value: '' },
+                    ]
                 },
                 {
                     id: 'address',
@@ -173,14 +185,6 @@ export class DetailProfileComponent implements OnInit, OnDestroy {
             .select(AuthenticationState.authEntities)
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                const startWork = result.start_work_at ?
-                    this._utilityService.onFormatDate(new Date(result.start_work_at as any), 'HH:mm') :
-                    '08:00';
-
-                const endWork = result.end_work_at ?
-                    this._utilityService.onFormatDate(new Date(result.end_work_at as any), 'HH:mm') :
-                    '17:00';
-
                 this.DetailProfile = [
                     { label: 'Photo', value: result.photo },
                     { label: 'Nama Lengkap', value: `${result.first_name} ${result.last_name}` },
@@ -189,12 +193,14 @@ export class DetailProfileComponent implements OnInit, OnDestroy {
                     { label: 'No. Telepon', value: result.phone_number ? result.phone_number : '-' },
                     { label: 'Jenis Kelamin', value: result.gender ? result.gender : '-' },
                     { label: 'Jabatan', value: result.role.role_name ? result.role.role_name : '-' },
-                    { label: 'Jam Kerja', value: `${startWork} - ${endWork}` },
+                    { label: 'Jam Kerja', value: `${result.start_work_at} - ${result.end_work_at}` },
                     { label: 'Alamat', value: result.address ? result.address : '-' },
                 ];
 
                 this.ProfileObject = result;
-            })
+            });
+
+        this.getAllRoleState();
     }
 
     ngOnDestroy(): void {
@@ -206,7 +212,70 @@ export class DetailProfileComponent implements OnInit, OnDestroy {
         this.PageState = state;
 
         if (state == 'edit' && data) {
-            this.FormComps.FormGroup.patchValue(data);
+            setTimeout(() => {
+                const today_start_work_at = this._utilityService.onFormatDate(new Date(), 'yyyy-MM-DD') + " " + data.start_work_at;
+                const start_work_at = new Date(today_start_work_at);
+
+                const today_end_work_at = this._utilityService.onFormatDate(new Date(), 'yyyy-MM-DD') + " " + data.end_work_at;
+                const end_work_at = new Date(today_end_work_at);
+
+                const payload = {
+                    ...data,
+                    name: `${data.first_name} ${data.last_name}`,
+                    role_id: data.role.role_id,
+                    start_work_at: new Date(start_work_at),
+                    end_work_at: new Date(end_work_at),
+                    file_image: data.photo
+                };
+                this.FormComps.FormGroup.patchValue(payload);
+                this.ImagePreview = data.photo;
+            }, 1000);
         }
+    }
+
+    private getAllRoleState() {
+        this._store
+            .select(RoleState.roleEntities)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                const index = this.FormProps.fields.findIndex(item => item.id == 'role_id');
+                this.FormProps.fields[index].dropdownProps.options = result;
+            })
+    }
+
+    handleChangeFileInput(args: any) {
+        const files = args.target.files[0];
+        this.FormComps.FormGroup.get('file_image')?.setValue(files);
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.ImagePreview = reader.result;
+        };
+        reader.readAsDataURL(files);
+
+        const el = document.getElementById('fileInputEl') as HTMLInputElement;
+        el.value = "";
+    }
+
+    handleUpdateProfile(data: any) {
+        delete data['s.d'];
+        delete data['work_time'];
+
+        let payload = {
+            ...data,
+            start_work_at: this._utilityService.onFormatDate(new Date(data.start_work_at), 'HH:mm:ss'),
+            end_work_at: this._utilityService.onFormatDate(new Date(data.end_work_at), 'HH:mm:ss'),
+        };
+
+        this._store
+            .dispatch(new AuthenticationActions.UpdateProfile(payload))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.authentication.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil', detail: 'Profil berhasil diperbarui' });
+                    this.PageState = 'detail';
+                }
+            })
     }
 }

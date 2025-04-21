@@ -23,6 +23,7 @@ import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputOtpModule } from 'primeng/inputotp';
 import { InputGroupModule } from 'primeng/inputgroup';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-dynamic-form',
@@ -84,6 +85,7 @@ export class DynamicFormComponent implements OnInit {
     ImagePreviews: { [key: string]: string | ArrayBuffer | null } = {};
 
     constructor(
+        private _router: Router,
         private _formBuilder: FormBuilder,
         private _messageService: MessageService,
     ) {
@@ -135,6 +137,12 @@ export class DynamicFormComponent implements OnInit {
                 })
             };
 
+            if (item.type == 'time_split') {
+                item.splitProps.forEach((time: any) => {
+                    this.FormGroup.addControl(time.id, new FormControl(0, [Validators.required]));
+                })
+            };
+
             if (item.type == 'switch') {
                 this.FormGroup.addControl(item.id, new FormControl(false, [Validators.required]));
             }
@@ -172,7 +180,15 @@ export class DynamicFormComponent implements OnInit {
 
             if (item.required && item.type == 'text_split' && this.FormGroup.get(item.id)?.invalid) {
                 item.splitProps.forEach((text: any) => {
-                    this.FormGroup.addControl(item.id, new FormControl("", [Validators.required]));
+                    this.FormGroup.addControl(text.id, new FormControl("", [Validators.required]));
+                })
+            };
+
+            if (item.required && item.type == 'time_split' && this.FormGroup.get(item.id)?.invalid) {
+                item.splitProps.forEach((time: any) => {
+                    if (!time.is_only_label) {
+                        this.FormGroup.addControl(time.id, new FormControl("", [Validators.required]));
+                    }
                 })
             };
         });
@@ -262,6 +278,10 @@ export class DynamicFormComponent implements OnInit {
         reader.readAsDataURL(files);
     }
 
+    handleChangePassword(args: any, fields: FormModel.IFormFields) {
+        return fields?.onChange?.(args);
+    }
+
     // Check if the accepted file type is an image
     isImageFile(accept: string): boolean {
         return accept.includes('image');
@@ -297,5 +317,9 @@ export class DynamicFormComponent implements OnInit {
 
     handleOpenImage(image: any) {
         window.open(image);
+    }
+
+    handleOpenAdditionalLink(url: string) {
+        this._router.navigateByUrl(url);
     }
 }

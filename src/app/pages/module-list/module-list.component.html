@@ -21,7 +21,8 @@
             <!-- Button -->
             <div class="flex flex-col gap-3 w-2/12 ml-auto">
                 <!-- Halaman Profil -->
-                <div class="flex w-full justify-center items-center px-2 py-3 rounded-lg bg-white">
+                <div class="flex w-full justify-center items-center px-2 py-3 rounded-lg bg-white"
+                    (click)="handleNavigate('profile')">
                     <p class="text-xs text-gray-700 font-medium">
                         <i class="pi pi-user text-blue-500" style="font-size: 12px"></i>&nbsp; Halaman Profil
                     </p>
@@ -70,7 +71,7 @@
                     </p>
 
                     <div class="bg-white rounded-lg shadow-md p-3 cursor-pointer transition-all duration-75 hover:bg-gray-100"
-                        (click)="handleNavigate(ActiveModule, ActiveModule.module_path + '/beranda')">
+                        (click)="handleNavigate(ActiveModule.module_path + '/beranda')">
                         <p class="text-sm text-[#295AA3]">
                             {{ user.role.role_name }}
                         </p>
