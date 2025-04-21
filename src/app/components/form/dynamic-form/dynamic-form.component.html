@@ -60,7 +60,7 @@
             <!-- Datepicker -->
             <p-calendar *ngIf="item.type == 'date'" appendTo="body" styleClass="p-inputtext-sm w-full"
                 dateFormat="dd MM yy" [showClear]="true" formControlName="{{ item.id }}" [readonlyInput]="true"
-                (onSelect)="handleChangeCalendar($event, item)">
+                (onSelect)="handleChangeCalendar($event, item)" [disabled]="item.readonly!">
             </p-calendar>
 
             <!-- Month Picker -->
