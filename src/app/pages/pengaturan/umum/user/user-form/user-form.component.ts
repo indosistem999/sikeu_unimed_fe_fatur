@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -68,12 +68,12 @@ import { Subject, takeUntil } from 'rxjs';
                 <label>Jenis Kelamin</label>
                 <div class="flex gap-4">
                     <div class="flex items-center">
-                        <p-radioButton name="gender" value="male" formControlName="gender" inputId="male"></p-radioButton>
-                        <label for="male" class="ml-2">Laki-laki</label>
+                        <p-radioButton name="gender" value="L" formControlName="gender" inputId="L"></p-radioButton>
+                        <label for="L" class="ml-2">Laki-laki</label>
                     </div>
                     <div class="flex items-center">
-                        <p-radioButton name="gender" value="female" formControlName="gender" inputId="female"></p-radioButton>
-                        <label for="female" class="ml-2">Perempuan</label>
+                        <p-radioButton name="gender" value="P" formControlName="gender" inputId="P"></p-radioButton>
+                        <label for="P" class="ml-2">Perempuan</label>
                     </div>
                 </div>
             </div>
@@ -129,7 +129,8 @@ import { Subject, takeUntil } from 'rxjs';
         }
     `]
 })
-export class UserFormComponent implements OnInit, OnDestroy {
+export class UserFormComponent implements OnInit, OnDestroy, OnChanges {
+    @Input() userData: any;
     @Output() onClose = new EventEmitter<void>();
     @Output() onFormSubmit = new EventEmitter<any>();
 
@@ -147,7 +148,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
             name: [''],
             email: ['', Validators.required],
             phone_number: [''],
-            gender: ['male'],
+            gender: ['L'],
             has_work_unit: [0],
             unit_id: [''],
             role_id: ['']
@@ -168,6 +169,21 @@ export class UserFormComponent implements OnInit, OnDestroy {
             .subscribe(() => {
                 this.roles = this.store.selectSnapshot(RoleState.roleEntities);
             });
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['userData'] && changes['userData'].currentValue) {
+            const data = changes['userData'].currentValue;
+            this.userForm.patchValue({
+                name: data.name || `${data.first_name} ${data.last_name}`,
+                email: data.email,
+                phone_number: data.phone_number || '',
+                gender: data.gender === 'null' ? 'L' : data.gender || 'L',
+                has_work_unit: data.has_work_unit || (data.work_unit ? 1 : 0),
+                unit_id: data.unit_id || data.work_unit?.unit_id || '',
+                role_id: data.role_id || data.role?.role_id || ''
+            });
+        }
     }
 
     ngOnDestroy(): void {

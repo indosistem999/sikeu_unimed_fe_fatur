@@ -17,6 +17,7 @@ import { MenuState } from 'src/app/store/pengaturan/menu';
 import { Store } from '@ngxs/store';
 import { IdentitasState } from 'src/app/store/pengaturan/umum/identitas';
 import { SafeUrlPipe } from 'src/app/middleware/pipe/safeUrl.pipe';
+import { IdentitasActions } from 'src/app/store/pengaturan/umum/identitas/identitas.action';
 
 @Component({
     selector: 'app-navbar',
@@ -100,6 +101,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
+        // Load identitas data
+        this._store.dispatch(new IdentitasActions.GetAllIdentitas());
+
         const module = this._authenticationService.Module$.value;
 
         this._router

@@ -8,21 +8,12 @@
     </div>
 
     <!-- Dialog -->
-    <p-dialog [header]="FormState == 'insert' ? 'Tambah User' : 'Ubah User'" [(visible)]="FormDialogToggle"
-        [modal]="true" [style]="{ width: '40rem' }" [draggable]="false" [resizable]="false">
-
-        <div class="grid w-full my-2">
-            <app-dynamic-form #FormComps [props]="FormProps"></app-dynamic-form>
-        </div>
-
-        <ng-template pTemplate="footer">
-            <p-button label="Batal" severity="secondary" styleClass="p-button-sm"
-                (onClick)="FormDialogToggle = false" />
-
-            <p-button label="Simpan" severity="success" styleClass="p-button-sm"
-                (onClick)="FormState == 'insert' ? handleSave(FormComps.FormGroup.value) : handleUpdate(FormComps.FormGroup.value)">
-            </p-button>
-        </ng-template>
+    <p-dialog [header]="FormState == 'insert' ? 'Tambah User' : 'Edit User'" [(visible)]="FormDialogToggle" [style]="{width: '50vw'}" [modal]="true" [draggable]="false" [resizable]="false">
+        <app-user-form 
+            [userData]="FormState == 'update' ? GridSelectedData : null"
+            (onClose)="FormDialogToggle = false" 
+            (onFormSubmit)="FormState == 'insert' ? handleSave($event) : handleUpdate($event)">
+        </app-user-form>
     </p-dialog>
 
     <p-confirmDialog />

@@ -18,6 +18,7 @@ import { AuthenticationService } from 'src/app/services/authentication/authentic
 import { RoleState } from 'src/app/store/pengaturan/hak-akses/role';
 import { SatuanKerjaState } from 'src/app/store/pengaturan/umum/satuan-kerja';
 import { UserState, UserActions } from 'src/app/store/pengaturan/umum/user';
+import { UserFormComponent } from '../../umum/user/user-form/user-form.component';
 
 @Component({
     selector: 'app-user',
@@ -30,6 +31,7 @@ import { UserState, UserActions } from 'src/app/store/pengaturan/umum/user';
         DashboardComponent,
         ConfirmDialogModule,
         DynamicFormComponent,
+        UserFormComponent
     ],
     templateUrl: './user.component.html',
     styleUrl: './user.component.scss'
@@ -55,6 +57,7 @@ export class UserComponent implements OnInit, OnDestroy {
             { field: 'full_name', headerName: 'Nama', },
             { field: 'email', headerName: 'Email', },
             { field: 'phone_number', headerName: 'No. HP', },
+            { field: 'gender', headerName: 'Jenis Kelamin' },
             { field: 'role.role_name', headerName: 'User Akses', },
             { field: 'work_unit.unit_name', headerName: 'Satuan Kerja', },
         ],
@@ -203,7 +206,13 @@ export class UserComponent implements OnInit, OnDestroy {
         if (data.id == 'add') {
             this.FormState = 'insert';
             this.FormDialogToggle = true;
-            this.FormComps.FormGroup.reset();
+            
+            // Wait for the next tick to ensure form is initialized
+            setTimeout(() => {
+                if (this.FormComps && this.FormComps.FormGroup) {
+                    this.FormComps.FormGroup.reset();
+                }
+            });
         };
     }
 
@@ -212,7 +221,11 @@ export class UserComponent implements OnInit, OnDestroy {
             .select(UserState.userEntities)
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                this.GridProps.dataSource = result;
+                // Transform the data to include formatted gender
+                this.GridProps.dataSource = result.map((item: any) => ({
+                    ...item,
+                    gender: item.gender === 'L' ? 'Laki-laki' : item.gender === 'P' ? 'Perempuan' : '-'
+                }));
             })
     }
 
@@ -265,22 +278,26 @@ export class UserComponent implements OnInit, OnDestroy {
         this.FormState = 'update';
         this.FormDialogToggle = true;
 
-        const index = this.FormProps.fields.findIndex(item => item.id == 'unit_id');
+        setTimeout(() => {
+            const index = this.FormProps.fields.findIndex(item => item.id == 'unit_id');
 
-        if (args.work_unit) {
-            this.FormProps.fields[index].hidden = false;
-            this.FormProps.class = 'grid-rows-7 grid-cols-1';
-        } else {
-            this.FormProps.fields[index].hidden = true;
-            this.FormProps.class = 'grid-rows-6 grid-cols-1';
-        }
+            if (args.work_unit) {
+                this.FormProps.fields[index].hidden = false;
+                this.FormProps.class = 'grid-rows-7 grid-cols-1';
+            } else {
+                this.FormProps.fields[index].hidden = true;
+                this.FormProps.class = 'grid-rows-6 grid-cols-1';
+            }
 
-        this.FormComps.FormGroup.patchValue({
-            ...args,
-            name: `${args.first_name} ${args.last_name}`,
-            role_id: args.role.role_id,
-            has_work_unit: args.work_unit ? 1 : 0,
-            unit_id: args.work_unit.unit_id
+            if (this.FormComps && this.FormComps.FormGroup) {
+                this.FormComps.FormGroup.patchValue({
+                    ...args,
+                    name: `${args.first_name} ${args.last_name}`,
+                    role_id: args.role?.role_id,
+                    has_work_unit: args.work_unit ? 1 : 0,
+                    unit_id: args.work_unit?.unit_id
+                });
+            }
         });
     }
 
@@ -337,13 +354,23 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     handleUpdate(args: any) {
+        if (!this.GridSelectedData?.user_id) {
+            this._messageService.add({ severity: 'error', summary: 'Error', detail: 'User ID tidak ditemukan' });
+            return;
+        }
+
+        const updateData = {
+            user_id: this.GridSelectedData.user_id,
+            ...args
+        };
+
         this._store
-            .dispatch(new UserActions.UpdateUser(args))
+            .dispatch(new UserActions.UpdateUser(updateData))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
                 if (result.user.success) {
                     this._messageService.clear();
-                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Diperbarui' });
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'User Berhasil Diperbarui' });
                     this.FormDialogToggle = false;
                     this.FormComps.FormGroup.reset();
                 }

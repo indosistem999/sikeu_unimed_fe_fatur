@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { map, Subject, takeUntil } from 'rxjs';
 import { GridComponent } from 'src/app/components/grid/grid.component';
@@ -31,7 +31,6 @@ import { UserFormComponent } from '../umum/user/user-form/user-form.component';
     styleUrl: './beranda.component.scss'
 })
 export class BerandaComponent implements OnInit, OnDestroy {
-
     Destroy$ = new Subject();
 
     GridProps: GridModel.IGrid = {
@@ -41,6 +40,7 @@ export class BerandaComponent implements OnInit, OnDestroy {
             { field: 'full_name', headerName: 'Nama', },
             { field: 'email', headerName: 'Email', },
             { field: 'phone_number', headerName: 'No. HP', },
+            { field: 'gender', headerName: 'Jenis Kelamin' },
             { field: 'role.role_name', headerName: 'Role Akses', },
             { field: 'work_unit.unit_name', headerName: 'Satuan Kerja', },
         ],
@@ -55,6 +55,9 @@ export class BerandaComponent implements OnInit, OnDestroy {
     };
 
     GridQueryParams: UserModel.GetAllQuery = { page: '1', limit: '5' };
+    GridSelectedData: any;
+    FormState: 'insert' | 'update' = 'insert';
+    FormDialogToggle = false;
 
     QuickAccessDatasource: any[] = [
         { title: 'Tambah Role Akses', path: '/pengaturan/hak-akses/role-akses' },
@@ -64,13 +67,12 @@ export class BerandaComponent implements OnInit, OnDestroy {
         { title: 'Ubah Identitas', path: '/pengaturan/profile' },
     ];
 
-    showUserForm: boolean = false;
-
     constructor(
         private _store: Store,
         private _router: Router,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
+        private _messageService: MessageService,
     ) { }
 
     ngOnInit(): void {
@@ -87,7 +89,11 @@ export class BerandaComponent implements OnInit, OnDestroy {
             .select(UserState.userEntities)
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                this.GridProps.dataSource = result;
+                this.GridProps.dataSource = result.map((item: any) => ({
+                    ...item,
+                    gender: item.gender === 'L' ? 'Laki-laki' : item.gender === 'P' ? 'Perempuan' : '-',
+                    original_gender: item.gender // Keep original gender value
+                }));
             })
     }
 
@@ -113,15 +119,22 @@ export class BerandaComponent implements OnInit, OnDestroy {
     }
 
     onCellClicked(args: any): void {
-
+        this.GridSelectedData = args;
     }
 
     onRowDoubleClicked(args: any): void {
-
+        this.FormState = 'update';
+        this.FormDialogToggle = true;
+        this.GridSelectedData = {
+            ...args,
+            gender: args.original_gender || args.gender
+        };
     }
 
     onToolbarClicked(args: any): void {
-        if (args.type == 'delete') {
+        const actionType = args.type?.toLowerCase();
+        
+        if (actionType === 'hapus') {
             this._confirmationService.confirm({
                 target: (<any>event).target as EventTarget,
                 message: 'Data Yang Dihapus Tidak Dapat Dikembalikan',
@@ -134,13 +147,26 @@ export class BerandaComponent implements OnInit, OnDestroy {
                 rejectIcon: "none",
                 rejectLabel: 'Tidak, kembali',
                 accept: () => {
+                    this.handleDelete(args.data);
                 }
             });
         }
 
-        if (args.type == 'detail') {
+        if (actionType === 'edit') {
             this.onRowDoubleClicked(args.data);
         }
+    }
+
+    handleDelete(args: any) {
+        this._store
+            .dispatch(new UserActions.DeleteUser(args.user_id))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.user.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'User Berhasil Dihapus' });
+                }
+            })
     }
 
     onPageChanged(args: any): void {
@@ -158,19 +184,43 @@ export class BerandaComponent implements OnInit, OnDestroy {
     }
 
     onAddUserClick() {
-        this.showUserForm = true;
+        this.FormState = 'insert';
+        this.FormDialogToggle = true;
     }
 
-    onUserFormClose() {
-        this.showUserForm = false;
-    }
-
-    onUserFormSubmit(formData: any) {
-        this._store.dispatch(new UserActions.CreateUser(formData))
+    handleSave(args: any) {
+        this._store
+            .dispatch(new UserActions.CreateUser(args))
             .pipe(takeUntil(this.Destroy$))
-            .subscribe(() => {
-                this.showUserForm = false;
-                this.onSearchGrid(this.GridQueryParams.search);
-            });
+            .subscribe((result) => {
+                if (result.user.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'User Berhasil Disimpan' });
+                    this.FormDialogToggle = false;
+                }
+            })
+    }
+
+    handleUpdate(args: any) {
+        if (!this.GridSelectedData?.user_id) {
+            this._messageService.add({ severity: 'error', summary: 'Error', detail: 'User ID tidak ditemukan' });
+            return;
+        }
+
+        const updateData = {
+            user_id: this.GridSelectedData.user_id,
+            ...args
+        };
+
+        this._store
+            .dispatch(new UserActions.UpdateUser(updateData))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.user.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'User Berhasil Diperbarui' });
+                    this.FormDialogToggle = false;
+                }
+            })
     }
 }
