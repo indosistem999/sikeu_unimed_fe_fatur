@@ -39,7 +39,13 @@
         <div class="flex flex-row w-full justify-between mt-3">
             <p-button severity="secondary" label="Preview" styleClass="p-button-sm"></p-button>
 
-            <p-button severity="info" label="Simpan Kop Surat" styleClass="p-button-sm"></p-button>
+            <p-button *ngIf="FormState == 'insert'" severity="info" label="Simpan Kop Surat" styleClass="p-button-sm"
+                (onClick)="handleSave(KopSuratDatasource)">
+            </p-button>
+
+            <p-button *ngIf="FormState == 'update'" severity="info" label="Edit Kop Surat" styleClass="p-button-sm"
+                (onClick)="handleUpdate(KopSuratDatasource)">
+            </p-button>
         </div>
     </div>
 </app-dashboard>

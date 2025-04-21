@@ -18,6 +18,13 @@ const routes: Routes = [
         }
     },
     {
+        path: 'profile',
+        loadComponent: async () => (await import('./pages/profile/profile.component')).ProfileComponent,
+        data: {
+            show_title: false,
+        }
+    },
+    {
         path: 'pengaturan',
         loadChildren: async () => (await import('./pages/pengaturan/pengaturan.routes')).pengaturanRoutes
     },

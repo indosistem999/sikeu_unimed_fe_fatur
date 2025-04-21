@@ -22,12 +22,14 @@ export class KopSuratService {
             .pipe(
                 map((result) => {
                     if (result.data.records.length) {
-                        result.data.records = result.data.records.map((item: any, index: number) => {
-                            return {
-                                ...item,
-                                no: index + 1,
-                            }
-                        });
+                        result.data.records = result.data.records
+                            .sort((a: any, b: any) => { return parseInt(a.order_number) - parseInt(b.order_number) })
+                            .map((item: any, index: number) => {
+                                return {
+                                    ...item,
+                                    no: index + 1,
+                                }
+                            });
                     }
 
                     return result;
@@ -41,13 +43,11 @@ export class KopSuratService {
     }
 
     create(payload: any): Observable<HttpBaseResponse> {
-        const { kopsurat_id, ...data } = payload;
-        return this._httpRequestService.postRequest(`${environment.webApiUrl}/sppd-kop-surat`, payload);
+        return this._httpRequestService.postRequest(`${environment.webApiUrl}/sppd-kop-surat/batch`, payload);
     }
 
     update(payload: any): Observable<HttpBaseResponse> {
-        const { kopsurat_id, ...data } = payload;
-        return this._httpRequestService.putRequest(`${environment.webApiUrl}/sppd-kop-surat/${kopsurat_id}`, data);
+        return this._httpRequestService.putRequest(`${environment.webApiUrl}/sppd-kop-surat/batch`, payload);
     }
 
     delete(kopsurat_id: string): Observable<HttpBaseResponse> {

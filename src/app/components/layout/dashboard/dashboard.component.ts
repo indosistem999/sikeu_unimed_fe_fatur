@@ -36,6 +36,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     @Output('onClickButtonNavigation') onClickButtonNavigation = new EventEmitter<any>();
 
+    ShowTitle = this._activatedRoute.snapshot.data ? this._activatedRoute.snapshot.data['show_title'] : true;
+
     constructor(
         private _router: Router,
         private _activatedRoute: ActivatedRoute,

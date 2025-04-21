@@ -45,7 +45,10 @@ export class AppComponent implements OnInit, OnDestroy {
                 if (event instanceof NavigationEnd) {
 
                     // ** Load setup data state
-                    if ((event.url.includes('pengaturan') || event.url.includes('pengatuan')) && !this.IsPengaturanStateInited) {
+                    if (event.url.includes('module-list') ||
+                        event.url.includes('profile') ||
+                        (event.url.includes('pengaturan') ||
+                            (event.url.includes('pengatuan')) && !this.IsPengaturanStateInited)) {
                         this.initPengaturanState();
                     }
                 }

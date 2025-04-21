@@ -1,16 +1,16 @@
 <div id="navbar" class="flex flex-col w-full shadow pt-12 px-12">
     <!-- Heading -->
     <div class="flex w-full gap-2 justify-between items-center mb-5">
-        <div class="flex items-center gap-5">
-            <img src="../../../assets/image/logo.png" alt="logo" class="h-[100px] w-[100px]">
+        <div *ngIf="IdentitasState$ | async as identitas" class="flex items-center gap-5">
+            <img [src]="identitas.logo | safeUrl: 'url'" alt="logo" class="h-[100px] w-[100px]">
 
-            <div *ngIf="Breadcrumbs$ | async as breadcrumbs" class="flex gap-2 flex-col">
-                <p class="text-gray-300 text-base">
+            <div class="flex gap-2 flex-col">
+                <p *ngIf="Breadcrumbs$ | async as breadcrumbs" class="text-gray-300 text-base">
                     {{ breadcrumbs[0] }}
                 </p>
 
                 <p class="text-gray-100 text-xl font-semibold">
-                    Universitas Negeri Medan
+                    {{ identitas.name }}
                 </p>
             </div>
         </div>
@@ -20,15 +20,33 @@
                 <i class="pi pi-bell"></i>
             </span>
 
-            <span class="text-gray-100 cursor-pointer">
+            <span class="text-gray-100 cursor-pointer" (click)="handleNavigateToMenu('/list-module')">
                 <i class="pi pi-th-large"></i>
             </span>
 
             <span class="text-gray-100 cursor-pointer">
-                <p-avatar (click)="menu.toggle($event)" [label]="user.first_name[0]" styleClass="mr-2"
-                    [style]="{ 'background-color': '#dee9fc', color: '#1a2551' }" />
+                <p-avatar *ngIf="user.photo" [image]="user.photo | safeUrl: 'url'" styleClass="mr-2" shape="circle" />
 
-                <p-menu #menu [model]="UserMenu" [popup]="true" appendTo="body" />
+                <p-avatar *ngIf="!user.photo" (click)="menu.toggle($event)" [label]="user.first_name[0]"
+                    styleClass="mr-2" shape="circle" [style]="{ 'background-color': '#dee9fc', color: '#1a2551' }" />
+
+                <p-overlayPanel #menu>
+                    <div class="flex flex-col gap-4 p-5 w-auto bg-white rounded-lg">
+                        <div
+                            class="w-full flex items-center pb-3 border-b border-x-0 border-t-0 border-gray-200 border-solid">
+                            <p-avatar *ngIf="user.photo" [image]="user.photo | safeUrl: 'url'" styleClass="mr-2"
+                                shape="circle" />
+
+                            <p class="text-gray-700 text-sm">
+                                {{ user.first_name }} {{ user.last_name }}
+                            </p>
+                        </div>
+                        <p *ngFor="let sub of UserMenu" class="text-gray-700 text-sm cursor-pointer"
+                            (click)="sub.command()!">
+                            <i [class]="sub.icon" style="font-size: 12px"></i>&nbsp; {{ sub.label }}
+                        </p>
+                    </div>
+                </p-overlayPanel>
             </span>
         </div>
     </div>
