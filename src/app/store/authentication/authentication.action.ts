@@ -9,4 +9,13 @@ export namespace AuthenticationActions {
     export class GetProfile {
         static readonly type = '[AUTH] Get Profile';
     }
+
+    export class GetProfileFromApi {
+        static readonly type = '[AUTH] Get Profile Data';
+    }
+
+    export class UpdateProfile {
+        static readonly type = '[AUTH] Update Profile';
+        constructor(public payload: any) { }
+    }
 }

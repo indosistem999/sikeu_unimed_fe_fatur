@@ -26,7 +26,8 @@
                 <!-- Photo -->
                 <div *ngIf="DetailProfile[0].value"
                     class="flex w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem]">
-                    <img [src]="DetailProfile[0].value | safeUrl: 'url'" alt="photo" class="w-full h-full">
+                    <img [src]="DetailProfile[0].value | safeUrl: 'url'" alt="photo"
+                        class="w-full h-full rounded-md object-cover">
                 </div>
             </div>
 
@@ -61,7 +62,8 @@
                     (onClick)="PageState = 'detail'">
                 </p-button>
 
-                <p-button severity="success" label="Simpan" icon="pi pi-save" styleClass="p-button-sm">
+                <p-button severity="success" label="Simpan" icon="pi pi-save" styleClass="p-button-sm"
+                    (onClick)="handleUpdateProfile(FormComps.FormGroup.value)">
                 </p-button>
             </div>
         </div>
@@ -69,17 +71,54 @@
         <div class="flex flex-row w-full my-2 gap-8">
             <div class="w-2/12 flex h-full">
                 <!-- No Photo -->
-                <div *ngIf="!DetailProfile[0].value"
-                    class="flex w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem]">
+                <div *ngIf="!DetailProfile[0].value && !ImagePreview"
+                    class="flex flex-col w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem] cursor-pointer"
+                    (click)="FileInputEl.click()">
                     <p class="text-sm text-gray-500 text-center">
-                        No Photo
+                        <i class="pi pi-upload"></i>
+                    </p>
+                    <p class="text-sm text-gray-500 text-center">
+                        Klik untuk ganti foto
                     </p>
                 </div>
 
+                <!-- No Photo -->
+                <div *ngIf="!DetailProfile[0].value && ImagePreview"
+                    class="flex flex-col w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem] relative">
+                    <img [src]="ImagePreview" alt="photo" class="w-full h-full rounded-md object-cover">
+
+                    <span class="bg-red-500 p-2 rounded-md absolute top-[10px] right-[10px] cursor-pointer"
+                        (click)="ImagePreview = null">
+                        <i class="pi pi-trash text-white" style="font-size: 12px"></i>
+                    </span>
+                </div>
+
+                <input #FileInputEl [id]="'fileInputEl'" type="file" accept="image/*"
+                    class="hidden p-inputtext-sm w-full readonlyState" (change)="handleChangeFileInput($event)" />
+
                 <!-- Photo -->
-                <div *ngIf="DetailProfile[0].value"
-                    class="flex w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem]">
-                    <img [src]="DetailProfile[0].value | safeUrl: 'url'" alt="photo" class="w-full h-full">
+                <div *ngIf="DetailProfile[0].value && !ImagePreview"
+                    class="flex flex-col w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem] cursor-pointer"
+                    (click)="FileInputEl.click()">
+                    <p class="text-sm text-gray-500 text-center">
+                        <i class="pi pi-upload"></i>
+                    </p>
+                    <p class="text-sm text-gray-500 text-center">
+                        Klik untuk ganti foto
+                    </p>
+                </div>
+
+
+                <!-- Photo -->
+                <div *ngIf="DetailProfile[0].value && ImagePreview"
+                    class="flex w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem] relative">
+                    <img [src]="ImagePreview | safeUrl: 'url'" alt="photo"
+                        class="w-full h-full rounded-md object-cover">
+
+                    <span class="bg-red-500 p-2 rounded-md absolute top-[10px] right-[10px] cursor-pointer"
+                        (click)="ImagePreview = null">
+                        <i class="pi pi-trash text-white" style="font-size: 12px"></i>
+                    </span>
                 </div>
             </div>
 

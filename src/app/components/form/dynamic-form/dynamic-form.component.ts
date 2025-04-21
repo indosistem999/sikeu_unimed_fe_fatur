@@ -135,6 +135,12 @@ export class DynamicFormComponent implements OnInit {
                 })
             };
 
+            if (item.type == 'time_split') {
+                item.splitProps.forEach((time: any) => {
+                    this.FormGroup.addControl(time.id, new FormControl(0, [Validators.required]));
+                })
+            };
+
             if (item.type == 'switch') {
                 this.FormGroup.addControl(item.id, new FormControl(false, [Validators.required]));
             }
@@ -172,7 +178,15 @@ export class DynamicFormComponent implements OnInit {
 
             if (item.required && item.type == 'text_split' && this.FormGroup.get(item.id)?.invalid) {
                 item.splitProps.forEach((text: any) => {
-                    this.FormGroup.addControl(item.id, new FormControl("", [Validators.required]));
+                    this.FormGroup.addControl(text.id, new FormControl("", [Validators.required]));
+                })
+            };
+
+            if (item.required && item.type == 'time_split' && this.FormGroup.get(item.id)?.invalid) {
+                item.splitProps.forEach((time: any) => {
+                    if (!time.is_only_label) {
+                        this.FormGroup.addControl(time.id, new FormControl("", [Validators.required]));
+                    }
                 })
             };
         });

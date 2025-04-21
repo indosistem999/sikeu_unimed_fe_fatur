@@ -79,6 +79,20 @@
                 [showClear]="true" formControlName="{{ item.id }}" [readonlyInput]="true">
             </p-calendar>
 
+            <!-- Time Split -->
+            <div *ngIf="item.type == 'time_split'" class="flex w-full gap-3 items-center">
+                <div *ngFor="let time of item.splitProps"
+                    class="{{time.is_only_label ? 'w-auto px-2' : 'w-3/12'}} grid">
+                    <p-calendar *ngIf="!time.is_only_label" appendTo="body" styleClass="p-inputtext-sm w-full"
+                        [timeOnly]="true" [showClear]="true" formControlName="{{ time.id }}" [readonlyInput]="true">
+                    </p-calendar>
+
+                    <p *ngIf="time.is_only_label" class="text-sm text-gray-700 text-center">
+                        {{ time.id }}
+                    </p>
+                </div>
+            </div>
+
             <!-- Dropdown -->
             <p-dropdown *ngIf="item.type == 'select'" [options]="item.dropdownProps.options"
                 [optionLabel]="item.dropdownProps.optionName"

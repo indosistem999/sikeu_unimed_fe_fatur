@@ -272,7 +272,7 @@ export class AuthenticationService {
             .pipe(
                 map((result) => {
                     if (result.success) {
-                        result.data = Array(result.data) ? result.data[0] : result.data
+                        result.data = result.data;
                     };
 
                     return result;

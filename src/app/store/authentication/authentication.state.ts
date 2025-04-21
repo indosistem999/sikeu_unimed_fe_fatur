@@ -3,7 +3,8 @@ import { Action, Selector, State, StateContext } from "@ngxs/store";
 import { AuthenticationModel } from "src/app/model/pages/authentication/authentication.model";
 import { AuthenticationService } from "src/app/services/authentication/authentication.service";
 import { AuthenticationActions } from "./authentication.action";
-import { tap } from "rxjs";
+import { of, switchMap, tap } from "rxjs";
+import { MasterUserService } from "src/app/services/pengaturan/hak-akses/master-user.service";
 
 interface AuthStateModel {
     entities: AuthenticationModel.IAuthentication;
@@ -21,6 +22,7 @@ interface AuthStateModel {
 export class AuthenticationState {
 
     constructor(
+        private _userService: MasterUserService,
         private _authenticationService: AuthenticationService,
     ) {
         const userData = this._authenticationService.getUserData();
@@ -56,5 +58,57 @@ export class AuthenticationState {
         });
 
         return userData ? true : false;
+    }
+
+    @Action(AuthenticationActions.GetProfileFromApi)
+    getProfileApi(ctx: StateContext<AuthStateModel>) {
+        const userData = this._authenticationService.getUserData();
+
+        return this._authenticationService
+            .getProfile(userData.access_token)
+            .pipe(
+                tap((result) => {
+                    const state = ctx.getState();
+                    const data = { ...result.data, access_token: userData.access_token, refresh_token: userData.refresh_token };
+
+                    localStorage.setItem("_SIMKEU_UD_", JSON.stringify(data));
+
+                    this._authenticationService.setUserData();
+
+                    ctx.setState({
+                        ...state,
+                        entities: data,
+                    });
+                })
+            )
+    }
+
+    @Action(AuthenticationActions.UpdateProfile)
+    updateProfile(ctx: StateContext<AuthStateModel>, actions: any) {
+        return this._userService
+            .update(actions.payload)
+            .pipe(
+                tap((result) => {
+                    const state = ctx.getState();
+                    if (result.success) {
+                        ctx.setState({
+                            ...state,
+                            success: true
+                        })
+                    } else {
+                        ctx.patchState({
+                            ...state,
+                            success: false
+                        })
+                    }
+                }),
+                switchMap((result: any) => {
+                    if (result.success) {
+                        return ctx.dispatch(new AuthenticationActions.GetProfileFromApi());
+                    } else {
+                        return of([]);
+                    }
+                })
+            )
     }
 }

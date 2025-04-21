@@ -48,11 +48,12 @@ export namespace FormModel {
         required: boolean;
         value: any;
         onChange?: (args: any) => any;
+        is_only_label?: boolean;
     }
 
     export interface IFormFields {
         id: string;
-        type: 'text' | 'date' | 'daterange' | 'monthpicker' | 'number' | 'select' | 'multiselect' | 'checkbox' | 'radio' | 'textarea' | 'password' | 'lookup' | 'text_split' | 'switch' | 'time' | 'number_split' | 'fileinput' | 'editor' | 'otp' | 'captcha';
+        type: 'text' | 'date' | 'daterange' | 'monthpicker' | 'number' | 'select' | 'multiselect' | 'checkbox' | 'radio' | 'textarea' | 'password' | 'lookup' | 'text_split' | 'switch' | 'time' | 'time_split' | 'number_split' | 'fileinput' | 'editor' | 'otp' | 'captcha';
         label: string;
         required: boolean;
         value: any;
