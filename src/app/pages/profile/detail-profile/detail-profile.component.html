@@ -1,0 +1,91 @@
+<div class="grid w-full">
+    <!-- Detail -->
+    <div *ngIf="PageState == 'detail'" class="flex flex-col gap-0 p-3">
+        <!-- Header -->
+        <div class="flex w-full justify-between items-center mb-3">
+            <p class="text-2xl font-semibold text-gray-700">
+                Profil
+            </p>
+
+            <p-button severity="primary" label="Edit Profil" icon="pi pi-pencil"
+                styleClass="p-button-sm p-button-outlined" (onClick)="handleChangePageState('edit', ProfileObject)">
+            </p-button>
+        </div>
+
+        <!-- Form -->
+        <div class="flex w-full flex-row gap-8 mb-2">
+            <div class="w-2/12 flex h-full">
+                <!-- No Photo -->
+                <div *ngIf="!DetailProfile[0].value"
+                    class="flex w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem]">
+                    <p class="text-sm text-gray-500 text-center">
+                        No Photo
+                    </p>
+                </div>
+
+                <!-- Photo -->
+                <div *ngIf="DetailProfile[0].value"
+                    class="flex w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem]">
+                    <img [src]="DetailProfile[0].value | safeUrl: 'url'" alt="photo" class="w-full h-full">
+                </div>
+            </div>
+
+            <div class="w-10/12 flex flex-col gap-2">
+                <div *ngFor="let item of DetailProfile"
+                    class="{{ item.label == 'Photo' ? 'hidden' : 'flex' }} flex-row items-center mb-2">
+                    <div class="w-3/12">
+                        <p class="text-sm text-gray-600">
+                            {{ item.label }}
+                        </p>
+                    </div>
+                    <div class="w-9/12">
+                        <p class="text-sm text-gray-800 font-medium">
+                            {{ item.value }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit -->
+    <div *ngIf="PageState == 'edit'" class="flex flex-col gap-0 p-3">
+        <!-- Header -->
+        <div class="flex w-full justify-between items-center mb-3">
+            <p class="text-2xl font-semibold text-gray-700">
+                Edit Profil
+            </p>
+
+            <div class="flex gap-4">
+                <p-button severity="danger" label="Batal" icon="pi pi-times" styleClass="p-button-sm p-button-outlined"
+                    (onClick)="PageState = 'detail'">
+                </p-button>
+
+                <p-button severity="success" label="Simpan" icon="pi pi-save" styleClass="p-button-sm">
+                </p-button>
+            </div>
+        </div>
+
+        <div class="flex flex-row w-full my-2 gap-8">
+            <div class="w-2/12 flex h-full">
+                <!-- No Photo -->
+                <div *ngIf="!DetailProfile[0].value"
+                    class="flex w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem]">
+                    <p class="text-sm text-gray-500 text-center">
+                        No Photo
+                    </p>
+                </div>
+
+                <!-- Photo -->
+                <div *ngIf="DetailProfile[0].value"
+                    class="flex w-full items-center justify-center rounded-lg bg-gray-200 h-[15rem]">
+                    <img [src]="DetailProfile[0].value | safeUrl: 'url'" alt="photo" class="w-full h-full">
+                </div>
+            </div>
+
+            <div class="grid w-10/12">
+                <app-dynamic-form #FormComps [props]="FormProps"></app-dynamic-form>
+            </div>
+        </div>
+    </div>
+</div>

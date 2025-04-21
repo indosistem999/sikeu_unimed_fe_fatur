@@ -1,0 +1,25 @@
+<app-dashboard>
+    <!-- Heading -->
+    <div class="flex w-full gap-3 p-2 mb-1">
+        <div *ngFor="let item of Tabs" class="grid w-2/12">
+            <p-button [severity]="SelectedTab == item ? 'info' : 'secondary'" [label]="item"
+                styleClass="p-button-sm w-full" (onClick)="SelectedTab = item">
+            </p-button>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="grid w-full">
+        @if(SelectedTab == 'Profil') {
+        <app-detail-profile></app-detail-profile>
+        }
+
+        @if(SelectedTab == 'Ubah Password') {
+        <app-ubah-password></app-ubah-password>
+        }
+
+        @if(SelectedTab == 'Log Aktivitas') {
+        <app-log-aktifitas></app-log-aktifitas>
+        }
+    </div>
+</app-dashboard>

@@ -15,12 +15,15 @@ import { AuthenticationModel } from 'src/app/model/pages/authentication/authenti
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { MenuState } from 'src/app/store/pengaturan/menu';
 import { Store } from '@ngxs/store';
+import { IdentitasState } from 'src/app/store/pengaturan/umum/identitas';
+import { SafeUrlPipe } from 'src/app/middleware/pipe/safeUrl.pipe';
 
 @Component({
     selector: 'app-navbar',
     standalone: true,
     imports: [
         MenuModule,
+        SafeUrlPipe,
         CommonModule,
         DialogModule,
         ButtonModule,
@@ -44,6 +47,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     ShowSearch = false;
 
+    IdentitasState$ = this._store
+        .select(IdentitasState.identitasEntities)
+        .pipe(takeUntil(this.Destroy$));
+
     // Menu$ = this._store
     //     .select(MenuState.menuEntities)
     //     .pipe(takeUntil(this.Destroy$));
@@ -59,10 +66,24 @@ export class NavbarComponent implements OnInit, OnDestroy {
                 map(result => result['breadcrumbs'])
             );
 
-    UserMenu: MenuItem[] = [
+    UserMenu: any[] = [
+        {
+            label: 'Lihat Profil',
+            icon: 'pi pi-user text-blue-500',
+            command: () => {
+                this._router.navigateByUrl('/profile')
+            }
+        },
+        {
+            label: 'Ganti Password',
+            icon: 'pi pi-lock text-yellow-500',
+            command: () => {
+                this._authenticationService.signOut();
+            }
+        },
         {
             label: 'Sign Out',
-            icon: 'pi pi-sign-out',
+            icon: 'pi pi-sign-out text-red-500',
             command: () => {
                 this._authenticationService.signOut();
             }
@@ -86,7 +107,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.Destroy$))
             .subscribe((event: any) => {
                 if (event.routerEvent) {
-                    if (event.routerEvent.url.includes('pengaturan')) {
+                    if (event.routerEvent.url.includes('pengaturan') || event.routerEvent.url.includes('profile')) {
                         this.Menu$.next(module[0].module_menu);
                     };
 
@@ -96,7 +117,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
                 }
 
                 if (event instanceof NavigationEnd) {
-                    if (event.url.includes('pengaturan')) {
+                    if (event.url.includes('pengaturan') || event.url.includes('profile')) {
                         this.Menu$.next(module[0].module_menu);
                     };
 

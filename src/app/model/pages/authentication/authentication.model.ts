@@ -4,10 +4,18 @@ export namespace AuthenticationModel {
     export interface IAuthentication {
         user_id: string
         email: string
+        nip?: string
         first_name: string
         last_name: string
         access_token: string;
+        address?: string;
+        gender?: string;
+        job_position?: any;
         refresh_token: string;
+        photo?: string;
+        phone_number?: string;
+        start_work_at?: Date;
+        end_work_at?: Date;
         role: {
             role_id: string
             role_name: string

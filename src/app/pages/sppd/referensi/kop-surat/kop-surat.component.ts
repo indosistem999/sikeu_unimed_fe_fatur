@@ -17,6 +17,7 @@ import { GridModel } from 'src/app/model/components/grid.model';
 import { LayoutModel } from 'src/app/model/components/layout.model';
 import { AuthenticationService } from 'src/app/services/authentication/authentication.service';
 import { JenisTransportasiService } from 'src/app/services/sppd/referensi/jenis-transportasi.service';
+import { KopSuratService } from 'src/app/services/sppd/referensi/kop-surat.service';
 
 @Component({
     selector: 'app-kop-surat',
@@ -65,7 +66,7 @@ export class KopSuratComponent implements OnInit, OnDestroy {
         searchPlaceholder: 'Cari Satuan Kerja Disini',
     };
     GridSelectedData: any;
-    GridQueryParams: any = { page: '1', limit: '5' };
+    GridQueryParams: any = { page: '1', limit: '6' };
 
     FormState: 'insert' | 'update' = 'insert';
     FormProps: FormModel.IForm;
@@ -157,9 +158,9 @@ export class KopSuratComponent implements OnInit, OnDestroy {
     constructor(
         private _router: Router,
         private _messageService: MessageService,
+        private _kopSuratService: KopSuratService,
         private _confirmationService: ConfirmationService,
         private _authenticationService: AuthenticationService,
-        private _jenisTransportasiService: JenisTransportasiService,
     ) {
         this.FormProps = {
             id: 'form_jenis_transportasi',
@@ -205,11 +206,14 @@ export class KopSuratComponent implements OnInit, OnDestroy {
     }
 
     private getAll(query?: any) {
-        this._jenisTransportasiService
+        this._kopSuratService
             .getAll(query)
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                this.GridProps.dataSource = result.data.records;
+                if (result.data.records.length) {
+                    this.KopSuratDatasource = result.data.records;
+                    this.FormState = 'update';
+                }
             })
     }
 
@@ -283,47 +287,52 @@ export class KopSuratComponent implements OnInit, OnDestroy {
     }
 
     handleSave(args: any) {
-        this._jenisTransportasiService
+        this._kopSuratService
             .create(args)
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
                 if (result.success) {
                     this._messageService.clear();
-                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Jenis Transportasi Berhasil Disimpan' });
-                    this.FormDialogToggle = false;
-                    this.FormComps.FormGroup.reset();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Kop Surat Berhasil Disimpan' });
                     this.getAll(this.GridQueryParams);
                 }
             })
     }
 
     handleUpdate(args: any) {
-        this._jenisTransportasiService
-            .update(args)
+        const payload = args.map((item: any) => {
+            return {
+                kopsurat_id: item.kopsurat_id,
+                order_number: item.order_number,
+                description: item.description,
+                font_type: item.font_type,
+                font_style: item.font_style,
+                font_size: item.font_size,
+            }
+        })
+
+        this._kopSuratService
+            .update(payload)
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
                 if (result.success) {
                     this._messageService.clear();
-                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Jenis Transportasi Berhasil Diperbarui' });
-                    this.FormDialogToggle = false;
-                    this.FormComps.FormGroup.reset();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Kop Surat Berhasil Diperbarui' });
                     this.getAll(this.GridQueryParams);
                 }
             })
     }
 
     handleDelete(args: any) {
-        this._jenisTransportasiService
+        this._kopSuratService
             .delete(args.unit_id)
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
                 if (result.success) {
                     this._messageService.clear();
-                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Dihapus' });
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Kop Surat Berhasil Dihapus' });
                     this.getAll(this.GridQueryParams);
                 }
             })
     }
-
-
 }

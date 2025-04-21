@@ -15,6 +15,7 @@ import { JwtInterceptor } from './middleware/jwt.interceptor';
 import { TitleCasePipe } from '@angular/common';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
+import { SafeUrlPipe } from './middleware/pipe/safeUrl.pipe';
 
 const config: SocketIoConfig = {
     url: environment.socketUrl,
@@ -23,7 +24,7 @@ const config: SocketIoConfig = {
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
     ],
     imports: [
         BrowserModule,
