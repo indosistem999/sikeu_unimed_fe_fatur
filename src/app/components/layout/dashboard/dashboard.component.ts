@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     @Output('onClickButtonNavigation') onClickButtonNavigation = new EventEmitter<any>();
 
-    ShowTitle = this._activatedRoute.snapshot.data ? this._activatedRoute.snapshot.data['show_title'] : true;
+    ShowTitle = true;
 
     constructor(
         private _router: Router,
@@ -49,6 +49,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
                 this.IsBeranda = result[0].path == 'beranda';
+
+                this.ShowTitle = result[0].path != 'profile' && result[0].path != 'ubah-password';
             })
 
         // ** Set Userdata if page is refreshed
