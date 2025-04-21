@@ -12,6 +12,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Store } from '@ngxs/store';
 import { UserModel } from 'src/app/model/pages/pengaturan/module/user.model';
 import { UserActions, UserState } from 'src/app/store/pengaturan/umum/user';
+import { DialogModule } from 'primeng/dialog';
+import { UserFormComponent } from '../umum/user/user-form/user-form.component';
 
 @Component({
     selector: 'app-beranda',
@@ -21,7 +23,9 @@ import { UserActions, UserState } from 'src/app/store/pengaturan/umum/user';
         ButtonModule,
         GridComponent,
         DashboardComponent,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        DialogModule,
+        UserFormComponent
     ],
     templateUrl: './beranda.component.html',
     styleUrl: './beranda.component.scss'
@@ -59,6 +63,8 @@ export class BerandaComponent implements OnInit, OnDestroy {
         { title: 'Lihat Daftar Pejabat Satuan Kerja', path: '/pengaturan/umum/pejabat' },
         { title: 'Ubah Identitas', path: '/pengaturan/profile' },
     ];
+
+    showUserForm: boolean = false;
 
     constructor(
         private _store: Store,
@@ -149,5 +155,22 @@ export class BerandaComponent implements OnInit, OnDestroy {
 
     handleNavigate(url: string) {
         this._router.navigateByUrl(url);
+    }
+
+    onAddUserClick() {
+        this.showUserForm = true;
+    }
+
+    onUserFormClose() {
+        this.showUserForm = false;
+    }
+
+    onUserFormSubmit(formData: any) {
+        this._store.dispatch(new UserActions.CreateUser(formData))
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe(() => {
+                this.showUserForm = false;
+                this.onSearchGrid(this.GridQueryParams.search);
+            });
     }
 }

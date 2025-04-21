@@ -86,15 +86,6 @@ export class UserComponent implements OnInit, OnDestroy {
             id: 'form_user',
             fields: [
                 {
-                    id: 'user_id',
-                    label: 'ID',
-                    required: true,
-                    type: 'text',
-                    value: '',
-                    readonly: true,
-                    hidden: true
-                },
-                {
                     id: 'file_image',
                     label: 'Foto Profile',
                     required: true,
@@ -169,10 +160,10 @@ export class UserComponent implements OnInit, OnDestroy {
 
                         if (args.value == 1) {
                             this.FormProps.fields[index].hidden = false;
-                            this.FormProps.class = 'grid-rows-8 grid-cols-1';
+                            this.FormProps.class = 'grid-rows-7 grid-cols-1';
                         } else {
                             this.FormProps.fields[index].hidden = true;
-                            this.FormProps.class = 'grid-rows-7 grid-cols-1';
+                            this.FormProps.class = 'grid-rows-6 grid-cols-1';
                         }
                     }
                 },
@@ -191,7 +182,7 @@ export class UserComponent implements OnInit, OnDestroy {
                 },
             ],
             style: 'inline',
-            class: 'grid-rows-7 grid-cols-1',
+            class: 'grid-rows-6 grid-cols-1',
             state: 'write',
             defaultValue: null,
         };
@@ -278,10 +269,10 @@ export class UserComponent implements OnInit, OnDestroy {
 
         if (args.work_unit) {
             this.FormProps.fields[index].hidden = false;
-            this.FormProps.class = 'grid-rows-8 grid-cols-1';
+            this.FormProps.class = 'grid-rows-7 grid-cols-1';
         } else {
             this.FormProps.fields[index].hidden = true;
-            this.FormProps.class = 'grid-rows-7 grid-cols-1';
+            this.FormProps.class = 'grid-rows-6 grid-cols-1';
         }
 
         this.FormComps.FormGroup.patchValue({

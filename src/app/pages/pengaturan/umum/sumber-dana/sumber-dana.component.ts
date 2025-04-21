@@ -81,14 +81,6 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
             id: 'form_satuan_kerja',
             fields: [
                 {
-                    id: 'sumber_dana_id',
-                    label: 'ID',
-                    required: true,
-                    type: 'text',
-                    value: '',
-                    readonly: true
-                },
-                {
                     id: 'code',
                     label: 'Kode',
                     required: true,
@@ -104,7 +96,7 @@ export class SumberDanaComponent implements OnInit, OnDestroy {
                 },
             ],
             style: 'not_inline',
-            class: 'grid-rows-3 grid-cols-1',
+            class: 'grid-rows-2 grid-cols-1',
             state: 'write',
             defaultValue: null,
         };

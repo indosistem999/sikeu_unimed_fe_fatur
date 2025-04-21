@@ -85,7 +85,8 @@ export class KategoriJabatanComponent implements OnInit, OnDestroy {
                     required: true,
                     type: 'text',
                     value: '',
-                    readonly: true
+                    readonly: true,
+                    hidden: true
                 },
                 {
                     id: 'code',

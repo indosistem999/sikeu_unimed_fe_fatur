@@ -1,5 +1,5 @@
 <section id="authentication" class="h-screen flex flex-col w-full items-center justify-center">
-    <div class="flex flex-col w-10/12 glass p-8 gap-5">
+    <div class="flex flex-col w-8/12 max-w-4xl glass p-8 gap-5">
         <!-- Heading -->
         <div class="flex flex-row w-full items-center heading p-8 gap-5 rounded-xl">
             <!-- Logo -->
@@ -21,18 +21,18 @@
             <!-- Button -->
             <div class="flex flex-col gap-3 w-2/12 ml-auto">
                 <!-- Halaman Profil -->
-                <div class="flex w-full justify-center items-center px-2 py-3 rounded-lg bg-white"
+                <div class="flex w-full justify-center items-center px-2 py-3 rounded-lg bg-blue-900/40 transition-all duration-200 hover:bg-blue-900/60 cursor-pointer"
                     (click)="handleNavigate('profile')">
-                    <p class="text-xs text-gray-700 font-medium">
-                        <i class="pi pi-user text-blue-500" style="font-size: 12px"></i>&nbsp; Halaman Profil
+                    <p class="text-xs text-gray-50 font-medium">
+                        <i class="pi pi-user text-blue-200" style="font-size: 12px"></i>&nbsp; Halaman Profil
                     </p>
                 </div>
 
                 <!-- Halaman Profil -->
-                <div class="flex w-full justify-center items-center px-2 py-3 rounded-lg bg-white cursor-pointer"
+                <div class="flex w-full justify-center items-center px-2 py-3 rounded-lg bg-blue-900/40 cursor-pointer transition-all duration-200 hover:bg-blue-900/60"
                     (click)="handleSignOut()">
-                    <p class="text-xs text-gray-700 font-medium">
-                        <i class="pi pi-sign-out text-red-500" style="font-size: 12px"></i>&nbsp; Keluar Akun
+                    <p class="text-xs text-gray-50 font-medium">
+                        <i class="pi pi-sign-out text-red-200" style="font-size: 12px"></i>&nbsp; Keluar Akun
                     </p>
                 </div>
             </div>
@@ -45,13 +45,16 @@
                     Daftar Modul
                 </p>
 
-                <div *ngIf="Module$ | async as module" class="grid grid-cols-3 gap-5">
+                <div *ngIf="Module$ | async as module" class="grid grid-cols-3 gap-6">
                     <div *ngFor="let item of module"
-                        class="flex w-full flex-col gap-3 p-3 justify-center items-center 
-                        {{ ActiveModule && ActiveModule.module_id == item.module_id ? 'bg-blue-100' : 'bg-gray-50'}} rounded-lg shadow cursor-pointer"
+                        class="flex w-full flex-col gap-4 p-4 justify-center items-center 
+                        {{ ActiveModule && ActiveModule.module_id == item.module_id ? 'bg-blue-100 border-2 border-blue-300' : 'bg-gray-50 border border-gray-200'}} 
+                        rounded-xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer hover:scale-[1.02]"
                         (click)="ActiveModule = item">
-                        <img [src]="item.icon" alt="icon" class="w-[60px] h-[60px]">
-                        <p class="text-[#295AA3] font-medium text-sm text-center">
+                        <div class="w-[70px] h-[70px] flex items-center justify-center bg-white rounded-full p-3 shadow-sm">
+                            <img [src]="item.icon" alt="icon" class="w-full h-full object-contain">
+                        </div>
+                        <p class="text-[#295AA3] font-semibold text-sm text-center">
                             {{ item.module_name }}
                         </p>
                     </div>

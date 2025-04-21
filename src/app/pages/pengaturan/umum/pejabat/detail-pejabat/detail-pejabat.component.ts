@@ -114,14 +114,6 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
             id: 'form_pejabat',
             fields: [
                 {
-                    id: 'officers_id',
-                    label: 'ID',
-                    required: true,
-                    type: 'text',
-                    value: '',
-                    hidden: true
-                },
-                {
                     id: 'nip',
                     label: 'NIP',
                     required: true,
@@ -208,7 +200,7 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
                 },
             ],
             style: 'not_inline',
-            class: 'grid-rows-9 grid-cols-1',
+            class: 'grid-rows-8 grid-cols-1',
             state: 'write',
             defaultValue: null,
         };

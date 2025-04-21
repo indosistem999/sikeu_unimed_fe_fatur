@@ -81,14 +81,6 @@ export class TahunAnggaranComponent implements OnInit, OnDestroy {
             id: 'form_tahun_anggaran',
             fields: [
                 {
-                    id: 'budget_id',
-                    label: 'ID',
-                    required: true,
-                    type: 'text',
-                    value: '',
-                    readonly: true
-                },
-                {
                     id: 'budget_name',
                     label: 'Tahun Anggaran',
                     required: true,
@@ -111,7 +103,7 @@ export class TahunAnggaranComponent implements OnInit, OnDestroy {
                 },
             ],
             style: 'not_inline',
-            class: 'grid-rows-4 grid-cols-1',
+            class: 'grid-rows-3 grid-cols-1',
             state: 'write',
             defaultValue: null,
         };

@@ -81,14 +81,6 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
             id: 'form_satuan_kerja',
             fields: [
                 {
-                    id: 'unit_id',
-                    label: 'ID',
-                    required: true,
-                    type: 'text',
-                    value: '',
-                    readonly: true
-                },
-                {
                     id: 'unit_code',
                     label: 'Kode Unit',
                     required: true,
@@ -111,7 +103,7 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
                 },
             ],
             style: 'not_inline',
-            class: 'grid-rows-4 grid-cols-1',
+            class: 'grid-rows-3 grid-cols-1',
             state: 'write',
             defaultValue: null,
         };
