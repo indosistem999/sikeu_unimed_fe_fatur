@@ -15,9 +15,11 @@ export class PejabatService {
         private _httpRequestService: HttpRequestService,
     ) { }
 
-    getAllInSatker(query?: PejabatModel.GetAllQuery): Observable<PejabatModel.GetAllPejabat> {
+    getAllInSatker(query: PejabatModel.GetAllInSatkerQuery): Observable<PejabatModel.GetAllPejabat> {
+        const { unit_id, ...data } = query;
+
         return this._httpRequestService
-            .getRequest(`${environment.webApiUrl}/master-officers`, {}, query)
+            .getRequest(`${environment.webApiUrl}/pejabat-satker/list-pejabat/${query.unit_id}`, {}, data)
             .pipe(
                 map((result) => {
                     if (result.data.records.length) {

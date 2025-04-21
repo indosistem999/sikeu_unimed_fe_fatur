@@ -67,7 +67,7 @@ export class PejabatState {
     @Action(PejabatActions.GetAllPejabatInSatker)
     getAllInSatker(ctx: StateContext<PejabatStateModel>, actions: any) {
         return this._masterPejabatService
-            .getAll(actions.query)
+            .getAllInSatker(actions.query)
             .pipe(
                 tap((result) => {
                     const state = ctx.getState();
@@ -115,7 +115,7 @@ export class PejabatState {
                 }),
                 switchMap((result: any) => {
                     if (result.success) {
-                        return ctx.dispatch(new PejabatActions.GetAllPejabatInSatker({ unit_id: actions.payload.unit_id }));
+                        return ctx.dispatch(new PejabatActions.GetAllPejabat());
                     } else {
                         return of([]);
                     }
@@ -144,7 +144,7 @@ export class PejabatState {
                 }),
                 switchMap((result: any) => {
                     if (result.success) {
-                        return ctx.dispatch(new PejabatActions.GetAllPejabatInSatker({ unit_id: actions.payload.unit_id }));
+                        return ctx.dispatch(new PejabatActions.GetAllPejabat());
                     } else {
                         return of([]);
                     }
@@ -173,7 +173,7 @@ export class PejabatState {
                 }),
                 switchMap((result: any) => {
                     if (result.success) {
-                        return ctx.dispatch(new PejabatActions.GetAllPejabatInSatker({ unit_id: actions.payload.unit_id }));
+                        return ctx.dispatch(new PejabatActions.GetAllPejabat());
                     } else {
                         return of([]);
                     }

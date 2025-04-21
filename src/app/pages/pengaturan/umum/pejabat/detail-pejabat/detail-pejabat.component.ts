@@ -56,11 +56,6 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
             title: 'Kembali',
             icon: 'pi pi-chevron-left'
         },
-        {
-            id: 'add',
-            title: 'Tambah Pejabat',
-            icon: 'pi pi-plus'
-        }
     ];
 
     KelompokJabatanDatasource: any[] = [];
@@ -82,7 +77,6 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
         ],
         dataSource: [],
         height: "calc(100vh - 14.5rem)",
-        toolbar: ['Hapus', 'Edit'],
         showPaging: true,
         showSearch: true,
         showSort: true,
@@ -355,7 +349,7 @@ export class DetailPejabatComponent implements OnInit, OnDestroy {
             .subscribe((result) => {
                 if (result.satuan_kerja.success) {
                     this._messageService.clear();
-                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Disimpan' });
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Pejabat Berhasil Disimpan' });
                     this.FormDialogToggle = false;
                     this.FormComps.FormGroup.reset();
                 }

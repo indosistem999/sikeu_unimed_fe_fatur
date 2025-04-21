@@ -149,7 +149,7 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
             .dispatch(new SatuanKerjaActions.GetAllSatuanKerja(this.GridQueryParams))
             .pipe(
                 takeUntil(this.Destroy$),
-                map((result) => result.user)
+                map((result) => result.satuan_kerja)
             )
             .subscribe((result) => {
                 this.GridProps.dataSource = result.entities;
@@ -211,7 +211,7 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
             .subscribe((result) => {
                 if (result.satuan_kerja.success) {
                     this._messageService.clear();
-                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Disimpan' });
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Satuan Kerja Berhasil Disimpan' });
                     this.FormDialogToggle = false;
                     this.FormComps.FormGroup.reset();
                 }
@@ -225,7 +225,7 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
             .subscribe((result) => {
                 if (result.satuan_kerja.success) {
                     this._messageService.clear();
-                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Diperbarui' });
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Satuan Kerja Berhasil Diperbarui' });
                     this.FormDialogToggle = false;
                     this.FormComps.FormGroup.reset();
                 }
@@ -239,7 +239,7 @@ export class SatuanKerjaComponent implements OnInit, OnDestroy {
             .subscribe((result) => {
                 if (result.satuan_kerja.success) {
                     this._messageService.clear();
-                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Dihapus' });
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Satuan Kerja Berhasil Dihapus' });
                 }
             })
     }
