@@ -67,7 +67,7 @@ export class PejabatState {
     @Action(PejabatActions.GetAllPejabatInSatker)
     getAllInSatker(ctx: StateContext<PejabatStateModel>, actions: any) {
         return this._masterPejabatService
-            .getAll(actions.query)
+            .getAllInSatker(actions.query)
             .pipe(
                 tap((result) => {
                     const state = ctx.getState();
