@@ -76,7 +76,7 @@ export class AuthenticationComponent implements OnInit, AfterViewInit, OnDestroy
                 {
                     id: 'password',
                     label: 'Password',
-                    required: true,
+                    required: false,
                     type: 'password',
                     value: '',
                 },

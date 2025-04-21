@@ -353,4 +353,8 @@ export class AuthenticationService {
     resetPassword(payload: any) {
         return this._httpRequestService.postRequest(`${environment.webApiUrl}/auth/reset-password`, payload);
     }
+
+    changePassword(payload: any) {
+        return this._httpRequestService.postRequest(`${environment.webApiUrl}/auth/manual-change-password`, payload);
+    }
 }

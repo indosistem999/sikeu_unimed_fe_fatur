@@ -9,8 +9,8 @@ import { FormModel } from 'src/app/model/components/form.model';
 import { AuthenticationActions, AuthenticationState } from 'src/app/store/authentication';
 import { UtilityService } from 'src/app/services/utility/utility.service';
 import { SafeUrlPipe } from 'src/app/middleware/pipe/safeUrl.pipe';
-import { UserActions } from 'src/app/store/pengaturan/umum/user';
 import { RoleState } from 'src/app/store/pengaturan/hak-akses/role';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-detail-profile',
@@ -42,7 +42,8 @@ export class DetailProfileComponent implements OnInit, OnDestroy {
     constructor(
         private _store: Store,
         private _utilityService: UtilityService,
-        private _activatedRoute: ActivatedRoute
+        private _activatedRoute: ActivatedRoute,
+        private _messageService: MessageService,
     ) {
         this.FormProps = {
             id: 'form_user',
@@ -270,7 +271,11 @@ export class DetailProfileComponent implements OnInit, OnDestroy {
             .dispatch(new AuthenticationActions.UpdateProfile(payload))
             .pipe(takeUntil(this.Destroy$))
             .subscribe((result) => {
-                console.log(result);
+                if (result.authentication.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil', detail: 'Profil berhasil diperbarui' });
+                    this.PageState = 'detail';
+                }
             })
     }
 }

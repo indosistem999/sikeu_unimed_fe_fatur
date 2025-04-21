@@ -23,6 +23,7 @@ import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputOtpModule } from 'primeng/inputotp';
 import { InputGroupModule } from 'primeng/inputgroup';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-dynamic-form',
@@ -84,6 +85,7 @@ export class DynamicFormComponent implements OnInit {
     ImagePreviews: { [key: string]: string | ArrayBuffer | null } = {};
 
     constructor(
+        private _router: Router,
         private _formBuilder: FormBuilder,
         private _messageService: MessageService,
     ) {
@@ -276,6 +278,10 @@ export class DynamicFormComponent implements OnInit {
         reader.readAsDataURL(files);
     }
 
+    handleChangePassword(args: any, fields: FormModel.IFormFields) {
+        return fields?.onChange?.(args);
+    }
+
     // Check if the accepted file type is an image
     isImageFile(accept: string): boolean {
         return accept.includes('image');
@@ -311,5 +317,9 @@ export class DynamicFormComponent implements OnInit {
 
     handleOpenImage(image: any) {
         window.open(image);
+    }
+
+    handleOpenAdditionalLink(url: string) {
+        this._router.navigateByUrl(url);
     }
 }

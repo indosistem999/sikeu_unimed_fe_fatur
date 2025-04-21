@@ -13,17 +13,30 @@ export class JwtInterceptor implements HttpInterceptor {
 
     intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-        const WebApiUrl = !httpRequest.url.startsWith(`${environment.webApiUrl}/auth`);
+        const authApi = httpRequest.url.startsWith(`${environment.webApiUrl}/auth`);
 
         const userData = this._authenticationService.getUserData();
 
-        if (userData && WebApiUrl) {
-            const modifiedRequest = httpRequest.clone({
-                setHeaders: {
-                    Authorization: `Bearer ${userData.access_token}`
+        if (userData) {
+            if (authApi) {
+                if (httpRequest.url == `${environment.webApiUrl}/auth/manual-change-password`) {
+                    const modifiedRequest = httpRequest.clone({
+                        setHeaders: {
+                            Authorization: `Bearer ${userData.access_token}`
+                        }
+                    });
+                    return next.handle(modifiedRequest);
+                } else {
+                    return next.handle(httpRequest);
                 }
-            });
-            return next.handle(modifiedRequest);
+            } else {
+                const modifiedRequest = httpRequest.clone({
+                    setHeaders: {
+                        Authorization: `Bearer ${userData.access_token}`
+                    }
+                });
+                return next.handle(modifiedRequest);
+            }
         } else {
             return next.handle(httpRequest);
         }

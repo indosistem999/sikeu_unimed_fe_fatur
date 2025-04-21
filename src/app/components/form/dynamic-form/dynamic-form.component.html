@@ -157,9 +157,18 @@
             </div>
 
             <!-- Password -->
-            <p-password *ngIf="item.type == 'password'" formControlName="{{ item.id }}" [feedback]="false"
-                [toggleMask]="true" styleClass="p-inputtext-sm w-full">
-            </p-password>
+            <div *ngIf="item.type == 'password'" class="flex flex-col w-full">
+                <p-password formControlName="{{ item.id }}" [feedback]="false" [toggleMask]="true"
+                    styleClass="p-inputtext-sm w-full mb-1" (ngModelChange)="handleChangePassword($event, item)">
+                </p-password>
+
+                <div *ngIf="item.additional_link" class="flex w-full">
+                    <p class="text-xs text-blue-500 cursor-pointer"
+                        (click)="handleOpenAdditionalLink(item.additional_link.url)">
+                        {{ item.additional_link.label }}
+                    </p>
+                </div>
+            </div>
 
             <!-- Lookup -->
             <app-lookup-dialog *ngIf="item.type == 'lookup'" [props]="item.lookupProps!"

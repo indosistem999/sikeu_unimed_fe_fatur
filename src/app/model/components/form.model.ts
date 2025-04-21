@@ -75,6 +75,10 @@ export namespace FormModel {
         onChange?: (args: any) => any;
         onFilter?: (args: any) => any;
         onRefresh?: (args: any) => any;
+        additional_link?: {
+            label: string;
+            url: string;
+        }
     }
 
     export enum PageState {
