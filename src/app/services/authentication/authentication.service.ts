@@ -357,4 +357,8 @@ export class AuthenticationService {
     changePassword(payload: any) {
         return this._httpRequestService.postRequest(`${environment.webApiUrl}/auth/manual-change-password`, payload);
     }
+
+    getLogActivity(query?: any) {
+        return this._httpRequestService.getRequest(`${environment.webApiUrl}/user-log-activity`, {}, query);
+    }
 }
