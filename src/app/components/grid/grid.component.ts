@@ -119,6 +119,12 @@ export class GridComponent implements OnInit, AfterViewInit {
                     case 'Detail':
                         icon = 'pi pi-info-circle';
                         break;
+                    case 'Reset Password':
+                        icon = 'pi pi-lock';
+                        break;
+                    case 'Login As':
+                        icon = 'pi pi-user';
+                        break;
                     default:
                         break;
                 }
