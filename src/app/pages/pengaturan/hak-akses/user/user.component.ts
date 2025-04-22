@@ -378,6 +378,17 @@ export class UserComponent implements OnInit, OnDestroy {
             this.FormResetPasswordComps.FormGroup.get('email')?.setValue(args.data.email);
             this.FormResetPasswordDialogToggle = true;
         }
+
+        if (args.type == 'login as') {
+            this._authenticationService
+                .loginAs(args.data.user_id)
+                .pipe(takeUntil(this.Destroy$))
+                .subscribe((result) => {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Berhasil Login Sebagai User' });
+                    this._router.navigateByUrl("/list-module")
+                })
+        }
     }
 
     onPageChanged(args: any): void {
@@ -439,7 +450,7 @@ export class UserComponent implements OnInit, OnDestroy {
             .subscribe((result) => {
                 if (result.user.success) {
                     this._messageService.clear();
-                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'Modul Berhasil Dihapus' });
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil!', detail: 'User Berhasil Dihapus' });
                 }
             })
     }
