@@ -258,7 +258,7 @@ export class AuthenticationService {
 
     loginAs(user_id: string): Observable<AuthenticationModel.SignIn> {
         return this._httpRequestService
-            .postRequest(`${environment.webApiUrl}/user/login-as/${user_id}`, null)
+            .putRequest(`${environment.webApiUrl}/user/login-as/${user_id}`, null)
             .pipe(
                 switchMap((result) => {
                     if (result.success) {
