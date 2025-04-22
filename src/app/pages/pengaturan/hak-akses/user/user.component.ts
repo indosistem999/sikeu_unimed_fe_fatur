@@ -63,7 +63,7 @@ export class UserComponent implements OnInit, OnDestroy {
         ],
         dataSource: [],
         height: "calc(100vh - 14.5rem)",
-        toolbar: ['Hapus', 'Edit'],
+        toolbar: ['Edit', 'Reset Password', 'Login As', 'Hapus',],
         showPaging: true,
         showSearch: true,
         showSort: true,
@@ -77,6 +77,17 @@ export class UserComponent implements OnInit, OnDestroy {
     FormProps: FormModel.IForm;
     FormDialogToggle = false;
     @ViewChild('FormComps') FormComps!: DynamicFormComponent;
+
+    FormResetPasswordProps: FormModel.IForm;
+    FormResetPasswordDialogToggle = false;
+    @ViewChild('FormResetPasswordComps') FormResetPasswordComps!: DynamicFormComponent;
+
+    MinLength = false;
+    HasUppercase = false;
+    HasLowercase = false;
+    HasNumber = false;
+    HasSpecialChar = false;
+    HasSame = false;
 
     constructor(
         private _store: Store,
@@ -189,6 +200,45 @@ export class UserComponent implements OnInit, OnDestroy {
             state: 'write',
             defaultValue: null,
         };
+
+        this.FormResetPasswordProps = {
+            id: 'form_reset_password',
+            fields: [
+                {
+                    id: 'email',
+                    label: 'Email',
+                    required: true,
+                    type: 'text',
+                    value: '',
+                    hidden: true
+                },
+                {
+                    id: 'new_password',
+                    label: 'Password Baru',
+                    required: true,
+                    type: 'password',
+                    value: '',
+                    onChange: (args: any) => {
+                        this.handlecheckPasswordStrength(args);
+                    }
+                },
+                {
+                    id: 'confirm_password',
+                    label: 'Konfirmasi Password',
+                    required: true,
+                    type: 'password',
+                    value: '',
+                    onChange: (args: any) => {
+                        const new_password = this.FormResetPasswordComps.FormGroup.get('new_password')?.value;
+                        this.HasSame = args == new_password;
+                    }
+                },
+            ],
+            style: 'not_inline',
+            class: 'grid-rows-2 grid-cols-1',
+            state: 'write',
+            defaultValue: null,
+        };
     }
 
     ngOnInit(): void {
@@ -206,7 +256,7 @@ export class UserComponent implements OnInit, OnDestroy {
         if (data.id == 'add') {
             this.FormState = 'insert';
             this.FormDialogToggle = true;
-            
+
             // Wait for the next tick to ensure form is initialized
             setTimeout(() => {
                 if (this.FormComps && this.FormComps.FormGroup) {
@@ -323,6 +373,11 @@ export class UserComponent implements OnInit, OnDestroy {
         if (args.type == 'edit') {
             this.onRowDoubleClicked(args.data);
         }
+
+        if (args.type == 'reset password') {
+            this.FormResetPasswordComps.FormGroup.get('email')?.setValue(args.data.email);
+            this.FormResetPasswordDialogToggle = true;
+        }
     }
 
     onPageChanged(args: any): void {
@@ -389,4 +444,30 @@ export class UserComponent implements OnInit, OnDestroy {
             })
     }
 
+    handleResetPassword(data: any) {
+        this._authenticationService
+            .resetPassword(data)
+            .pipe(takeUntil(this.Destroy$))
+            .subscribe((result) => {
+                if (result.success) {
+                    this._messageService.clear();
+                    this._messageService.add({ severity: 'success', summary: 'Berhasil', detail: 'Password berhasil direset' });
+                    this.MinLength = false;
+                    this.HasUppercase = false;
+                    this.HasLowercase = false;
+                    this.HasNumber = false;
+                    this.HasSpecialChar = false;
+                    this.FormResetPasswordComps.FormGroup.reset();
+                    this.FormResetPasswordDialogToggle = false;
+                }
+            })
+    }
+
+    handlecheckPasswordStrength(password: string) {
+        this.MinLength = password.length >= 8;
+        this.HasUppercase = /[A-Z]/.test(password);
+        this.HasLowercase = /[a-z]/.test(password);
+        this.HasNumber = /[0-9]/.test(password);
+        this.HasSpecialChar = /[!@#$%^&*]/.test(password);
+    }
 }

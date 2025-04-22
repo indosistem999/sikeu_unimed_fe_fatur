@@ -256,6 +256,48 @@ export class AuthenticationService {
             );
     }
 
+    loginAs(user_id: string): Observable<AuthenticationModel.SignIn> {
+        return this._httpRequestService
+            .postRequest(`${environment.webApiUrl}/user/login-as/${user_id}`, null)
+            .pipe(
+                switchMap((result) => {
+                    if (result.success) {
+                        const token = result.data.access_token;
+                        return this.getProfile(token)
+                            .pipe(
+                                map(profile => {
+                                    if (profile.success) {
+                                        this.handleSignIn({
+                                            access_token: result.data.access_token,
+                                            refresh_token: result.data.refresh_token,
+                                            ...profile.data
+                                        });
+
+                                        return {
+                                            success: true,
+                                            message: 'Login Berhasil',
+                                            data: {
+                                                access_token: result.data.access_token,
+                                                refresh_token: result.data.refresh_token,
+                                                ...profile.data
+                                            }
+                                        };
+                                    } else {
+                                        return {
+                                            success: false,
+                                            message: profile.message,
+                                            data: null
+                                        };
+                                    }
+                                })
+                            );
+                    } else {
+                        return throwError(() => new Error('Sign-in failed'));
+                    }
+                })
+            );
+    }
+
     signOut() {
         this._messageService.clear();
         this._messageService.add({ severity: 'success', summary: 'Berhasil', detail: 'Sign Out Berhasil' })
