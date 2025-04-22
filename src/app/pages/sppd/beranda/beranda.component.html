@@ -1,1 +1,161 @@
-<app-dashboard></app-dashboard>
+<app-dashboard>
+    <div class="dashboard-container">
+        <!-- Header with welcome message -->
+        <div class="welcome-header">
+            <h1>Selamat Datang, {{ userName }}</h1>
+            <p>{{ formattedDate }}</p>
+        </div>
+
+        <!-- Statistics cards -->
+        <div class="stats-cards">
+            <!-- Surat Tugas Card -->
+            <div class="stat-card purple-card">
+                <div class="stat-content">
+                    <div class="stat-text">
+                        <h3>Surat Tugas Bulan Ini</h3>
+                        <div class="stat-number">{{ suratTugasCount }}</div>
+                    </div>
+                    <div class="stat-icon">
+                        <img src="assets/icons/mail-icon.svg" alt="Surat Tugas Icon" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jumlah Pegawai Card -->
+            <div class="stat-card green-card">
+                <div class="stat-content">
+                    <div class="stat-text">
+                        <h3>Jumlah Pegawai</h3>
+                        <div class="stat-number">{{ pegawaiCount }}</div>
+                    </div>
+                    <div class="stat-icon">
+                        <img src="assets/icons/employee-icon.svg" alt="Pegawai Icon" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jumlah Satuan Kerja Card -->
+            <div class="stat-card yellow-card">
+                <div class="stat-content">
+                    <div class="stat-text">
+                        <h3>Jumlah Satuan Kerja</h3>
+                        <div class="stat-number">{{ satuanKerjaCount }}</div>
+                    </div>
+                    <div class="stat-icon">
+                        <img src="assets/icons/office-icon.svg" alt="Satuan Kerja Icon" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content area -->
+        <div class="dashboard-content">
+            <!-- Left section - Statistics -->
+            <div class="stats-section">
+                <h2>Statistik Data SPPD</h2>
+                
+                <div class="stats-filters">
+                    <div class="filter-group">
+                        <label>Tahun</label>
+                        <div class="year-selection">
+                            <select class="year-select" [(ngModel)]="selectedStartYear">
+                                <option value="2024">2024</option>
+                            </select>
+                            <span>s/d</span>
+                            <select class="year-select" [(ngModel)]="selectedEndYear">
+                                <option value="2025">2025</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Satuan Kerja</label>
+                        <select class="unit-select" [(ngModel)]="selectedSatuanKerja">
+                            <option value="Fakultas Ilmu Budaya">Fakultas Ilmu Budaya</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="stats-display">
+                    <div class="stats-select">
+                        <label>Pilih Statistik Yang Ingin Ditampilkan</label>
+                        <select class="stats-type-select" [(ngModel)]="selectedStatistikType">
+                            <option value="Statistik Perjalanan Tahun 2024 - 2025">Statistik Perjalanan Tahun 2024 - 2025</option>
+                        </select>
+                    </div>
+                    
+                    <div class="stats-chart">
+                        <!-- Placeholder for the chart -->
+                        <div class="chart-container">
+                            <!-- This would be replaced with actual chart component -->
+                            <div class="bar-chart">
+                                <!-- Monthly bars for the chart -->
+                                <div *ngFor="let month of ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sept', 'Okt', 'Nov', 'Des']" 
+                                     class="month-column">
+                                    <div class="bar-2024" [style.height.px]="getRandomHeight(20, 60)"></div>
+                                    <div class="bar-2025" [style.height.px]="getRandomHeight(10, 65)"></div>
+                                    <div class="month-label">{{ month }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-marker green"></span>
+                                    <span>Juni 2024 - 60 Perjalanan</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-marker blue"></span>
+                                    <span>Juni 2025 - 36 Perjalanan</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right section - Quick Access & Pie Chart -->
+            <div class="quick-access-section">
+                <div class="quick-access">
+                    <h2>Akses Cepat</h2>
+                    <div class="quick-links">
+                        <a href="javascript:void(0)" (click)="navigateToLink('buat-surat-tugas')" class="quick-link">Buat Surat Tugas</a>
+                        <a href="javascript:void(0)" (click)="navigateToLink('daftar-spd')" class="quick-link">Daftar SPD</a>
+                        <a href="javascript:void(0)" (click)="navigateToLink('tambah-data-pegawai')" class="quick-link">Tambah Data Pegawai</a>
+                        <a href="javascript:void(0)" (click)="navigateToLink('cari-pegawai')" class="quick-link">Cari Pegawai</a>
+                        <a href="javascript:void(0)" (click)="navigateToLink('daftar-laporan')" class="quick-link">Daftar Laporan</a>
+                    </div>
+                </div>
+                
+                <div class="pie-chart-section">
+                    <h2>Surat Tugas & SPD</h2>
+                    <div class="pie-chart">
+                        <!-- Simple pie chart representation -->
+                        <div class="pie-chart-container">
+                            <!-- Using inline SVG for a simple pie chart -->
+                            <svg width="150" height="150" viewBox="0 0 150 150">
+                                <!-- SPD slice (green, 1/3) -->
+                                <path d="M75,75 L75,10 A65,65 0 0,1 129,102 Z" fill="#4caf50"></path>
+                                <!-- Surat Tugas slice (blue, 2/3) -->
+                                <path d="M75,75 L129,102 A65,65 0 0,1 21,102 L75,10 Z" fill="#2196f3"></path>
+                                <!-- Center circle -->
+                                <circle cx="75" cy="75" r="30" fill="white"></circle>
+                            </svg>
+                        </div>
+                        
+                        <div class="pie-chart-legend">
+                            <h3>Keterangan</h3>
+                            <div class="legend-item">
+                                <span class="legend-marker green"></span>
+                                <span>SPD {{ spdCount }}</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-marker blue"></span>
+                                <span>Surat Tugas {{ suratTugasChartCount }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-dashboard>
